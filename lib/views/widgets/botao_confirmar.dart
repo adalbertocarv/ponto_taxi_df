@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/themes/tema_provider.dart';
 
 class BotaoConfirmar extends StatelessWidget {
-   BotaoConfirmar({super.key});
+   const BotaoConfirmar({super.key});
 
   @override
   Widget build(BuildContext context) {

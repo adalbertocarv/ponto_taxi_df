@@ -1,29 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:ponto_taxi_df/views/widgets/botao_camada_satelite.dart';
-import 'package:ponto_taxi_df/views/widgets/botoes_zoom.dart';
 import 'package:provider/provider.dart';
-import '../../models/tile_layer_model.dart';
-import '../../providers/themes/Map_themes.dart';
+import '../../controllers/mapa_controller.dart';
+import '../../providers/themes/map_themes.dart';
 import '../../providers/themes/tema_provider.dart';
+import '../widgets/botao_camada_satelite.dart';
 import '../widgets/icone_central_mapa.dart';
 import '/views/widgets/botao_confirmar.dart';
 import '/views/widgets/centralizar_mapa.dart';
 import '/views/widgets/botao_norte.dart';
 
-class MapaCadastrar extends StatefulWidget {
+class MapaCadastrar extends StatelessWidget {
   const MapaCadastrar({super.key});
 
   @override
-  State<MapaCadastrar> createState() => _MapaCadastrarState();
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => MapaController()),
+      ],
+      child: const _MapaCadastrarContent(),
+    );
+  }
 }
 
-class _MapaCadastrarState extends State<MapaCadastrar> {
+class _MapaCadastrarContent extends StatelessWidget {
+  const _MapaCadastrarContent();
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final mapTheme = themeProvider.isDarkMode ? AppMapThemes.dark : AppMapThemes.light;
+    final mapaController = Provider.of<MapaController>(context);
+
+    final baseTheme = themeProvider.isDarkMode
+        ? AppMapThemes.dark
+        : AppMapThemes.light;
 
     return Scaffold(
       body: Stack(
@@ -31,28 +43,36 @@ class _MapaCadastrarState extends State<MapaCadastrar> {
           FlutterMap(
             options: const MapOptions(
               initialCenter: LatLng(-15.79, -47.88),
-              initialZoom: 18,
-              interactionOptions: const InteractionOptions(
+              initialZoom: 15,
+              interactionOptions: InteractionOptions(
                 flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
               ),
             ),
             children: [
               TileLayer(
-                urlTemplate: mapTheme.urlTemplate,
-                additionalOptions: mapTheme.additionalOptions,
-                subdomains: mapTheme.subdomains,
+                urlTemplate: baseTheme.urlTemplate,
+                subdomains: baseTheme.subdomains,
+                tileBuilder: baseTheme.tileBuilder,
+                additionalOptions: baseTheme.additionalOptions,
                 userAgentPackageName: 'com.ponto.certo.taxi.ponto_certo_taxi',
               ),
-              // Alfinete no centro da tela
+              if (mapaController.satelliteActive)
+                TileLayer(
+                  urlTemplate: AppMapThemes.satellite.urlTemplate,
+                  subdomains: AppMapThemes.satellite.subdomains,
+                  additionalOptions: AppMapThemes.satellite.additionalOptions,
+                  userAgentPackageName: 'com.ponto.certo.taxi.ponto_certo_taxi',
+                ),
               IconeCentralMapa(isDarkMode: themeProvider.isDarkMode),
             ],
           ),
-
-          // Definir latlong do ponto de taxi
-          BotaoConfirmar(),
-          CentralizarMapa(),
-          BotaoNorte(),
-          CamadaSatelite(),
+          const BotaoConfirmar(),
+          const CentralizarMapa(),
+          const BotaoNorte(),
+          CamadaSatelite(
+            ativo: mapaController.satelliteActive,
+            onToggle: mapaController.toggleSatellite,
+          ),
         ],
       ),
     );

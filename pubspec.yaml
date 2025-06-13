@@ -39,6 +39,7 @@ dependencies:
   curved_navigation_bar: ^1.0.6 #barra de navegação inferior com animação
   flutter_speed_dial: ^7.0.0 #submenu com a barra de navegação
   provider: ^6.1.5 #prover o 'estado' do app
+  vector_map_tiles: ^9.0.0-beta.8
 
 dev_dependencies:
   flutter_test:

@@ -10,6 +10,8 @@ import 'mapa_cadastrar.dart';
 import 'menu.dart';
 
 class TelaInicio extends StatefulWidget {
+  const TelaInicio({super.key});
+
   @override
   State<TelaInicio> createState() => _TelaInicioState();
 }
