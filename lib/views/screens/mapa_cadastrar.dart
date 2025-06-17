@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:ponto_taxi_df/views/widgets/botao_perfil.dart';
 import 'package:provider/provider.dart';
 import '../../controllers/mapa_controller.dart';
 import '../../providers/themes/map_themes.dart';
@@ -73,6 +74,7 @@ class _MapaCadastrarContent extends StatelessWidget {
             ativo: mapaController.satelliteActive,
             onToggle: mapaController.toggleSatellite,
           ),
+          BotaoPerfil(),
         ],
       ),
     );
