@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:ponto_taxi_df/views/screens/login.dart';
 import 'package:provider/provider.dart';
 import '../../providers/themes/tema_provider.dart';
+import '../../providers/autenticacao/auth_provider.dart';
 
 class Menu extends StatelessWidget {
   const Menu({super.key});
@@ -8,6 +10,7 @@ class Menu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       body: SafeArea(
@@ -108,6 +111,19 @@ class Menu extends StatelessWidget {
                         // Navegar para sobre
                       },
                     ),
+                    const Divider(height: 1,),
+                    ListTile(
+                      leading: const Icon(Icons.logout),
+                      title: const Text('Sair'),
+                      trailing: const Icon(Icons.arrow_forward_ios),
+                      onTap: () {
+                        authProvider.logout();
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (context) => LoginScreen()),
+                              (Route<dynamic> route) => false,
+                        );
+                      },
+                    )
                   ],
                 ),
               ),
