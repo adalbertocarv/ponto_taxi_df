@@ -17,22 +17,38 @@ class MapaCadastrar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => MapaController()),
-      ],
+    return ChangeNotifierProvider(
+      create: (_) => MapaController(),
       child: const _MapaCadastrarContent(),
     );
   }
 }
 
-class _MapaCadastrarContent extends StatelessWidget {
+class _MapaCadastrarContent extends StatefulWidget {
   const _MapaCadastrarContent();
 
   @override
+  State<_MapaCadastrarContent> createState() => _MapaCadastrarContentState();
+}
+
+class _MapaCadastrarContentState extends State<_MapaCadastrarContent> {
+  final MapController _mapController = MapController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Delay para garantir que o Provider já esteja disponível
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final mapaController = context.read<MapaController>();
+      mapaController.setFlutterMapController(_mapController);
+      mapaController.obterLocalizacaoUsuario(); // Opcional: já busca a localização ao abrir
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final mapaController = Provider.of<MapaController>(context);
+    final themeProvider = context.watch<ThemeProvider>();
+    final mapaController = context.watch<MapaController>();
 
     final baseTheme = themeProvider.isDarkMode
         ? AppMapThemes.dark
@@ -42,31 +58,31 @@ class _MapaCadastrarContent extends StatelessWidget {
       body: Stack(
         children: [
           FlutterMap(
-            options: const MapOptions(
-              initialCenter: LatLng(-15.79, -47.88),
-              initialZoom: 15,
-              interactionOptions: InteractionOptions(
-                flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-              ),
-            ),
+            mapController: _mapController,
+            options: mapaController.mapOptions,
             children: [
               TileLayer(
                 urlTemplate: baseTheme.urlTemplate,
                 subdomains: baseTheme.subdomains,
                 tileBuilder: baseTheme.tileBuilder,
                 additionalOptions: baseTheme.additionalOptions,
-                userAgentPackageName: 'com.ponto.certo.taxi.ponto_certo_taxi',
+                userAgentPackageName: mapaController.userAgentPackage,
               ),
               if (mapaController.satelliteActive)
                 TileLayer(
                   urlTemplate: AppMapThemes.satellite.urlTemplate,
                   subdomains: AppMapThemes.satellite.subdomains,
                   additionalOptions: AppMapThemes.satellite.additionalOptions,
-                  userAgentPackageName: 'com.ponto.certo.taxi.ponto_certo_taxi',
+                  userAgentPackageName: mapaController.userAgentPackage,
                 ),
+              MarkerLayer(
+                markers: mapaController.markers,
+              ),
               IconeCentralMapa(isDarkMode: themeProvider.isDarkMode),
             ],
           ),
+
+          /// Seus botões e widgets flutuantes
           const BotaoConfirmar(),
           const CentralizarMapa(),
           const BotaoNorte(),

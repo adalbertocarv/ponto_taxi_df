@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ponto_taxi_df/views/screens/login.dart';
+import 'package:ponto_taxi_df/views/screens/perfil.dart';
 import 'package:provider/provider.dart';
 import '../../providers/themes/tema_provider.dart';
 import '../../providers/autenticacao/auth_provider.dart';
@@ -81,7 +82,9 @@ class Menu extends StatelessWidget {
                       title: const Text('Perfil'),
                       trailing: const Icon(Icons.arrow_forward_ios),
                       onTap: () {
-                        // Navegar para perfil
+                        Navigator.push(
+                          context, MaterialPageRoute(builder: (context) => Perfil())
+                        );
                       },
                     ),
                     const Divider(height: 1),
@@ -108,7 +111,6 @@ class Menu extends StatelessWidget {
                       title: const Text('Sobre'),
                       trailing: const Icon(Icons.arrow_forward_ios),
                       onTap: () {
-                        // Navegar para sobre
                       },
                     ),
                     const Divider(height: 1,),

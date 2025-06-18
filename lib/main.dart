@@ -4,6 +4,7 @@ import 'package:ponto_taxi_df/views/screens/login.dart';
 import 'package:provider/provider.dart';
 
 import 'controllers/mapa_controller.dart';
+import 'controllers/perfil_controller.dart';
 import 'providers/themes/tema_provider.dart';
 import 'views/screens/telainicio.dart';
 
@@ -14,6 +15,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => MapaController()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => PerfilController()),
       ],
       child: PontoCertoTaxi(),
     ),

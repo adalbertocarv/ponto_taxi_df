@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/themes/tema_provider.dart';
+import '../screens/perfil.dart';
 
 class BotaoPerfil extends StatelessWidget {
   const BotaoPerfil({super.key});
@@ -24,7 +25,9 @@ class BotaoPerfil extends StatelessWidget {
         foregroundColor: ThemeProvider.primaryColor,
 
         onPressed: () {
-          print('Botão funcionando!');
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => Perfil())
+          );
         },
 
         // Deixe o ícone sem tamanho explícito para usar o padrão
