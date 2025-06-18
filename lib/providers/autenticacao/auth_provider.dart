@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../services/login.dart';
+import '../../services/login_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   bool _isAuthenticated = false;

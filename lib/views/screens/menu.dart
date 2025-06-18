@@ -89,15 +89,6 @@ class Menu extends StatelessWidget {
                     ),
                     const Divider(height: 1),
                     ListTile(
-                      leading: const Icon(Icons.settings),
-                      title: const Text('Configurações'),
-                      trailing: const Icon(Icons.arrow_forward_ios),
-                      onTap: () {
-                        // Navegar para configurações
-                      },
-                    ),
-                    const Divider(height: 1),
-                    ListTile(
                       leading: const Icon(Icons.help),
                       title: const Text('Ajuda'),
                       trailing: const Icon(Icons.arrow_forward_ios),

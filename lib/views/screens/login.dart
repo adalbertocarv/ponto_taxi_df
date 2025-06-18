@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:provider/provider.dart';
 import '../../providers/autenticacao/auth_provider.dart';
+import '../../services/login_service.dart';
 import 'telainicio.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -21,6 +22,57 @@ class _LoginScreenState extends State<LoginScreen> {
     mask: '###.###-#',
     filter: {"#": RegExp(r'[0-9]')},
   );
+
+  // Funcao para o lgoin
+  void _login() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final nome = _nomeController.text.trim();
+    final matricula = _matriculaFormatter.getUnmaskedText();
+
+    final result = await LoginService.login(nome, matricula);
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (result['success'] == true && result['idUsuario'] != null) {
+      _showSnackBar(context, 'Autenticado com sucesso!', Colors.green);
+
+      Future.delayed(const Duration(milliseconds: 500), () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const TelaInicio()),
+        );
+      });
+    } else if (result['error'] == 'Timeout') {
+      _showSnackBar(
+        context,
+        'Tempo limite. Verifique sua conexão.',
+        Colors.orange,
+      );
+    } else {
+      _showSnackBar(
+        context,
+        'Login falhou. Verifique suas credenciais.',
+        Colors.red,
+      );
+    }
+  }
+
+  void _showSnackBar(BuildContext context, String message, Color backgroundColor) {
+    final scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: backgroundColor,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: const EdgeInsets.all(32),
             child: Column(
               children: [
-                Image.asset('assets/images/imagessemob.png'),
+                Image.asset('assets/images/imagessemob.webp'),
                 const SizedBox(height: 20),
                 const Text(
                   'Entrar',

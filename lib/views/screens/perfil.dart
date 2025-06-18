@@ -61,7 +61,7 @@ class Perfil extends StatelessWidget {
                                 ),
                                 onPressed: () {
                                   perfilController
-                                      .alterarFoto('assets/images/profile.jpg');
+                                      .alterarFoto('assets/images/profile.webp');
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content:
