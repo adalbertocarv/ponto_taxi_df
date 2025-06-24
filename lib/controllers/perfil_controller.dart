@@ -3,8 +3,8 @@ import '../models/usuario_model.dart';
 
 class PerfilController extends ChangeNotifier {
   UsuarioModel _usuario = UsuarioModel(
-    nome: 'João Silva',
-    email: 'joao.silva@email.com',
+    nome: 'Adalberto Carvalho',
+    email: 'adalberto.junior2@semob.df.gov.br',
     telefone: '(61) 99999-9999',
     fotoPath: null,
   );

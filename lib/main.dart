@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ponto_taxi_df/providers/autenticacao/auth_provider.dart';
 import 'package:ponto_taxi_df/views/screens/login.dart';
+import 'package:ponto_taxi_df/views/screens/selecao.dart';
 import 'package:provider/provider.dart';
 
 import 'controllers/mapa_controller.dart';
@@ -33,7 +34,8 @@ class PontoCertoTaxi extends StatelessWidget {
               debugShowCheckedModeBanner: false,
               title: 'Ponto Certo - Táxi',
               theme: themeProvider.currentTheme,
-              home: authProvider.isAuthenticated ? TelaInicio() : LoginScreen(),
+             home: authProvider.isAuthenticated ? TelaInicio() : LoginScreen(),
+          //    home: Selecao(),
             );
           },
         );
