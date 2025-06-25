@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ponto_taxi_df/views/screens/login.dart';
 import 'package:ponto_taxi_df/views/screens/perfil.dart';
+import 'package:ponto_taxi_df/views/screens/sobre.dart';
 import 'package:provider/provider.dart';
 import '../../providers/themes/tema_provider.dart';
 import '../../providers/autenticacao/auth_provider.dart';
@@ -102,6 +103,7 @@ class Menu extends StatelessWidget {
                       title: const Text('Sobre'),
                       trailing: const Icon(Icons.arrow_forward_ios),
                       onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => Sobre()));
                       },
                     ),
                     const Divider(height: 1,),
