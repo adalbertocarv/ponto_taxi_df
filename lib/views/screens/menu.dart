@@ -5,6 +5,7 @@ import 'package:ponto_taxi_df/views/screens/sobre.dart';
 import 'package:provider/provider.dart';
 import '../../providers/themes/tema_provider.dart';
 import '../../providers/autenticacao/auth_provider.dart';
+import '../widgets/multi_clique.dart';
 
 class Menu extends StatelessWidget {
   const Menu({super.key});
@@ -22,13 +23,16 @@ class Menu extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Título da página
-              Text(
-                'Menu',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              MultiClickAudioButton(
+                text: 'Menu',
+                audioAssetPath: 'outros/audio.mp3', // Caminho do áudio
+                requiredClicks: 5,
+                resetDelay: Duration(seconds: 3),
+                textStyle: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 24),
+               SizedBox(height: 24),
 
               // Card com opção de tema
               Card(

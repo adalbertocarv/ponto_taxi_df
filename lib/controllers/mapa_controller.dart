@@ -7,18 +7,18 @@ import 'dart:async';
 class MapaController extends ChangeNotifier {
   bool _satelliteActive = false;
   final List<Marker> _markers = [];
+  bool _disposed = false;
 
   LatLng? _userLocation;
   MapController? _flutterMapController;
   Timer? _animationTimer;
+  Timer? _errorTimer;
 
   static const LatLng _initialCenter = LatLng(-15.79, -47.88);
   static const double _initialZoom = 15.0;
   static const String _userAgentPackage = 'com.ponto.certo.taxi.ponto_certo_taxi';
 
-  // static const InteractionOptions _interactionOptions = InteractionOptions(
-  //   flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-  // );
+  String? _errorMessage;
 
   // Getters
   bool get satelliteActive => _satelliteActive;
@@ -26,35 +26,55 @@ class MapaController extends ChangeNotifier {
   LatLng get initialCenter => _initialCenter;
   double get initialZoom => _initialZoom;
   String get userAgentPackage => _userAgentPackage;
- // InteractionOptions get interactionOptions => _interactionOptions;
   LatLng? get userLocation => _userLocation;
+  String? get errorMessage => _errorMessage;
 
   MapOptions get mapOptions => MapOptions(
     initialCenter: _initialCenter,
     initialZoom: _initialZoom,
- //   interactionOptions: _interactionOptions,
+    onMapEvent: (MapEvent event) {
+      if (event is MapEventRotateEnd || event is MapEventRotate) {
+        final angle = _flutterMapController?.camera.rotation ?? 0.0;
+        corrigirRotacaoSeNecessario(angle);
+      }
+    },
   );
-
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
 
   /// Define o controller do mapa
   void setFlutterMapController(MapController controller) {
+    if (_disposed) return;
     _flutterMapController = controller;
   }
 
+  /// Corrige rotações pequenas acidentais
+  void corrigirRotacaoSeNecessario(double rotacao) {
+    const double threshold = 3; // grau — rotação menor que isso será anulada
+    if (rotacao.abs() < threshold) {
+      _flutterMapController?.rotate(0);
+    }
+  }
+
+
   /// Obtém localização do usuário e move o mapa
   Future<void> obterLocalizacaoUsuario() async {
+    if (_disposed) return;
+
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (_disposed) return;
+
       if (!serviceEnabled) {
         _showError('Serviço de localização desativado.');
         return;
       }
 
       LocationPermission permission = await Geolocator.checkPermission();
+      if (_disposed) return;
+
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
+        if (_disposed) return;
+
         if (permission == LocationPermission.denied) {
           _showError('Permissão de localização negada.');
           return;
@@ -67,17 +87,22 @@ class MapaController extends ChangeNotifier {
       }
 
       Position position = await Geolocator.getCurrentPosition();
-      _userLocation = LatLng(position.latitude, position.longitude);
+      if (_disposed) return;
 
+      _userLocation = LatLng(position.latitude, position.longitude);
       _flutterMapController?.move(_userLocation!, 17.0);
-      notifyListeners();
+      _safeNotifyListeners();
     } catch (e) {
-      _showError('Erro ao obter localização: $e');
+      if (!_disposed) {
+        _showError('Erro ao obter localização: $e');
+      }
     }
   }
 
   /// Centraliza a localização do usuário com animação
   void centralizarLocalizacaoUsuario() {
+    if (_disposed) return;
+
     if (_userLocation == null) {
       _showError('Localização do usuário não disponível.');
       return;
@@ -96,11 +121,9 @@ class MapaController extends ChangeNotifier {
     _startCenteringAnimation(startPosition, targetPosition, startZoom, targetZoom);
   }
 
-  void _startCenteringAnimation(
-      LatLng startPosition,
-      LatLng targetPosition,
-      double startZoom,
-      double targetZoom) {
+  void _startCenteringAnimation(LatLng startPosition, LatLng targetPosition, double startZoom, double targetZoom) {
+    if (_disposed) return;
+
     const int duration = 350;
     const int steps = 30;
     const int interval = duration ~/ steps;
@@ -110,6 +133,11 @@ class MapaController extends ChangeNotifier {
     _animationTimer?.cancel();
 
     _animationTimer = Timer.periodic(Duration(milliseconds: interval), (timer) {
+      if (_disposed) {
+        timer.cancel();
+        return;
+      }
+
       currentStep++;
 
       double progress = currentStep / steps;
@@ -117,7 +145,7 @@ class MapaController extends ChangeNotifier {
       double lng = _lerp(startPosition.longitude, targetPosition.longitude, progress);
       double zoom = _lerp(startZoom, targetZoom, progress);
 
-      _flutterMapController!.move(LatLng(lat, lng), zoom);
+      _flutterMapController?.move(LatLng(lat, lng), zoom);
 
       if (currentStep >= steps) {
         timer.cancel();
@@ -131,37 +159,43 @@ class MapaController extends ChangeNotifier {
   }
 
   void resetarRotacaoParaNorte() {
+    if (_disposed) return;
+
     if (_flutterMapController != null) {
       _flutterMapController!.rotate(0);
-      notifyListeners();
+      _safeNotifyListeners();
     } else {
       _showError('Mapa não inicializado.');
     }
   }
 
-
   /// Controle de satélite
   void toggleSatellite() {
+    if (_disposed) return;
     _satelliteActive = !_satelliteActive;
-    notifyListeners();
+    _safeNotifyListeners();
   }
 
   void ativarSatellite() {
+    if (_disposed) return;
     if (!_satelliteActive) {
       _satelliteActive = true;
-      notifyListeners();
+      _safeNotifyListeners();
     }
   }
 
   void desativarSatellite() {
+    if (_disposed) return;
     if (_satelliteActive) {
       _satelliteActive = false;
-      notifyListeners();
+      _safeNotifyListeners();
     }
   }
 
   /// Controle de markers
   void adicionarMarker(LatLng posicao, {Widget? child}) {
+    if (_disposed) return;
+
     final marker = Marker(
       point: posicao,
       child: child ??
@@ -172,27 +206,59 @@ class MapaController extends ChangeNotifier {
           ),
     );
     _markers.add(marker);
-    notifyListeners();
+    _safeNotifyListeners();
+  }
+
+  /// método Adiciona marker no centro atual do mapa
+  void adicionarMarkerNoCentro({Widget? child}) {
+    if (_disposed) return;
+
+    if (_flutterMapController == null) {
+      _showError('Mapa não inicializado.');
+      return;
+    }
+
+    final posicaoCentral = _flutterMapController!.camera.center;
+    adicionarMarker(
+      posicaoCentral,
+      child: child ??
+          Transform.translate(
+            offset: const Offset(0, -20),
+            child: Icon(
+              Icons.location_pin,
+              color: Colors.green,
+              size: 40,
+            ),
+          ),
+    );
   }
 
   void removerMarker(int index) {
+    if (_disposed) return;
+
     if (index >= 0 && index < _markers.length) {
       _markers.removeAt(index);
-      notifyListeners();
+      _safeNotifyListeners();
     }
   }
 
   void removerMarkerPorPosicao(LatLng posicao) {
-    _markers.removeWhere((marker) =>
-    marker.point.latitude == posicao.latitude &&
-        marker.point.longitude == posicao.longitude);
-    notifyListeners();
+    if (_disposed) return;
+
+    _markers.removeWhere(
+          (marker) =>
+      marker.point.latitude == posicao.latitude &&
+          marker.point.longitude == posicao.longitude,
+    );
+    _safeNotifyListeners();
   }
 
   void limparMarkers() {
+    if (_disposed) return;
+
     if (_markers.isNotEmpty) {
       _markers.clear();
-      notifyListeners();
+      _safeNotifyListeners();
     }
   }
 
@@ -200,25 +266,44 @@ class MapaController extends ChangeNotifier {
 
   /// Resetar mapa
   void resetarMapa() {
+    if (_disposed) return;
+
     _satelliteActive = false;
     _markers.clear();
     _userLocation = null;
-    notifyListeners();
+    _safeNotifyListeners();
   }
 
   /// Mensagens de erro
   void _showError(String message) {
+    if (_disposed) return;
+
     _errorMessage = message;
-    notifyListeners();
-    Timer(const Duration(seconds: 3), () {
-      _errorMessage = null;
-      notifyListeners();
+    _safeNotifyListeners();
+
+    _errorTimer?.cancel();
+    _errorTimer = Timer(const Duration(seconds: 3), () {
+      if (!_disposed) {
+        _errorMessage = null;
+        _safeNotifyListeners();
+      }
     });
+  }
+
+  /// Método seguro para notifyListeners
+  void _safeNotifyListeners() {
+    if (!_disposed) {
+      notifyListeners();
+    }
   }
 
   @override
   void dispose() {
+    _disposed = true;
     _animationTimer?.cancel();
+    _errorTimer?.cancel();
+    _animationTimer = null;
+    _errorTimer = null;
     super.dispose();
   }
 }

@@ -24,6 +24,8 @@ void main() {
 }
 
 class PontoCertoTaxi extends StatelessWidget {
+  const PontoCertoTaxi({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
