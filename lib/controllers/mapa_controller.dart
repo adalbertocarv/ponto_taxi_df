@@ -6,7 +6,7 @@ import 'dart:async';
 
 class MapaController extends ChangeNotifier {
   bool _satelliteActive = false;
-  final List<Marker> _markers = [];
+  final List<Marker> _pontos = [];
   bool _disposed = false;
 
   LatLng? _userLocation;
@@ -22,7 +22,7 @@ class MapaController extends ChangeNotifier {
 
   // Getters
   bool get satelliteActive => _satelliteActive;
-  List<Marker> get markers => List.unmodifiable(_markers);
+  List<Marker> get markers => List.unmodifiable(_pontos);
   LatLng get initialCenter => _initialCenter;
   double get initialZoom => _initialZoom;
   String get userAgentPackage => _userAgentPackage;
@@ -35,7 +35,7 @@ class MapaController extends ChangeNotifier {
     onMapEvent: (MapEvent event) {
       if (event is MapEventRotateEnd || event is MapEventRotate) {
         final angle = _flutterMapController?.camera.rotation ?? 0.0;
-        corrigirRotacaoSeNecessario(angle);
+        corrigirRotacao(angle);
       }
     },
   );
@@ -47,7 +47,7 @@ class MapaController extends ChangeNotifier {
   }
 
   /// Corrige rotações pequenas acidentais
-  void corrigirRotacaoSeNecessario(double rotacao) {
+  void corrigirRotacao(double rotacao) {
     const double threshold = 3; // grau — rotação menor que isso será anulada
     if (rotacao.abs() < threshold) {
       _flutterMapController?.rotate(0);
@@ -205,7 +205,7 @@ class MapaController extends ChangeNotifier {
             size: 40,
           ),
     );
-    _markers.add(marker);
+    _pontos.add(marker);
     _safeNotifyListeners();
   }
 
@@ -236,8 +236,8 @@ class MapaController extends ChangeNotifier {
   void removerMarker(int index) {
     if (_disposed) return;
 
-    if (index >= 0 && index < _markers.length) {
-      _markers.removeAt(index);
+    if (index >= 0 && index < _pontos.length) {
+      _pontos.removeAt(index);
       _safeNotifyListeners();
     }
   }
@@ -245,7 +245,7 @@ class MapaController extends ChangeNotifier {
   void removerMarkerPorPosicao(LatLng posicao) {
     if (_disposed) return;
 
-    _markers.removeWhere(
+    _pontos.removeWhere(
           (marker) =>
       marker.point.latitude == posicao.latitude &&
           marker.point.longitude == posicao.longitude,
@@ -256,20 +256,20 @@ class MapaController extends ChangeNotifier {
   void limparMarkers() {
     if (_disposed) return;
 
-    if (_markers.isNotEmpty) {
-      _markers.clear();
+    if (_pontos.isNotEmpty) {
+      _pontos.clear();
       _safeNotifyListeners();
     }
   }
 
-  int get totalMarkers => _markers.length;
+  int get totalMarkers => _pontos.length;
 
   /// Resetar mapa
   void resetarMapa() {
     if (_disposed) return;
 
     _satelliteActive = false;
-    _markers.clear();
+    _pontos.clear();
     _userLocation = null;
     _safeNotifyListeners();
   }
