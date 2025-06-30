@@ -48,7 +48,7 @@ class ThemeProvider extends ChangeNotifier {
         foregroundColor: Colors.white,
       ),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: Colors.white,
       elevation: 4,
       shadowColor: Colors.grey.withOpacity(0.3),
@@ -87,7 +87,7 @@ class ThemeProvider extends ChangeNotifier {
         foregroundColor: Colors.white,
       ),
     ),
-    cardTheme: const CardTheme(
+    cardTheme: const CardThemeData(
       color: Color(0xff1E1E1E),
       elevation: 4,
     ),
