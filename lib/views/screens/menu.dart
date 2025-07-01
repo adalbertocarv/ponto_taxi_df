@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:ponto_taxi_df/views/screens/ajuda.dart';
 import 'package:ponto_taxi_df/views/screens/login.dart';
 import 'package:ponto_taxi_df/views/screens/perfil.dart';
 import 'package:ponto_taxi_df/views/screens/sobre.dart';
 import 'package:provider/provider.dart';
+import '../../controllers/modo_app_controller.dart';
 import '../../providers/themes/tema_provider.dart';
 import '../../providers/autenticacao/auth_provider.dart';
 import '../widgets/multi_clique.dart';
@@ -12,8 +14,9 @@ class Menu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
+    final themeProvider = context.watch<ThemeProvider>();
     final authProvider = Provider.of<AuthProvider>(context);
+    final modoApp = context.watch<ModoAppController>();
 
     return Scaffold(
       body: SafeArea(
@@ -63,12 +66,8 @@ class Menu extends StatelessWidget {
                           themeProvider.toggleTheme();
                         },
                         secondary: Icon(
-                          themeProvider.isDarkMode
-                              ? Icons.dark_mode
-                              : Icons.light_mode,
-                          color: themeProvider.isDarkMode
-                              ? ThemeProvider.primaryColorDark
-                              : ThemeProvider.primaryColor,
+                          themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                          color: themeProvider.primaryColor,
                         ),
                       ),
                     ],
@@ -98,18 +97,32 @@ class Menu extends StatelessWidget {
                       title: const Text('Ajuda'),
                       trailing: const Icon(Icons.arrow_forward_ios),
                       onTap: () {
-                        // Navegar para ajuda
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => Ajuda()));
                       },
                     ),
                     const Divider(height: 1),
-                    ListTile(
-                      leading: const Icon(Icons.info),
-                      title: const Text('Sobre'),
-                      trailing: const Icon(Icons.arrow_forward_ios),
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => Sobre()));
-                      },
-                    ),
+          ListTile(
+            leading: Icon(
+              modoApp.isCadastro ? Icons.assignment_turned_in_rounded : Icons.add_home,
+              color: themeProvider.primaryColor,
+            ),
+            title: Text(
+              modoApp.isCadastro
+                  ? 'Mudar para Modo Vistoria'
+                  : 'Mudar para Modo Cadastro',
+              style: const TextStyle(fontSize: 16),
+            ),
+            trailing: const Icon(Icons.swap_horiz),
+            onTap: () {
+              if (modoApp.isCadastro) {
+                modoApp.selecionarModoVistoria();
+                themeProvider.setModoApp(ModoApp.vistoria);
+              } else {
+                modoApp.selecionarModoCadastro();
+                themeProvider.setModoApp(ModoApp.cadastro);
+              }
+            },
+          ),
                     const Divider(height: 1,),
                     ListTile(
                       leading: const Icon(Icons.logout),
