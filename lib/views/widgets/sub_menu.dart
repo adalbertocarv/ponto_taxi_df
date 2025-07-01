@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
+import '../../controllers/mapa_controller.dart';
 import '../../controllers/modo_app_controller.dart';
 import '../../controllers/tela_inicio_controller.dart';
 import '../../providers/themes/tema_provider.dart';
@@ -13,6 +14,7 @@ class SubMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final modoApp = context.watch<ModoAppController>();
     final themeProvider = context.watch<ThemeProvider>();
+    final mapaController = context.read<MapaController>();
 
     return  Transform.translate(
       offset: const Offset(0, 12),
@@ -36,7 +38,7 @@ class SubMenu extends StatelessWidget {
               color: Colors.white,
             ),
             label: 'Atualizar localização',
-            onTap: () => print('Atualizar localização'),
+            onTap: () => mapaController.resetarMapa(),
           ),
 
           SpeedDialChild(

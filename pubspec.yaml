@@ -72,6 +72,7 @@ flutter:
   assets:
     - assets/images/imagessemob.webp
     - assets/images/profile.webp
+    - assets/images/icon_user.webp
     - assets/outros/audio.mp3
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -224,8 +224,8 @@ class MapaController extends ChangeNotifier {
     final posicaoCentral = _flutterMapController!.camera.center;
 
     // Adiciona o marcador no centro
-    adicionarMarker(
-      posicaoCentral,
+    final marker = Marker(
+      point: posicaoCentral,
       child: child ??
           Transform.translate(
             offset: const Offset(-6, -26),
@@ -236,6 +236,7 @@ class MapaController extends ChangeNotifier {
             ),
           ),
     );
+    _pontos.add(marker);
 
     // Oculta o ícone central
     iconeVisivel = false;
@@ -301,6 +302,14 @@ class MapaController extends ChangeNotifier {
       _pontos.clear();
       _safeNotifyListeners();
     }
+  }
+
+  void desfazerUltimoPonto() {
+    if (_pontos.isNotEmpty) {
+      _pontos.removeLast();          // remove o último marker
+    }
+    mostrarIconeCentral();           // volta a exibir o ícone central
+    _safeNotifyListeners();
   }
 
   int get totalMarkers => _pontos.length;
