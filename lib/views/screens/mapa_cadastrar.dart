@@ -37,7 +37,6 @@ class _MapaCadastrarContent extends StatefulWidget {
 class _MapaCadastrarContentState extends State<_MapaCadastrarContent> {
   final MapController _mapController = MapController();
   bool _isInitialized = false;
-
   @override
   void initState() {
     super.initState();
@@ -69,6 +68,7 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent> {
 
   @override
   Widget build(BuildContext context) {
+
     if (!_isInitialized) {
       return const Scaffold(
         body: Center(
@@ -104,13 +104,31 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent> {
                       userAgentPackageName: mapaController.userAgentPackage,
                     ),
                   MarkerLayer(
+                    markers: [
+                      if (mapaController.userLocation != null)
+                        Marker(
+                          point: mapaController.userLocation!, // LatLng do usuário
+                          width: 78,
+                          height: 78,
+                          child: Transform.translate(
+                            offset: const Offset(0, -20),
+                          child: Image.asset(
+                            'assets/images/icon_user.webp',
+                            fit: BoxFit.contain,
+                          ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  MarkerLayer(
                     markers: mapaController.markers,
                   ),
                   // Mostrar o ícone central apenas se _iconeVisivel for verdadeiro
                   if (mapaController.iconeVisivel) IconeCentralMapa(),                ],
               ),
               /// Seus botões e widgets flutuantes
-              BotaoExcluirMarker(),
+             //Botão excluir saiu pq foi substituido por outro
+              // BotaoExcluirMarker(),
                BotaoConfirmar(),
               const CentralizarMapa(),
               const BotaoNorte(),
