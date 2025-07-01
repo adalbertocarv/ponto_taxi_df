@@ -30,20 +30,6 @@ class _TelaInicioState extends State<TelaInicio> {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('Ponto Certo - Táxi'),
-      //   actions: [
-      //     // Botão para alternar entre tema claro e escuro
-      //     IconButton(
-      //       icon: Icon(
-      //         themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-      //       ),
-      //       onPressed: () {
-      //         themeProvider.toggleTheme();
-      //       },
-      //     ),
-      //   ],
-      // ),
       extendBody: true,
       body: PageView(
         controller: controller.pageController,
@@ -55,10 +41,8 @@ class _TelaInicioState extends State<TelaInicio> {
         ],
       ),
       bottomNavigationBar: CurvedNavigationBar(
-        color: themeProvider.isDarkMode
-            ? ThemeProvider.primaryColorDark
-            : ThemeProvider.primaryColor, // Cor muda baseada no tema
-        animationDuration: const Duration(milliseconds: 300),
+        color: themeProvider.primaryColor,
+          animationDuration: const Duration(milliseconds: 300),
         backgroundColor: Colors.transparent,
         index: controller.pageIndex,
         items: [
