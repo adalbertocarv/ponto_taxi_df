@@ -19,10 +19,8 @@ class CentralizarMapa extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
         ),
-        backgroundColor: themeProvider.isDarkMode
-            ? ThemeProvider.primaryColorDark
-            : ThemeProvider.primaryColor,
-        onPressed: () {
+        backgroundColor: themeProvider.primaryColor,
+          onPressed: () {
           mapaController.centralizarLocalizacaoUsuario();
         },
         child: const Icon(
