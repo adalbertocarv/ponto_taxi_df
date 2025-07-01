@@ -62,6 +62,7 @@ class SelectionScreen extends StatelessWidget {
 
               // Footer
               _buildFooter(),
+              const SizedBox(height: 8,)
             ],
           ),
         ),
