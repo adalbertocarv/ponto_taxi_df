@@ -5,6 +5,7 @@ import 'package:ponto_taxi_df/views/screens/selecao.dart';
 import 'package:provider/provider.dart';
 
 import 'controllers/mapa_controller.dart';
+import 'controllers/modo_app_controller.dart';
 import 'controllers/perfil_controller.dart';
 import 'providers/themes/tema_provider.dart';
 import 'views/screens/telainicio.dart';
@@ -13,6 +14,7 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => ModoAppController()),
         ChangeNotifierProvider(create: (_) => MapaController()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
@@ -36,8 +38,7 @@ class PontoCertoTaxi extends StatelessWidget {
               debugShowCheckedModeBanner: false,
               title: 'Ponto Certo - Táxi',
               theme: themeProvider.currentTheme,
-             home: authProvider.isAuthenticated ? TelaInicio() : LoginScreen(),
-          //    home: Selecao(),
+              home: authProvider.isAuthenticated ? SelectionScreen() : LoginScreen(),
             );
           },
         );
