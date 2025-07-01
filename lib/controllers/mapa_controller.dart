@@ -13,12 +13,15 @@ class MapaController extends ChangeNotifier {
   MapController? _flutterMapController;
   Timer? _animationTimer;
   Timer? _errorTimer;
+  Timer? _successTimer; // Adicionado timer para mensagens de sucesso
 
   static const LatLng _initialCenter = LatLng(-15.79, -47.88);
   static const double _initialZoom = 15.0;
   static const String _userAgentPackage = 'com.ponto.certo.taxi.ponto_certo_taxi';
+  bool iconeVisivel = true; // Controla a visibilidade do IconeCentralMapa
 
   String? _errorMessage;
+  String? _successMessage; // Adicionado para mensagens de sucesso
 
   // Getters
   bool get satelliteActive => _satelliteActive;
@@ -28,6 +31,7 @@ class MapaController extends ChangeNotifier {
   String get userAgentPackage => _userAgentPackage;
   LatLng? get userLocation => _userLocation;
   String? get errorMessage => _errorMessage;
+  String? get successMessage => _successMessage; // Getter para mensagens de sucesso
 
   MapOptions get mapOptions => MapOptions(
     initialCenter: _initialCenter,
@@ -53,7 +57,6 @@ class MapaController extends ChangeNotifier {
       _flutterMapController?.rotate(0);
     }
   }
-
 
   /// Obtém localização do usuário e move o mapa
   Future<void> obterLocalizacaoUsuario() async {
@@ -219,18 +222,56 @@ class MapaController extends ChangeNotifier {
     }
 
     final posicaoCentral = _flutterMapController!.camera.center;
+
+    // Adiciona o marcador no centro
     adicionarMarker(
       posicaoCentral,
       child: child ??
           Transform.translate(
-            offset: const Offset(0, -20),
+            offset: const Offset(-6, -26),
             child: Icon(
-              Icons.location_pin,
+              Icons.location_on_rounded,
               color: Colors.green,
-              size: 40,
+              size: 42,
             ),
           ),
     );
+
+    // Oculta o ícone central
+    iconeVisivel = false;
+
+    // Amplia o mapa para o marker criado com animação
+    _ampliarParaMarker(posicaoCentral);
+
+    // Mostra mensagem de sucesso
+    _showSuccess('Ponto cadastrado com sucesso!');
+
+    _safeNotifyListeners();
+  }
+
+  /// Amplia o mapa para a posição do marker com animação
+  void _ampliarParaMarker(LatLng posicao) {
+    if (_disposed || _flutterMapController == null) return;
+
+    LatLng startPosition = _flutterMapController!.camera.center;
+    double startZoom = _flutterMapController!.camera.zoom;
+    double targetZoom = 18.0; // Zoom mais próximo para destacar o marker
+
+    _startCenteringAnimation(startPosition, posicao, startZoom, targetZoom);
+  }
+
+  /// Mostra novamente o ícone central (útil para adicionar novos markers)
+  void mostrarIconeCentral() {
+    if (_disposed) return;
+    iconeVisivel = true;
+    _safeNotifyListeners();
+  }
+
+  /// Oculta o ícone central
+  void ocultarIconeCentral() {
+    if (_disposed) return;
+    iconeVisivel = false;
+    _safeNotifyListeners();
   }
 
   void removerMarker(int index) {
@@ -271,6 +312,7 @@ class MapaController extends ChangeNotifier {
     _satelliteActive = false;
     _pontos.clear();
     _userLocation = null;
+    iconeVisivel = true; // Restaura o ícone central quando resetar o mapa
     _safeNotifyListeners();
   }
 
@@ -290,6 +332,22 @@ class MapaController extends ChangeNotifier {
     });
   }
 
+  /// Mensagens de sucesso (seguindo o mesmo padrão das mensagens de erro)
+  void _showSuccess(String message) {
+    if (_disposed) return;
+
+    _successMessage = message;
+    _safeNotifyListeners();
+
+    _successTimer?.cancel();
+    _successTimer = Timer(const Duration(seconds: 3), () {
+      if (!_disposed) {
+        _successMessage = null;
+        _safeNotifyListeners();
+      }
+    });
+  }
+
   /// Método seguro para notifyListeners
   void _safeNotifyListeners() {
     if (!_disposed) {
@@ -302,8 +360,10 @@ class MapaController extends ChangeNotifier {
     _disposed = true;
     _animationTimer?.cancel();
     _errorTimer?.cancel();
+    _successTimer?.cancel(); // Cancela o timer de sucesso
     _animationTimer = null;
     _errorTimer = null;
+    _successTimer = null; // Limpa a referência
     super.dispose();
   }
 }
