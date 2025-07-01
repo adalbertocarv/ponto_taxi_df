@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:ponto_taxi_df/views/widgets/botao_perfil.dart';
 import 'package:provider/provider.dart';
+//CONTROLLERS
 import '../../controllers/mapa_controller.dart';
+//PROVIDERS
 import '../../providers/themes/map_themes.dart';
 import '../../providers/themes/tema_provider.dart';
+//WIDGETS
 import '../widgets/botao_camada_satelite.dart';
+import '../widgets/botao_excluir_marker.dart';
 import '../widgets/icone_central_mapa.dart';
-import '/views/widgets/botao_confirmar.dart';
-import '/views/widgets/centralizar_mapa.dart';
-import '/views/widgets/botao_norte.dart';
+import '../widgets/botao_confirmar_ponto.dart';
+import '../widgets/centralizar_mapa.dart';
+import '../widgets/botao_norte.dart';
+import '../widgets/botao_perfil.dart';
 
 class MapaCadastrar extends StatelessWidget {
   const MapaCadastrar({super.key});
@@ -73,7 +76,6 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent> {
         ),
       );
     }
-
     return Consumer2<ThemeProvider, MapaController>(
       builder: (context, themeProvider, mapaController, child) {
         final baseTheme = themeProvider.isDarkMode
@@ -104,11 +106,11 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent> {
                   MarkerLayer(
                     markers: mapaController.markers,
                   ),
-                  IconeCentralMapa(isDarkMode: themeProvider.isDarkMode),
-                ],
+                  // Mostrar o ícone central apenas se _iconeVisivel for verdadeiro
+                  if (mapaController.iconeVisivel) IconeCentralMapa(),                ],
               ),
-
               /// Seus botões e widgets flutuantes
+              BotaoExcluirMarker(),
                BotaoConfirmar(),
               const CentralizarMapa(),
               const BotaoNorte(),
@@ -117,7 +119,6 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent> {
                 onToggle: mapaController.toggleSatellite,
               ),
               BotaoPerfil(),
-
               // Mostrar mensagem de erro se houver
               if (mapaController.errorMessage != null)
                 Positioned(
@@ -152,13 +153,46 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent> {
                     ),
                   ),
                 ),
+              // Mostrar mensagem de sucesso se houver
+              if (mapaController.successMessage != null)
+                Positioned(
+                  top: MediaQuery.of(context).padding.top + 16,
+                  left: 16,
+                  right: 16,
+                  child: Material(
+                    elevation: 4,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade100,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.green.shade300),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.check_circle, color: Colors.green.shade700),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              mapaController.successMessage!,
+                              style: TextStyle(
+                                color: Colors.green.shade700,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         );
       },
     );
   }
-
   @override
   void dispose() {
     // O ChangeNotifierProvider já cuida do dispose do MapaController
