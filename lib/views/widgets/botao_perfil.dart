@@ -14,7 +14,7 @@ class BotaoPerfil extends StatelessWidget {
       top: 80,
       left: 16,
       child: FloatingActionButton(
-
+        heroTag: 'Minha Conta',
         tooltip: 'Minha Conta', // É bom ter um tooltip descritivo
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         backgroundColor: themeProvider.primaryColor,

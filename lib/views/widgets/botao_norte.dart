@@ -15,6 +15,7 @@ class BotaoNorte extends StatelessWidget {
       top: 160,
       right: 16,
       child: FloatingActionButton.small(
+        heroTag: 'Reorientar para o Norte',
         tooltip: 'Reorientar para o Norte',
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),

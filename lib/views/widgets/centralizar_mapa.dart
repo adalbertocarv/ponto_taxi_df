@@ -15,6 +15,7 @@ class CentralizarMapa extends StatelessWidget {
       top: 110,
       right: 16,
       child: FloatingActionButton.small(
+        heroTag: 'Centralizar localização',
         tooltip: 'Centralizar localização',
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
