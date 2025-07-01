@@ -17,14 +17,9 @@ class BotaoPerfil extends StatelessWidget {
 
         tooltip: 'Minha Conta', // É bom ter um tooltip descritivo
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        backgroundColor: themeProvider.isDarkMode
-            ? ThemeProvider.primaryColorDark  // Cor de fundo para tema escuro
-            : Colors.white,                   // Cor de fundo para tema claro
+        backgroundColor: themeProvider.primaryColor,
 
-        // Use foregroundColor para definir a cor do ícone
-        foregroundColor: ThemeProvider.primaryColor,
-
-        onPressed: () {
+          onPressed: () {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => Perfil())
           );
