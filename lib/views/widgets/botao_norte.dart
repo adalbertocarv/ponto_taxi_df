@@ -19,10 +19,8 @@ class BotaoNorte extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
         ),
-        backgroundColor: themeProvider.isDarkMode
-            ? ThemeProvider.primaryColorDark
-            : ThemeProvider.primaryColor,
-        onPressed: () {
+        backgroundColor: themeProvider.primaryColor,
+          onPressed: () {
           mapaController.resetarRotacaoParaNorte();
         },
         child: const Icon(
