@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:ponto_taxi_df/controllers/modo_app_controller.dart';
 
 class ThemeProvider extends ChangeNotifier {
-  static const Color primaryColor = Color(0xff5D89D5);
-  static const Color primaryColorDark = Color(0xff3A5A9E); // Tom mais escuro da cor primária
+  // Cores base
+  static const Color colorAzul = Color(0xff5D89D5);
+  static const Color colorAzulDark = Color(0xff3A5A9E);
+  static const Color colorVerde = Color(0xFF27AE60);
+  static const Color colorVerdeDark = Color(0xFF1C7D45);
 
   bool _isDarkMode = false;
-
   bool get isDarkMode => _isDarkMode;
 
-  ThemeData get currentTheme => _isDarkMode ? darkTheme : lightTheme;
+  ModoApp _modoApp = ModoApp.cadastro;
+  ModoApp get modoApp => _modoApp;
 
   void toggleTheme() {
     _isDarkMode = !_isDarkMode;
@@ -20,25 +24,43 @@ class ThemeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Tema Claro
+  void setModoApp(ModoApp modo) {
+    _modoApp = modo;
+    notifyListeners();
+  }
+
+  ThemeData get currentTheme => _isDarkMode ? darkTheme : lightTheme;
+
+  // 🔥 Cor primária dinâmica
+  Color get primaryColor {
+    if (_modoApp == ModoApp.cadastro) {
+      return _isDarkMode ? colorAzulDark : colorAzul;
+    } else {
+      return _isDarkMode ? colorVerdeDark : colorVerde;
+    }
+  }
+
+  MaterialColor get primarySwatch => _createMaterialColor(primaryColor);
+
+  // 🎨 Tema Claro
   ThemeData get lightTheme => ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
-    primarySwatch: _createMaterialColor(primaryColor),
+    primarySwatch: primarySwatch,
     primaryColor: primaryColor,
     scaffoldBackgroundColor: Colors.white,
-    appBarTheme: const AppBarTheme(
+    appBarTheme: AppBarTheme(
       backgroundColor: primaryColor,
       foregroundColor: Colors.white,
       elevation: 2,
       centerTitle: true,
     ),
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: primaryColor,
       selectedItemColor: Colors.white,
       unselectedItemColor: Colors.white70,
     ),
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: primaryColor,
       foregroundColor: Colors.white,
     ),
@@ -59,31 +81,31 @@ class ThemeProvider extends ChangeNotifier {
     ),
   );
 
-  // Tema Escuro
+  // 🎨 Tema Escuro
   ThemeData get darkTheme => ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
-    primarySwatch: _createMaterialColor(primaryColorDark),
-    primaryColor: primaryColorDark,
+    primarySwatch: primarySwatch,
+    primaryColor: primaryColor,
     scaffoldBackgroundColor: const Color(0xff121212),
-    appBarTheme: const AppBarTheme(
-      backgroundColor: primaryColorDark,
+    appBarTheme: AppBarTheme(
+      backgroundColor: primaryColor,
       foregroundColor: Colors.white,
       elevation: 2,
       centerTitle: true,
     ),
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: primaryColorDark,
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: primaryColor,
       selectedItemColor: Colors.white,
       unselectedItemColor: Colors.white70,
     ),
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: primaryColorDark,
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: primaryColor,
       foregroundColor: Colors.white,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: primaryColorDark,
+        backgroundColor: primaryColor,
         foregroundColor: Colors.white,
       ),
     ),
@@ -92,12 +114,12 @@ class ThemeProvider extends ChangeNotifier {
       elevation: 4,
     ),
     colorScheme: ColorScheme.fromSeed(
-      seedColor: primaryColorDark,
+      seedColor: primaryColor,
       brightness: Brightness.dark,
     ),
   );
 
-  // Método auxiliar para criar MaterialColor
+  // 🛠️ Material Color Generator
   MaterialColor _createMaterialColor(Color color) {
     List strengths = <double>[.05];
     Map<int, Color> swatch = {};
