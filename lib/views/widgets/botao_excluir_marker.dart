@@ -26,6 +26,7 @@ class _BotaoExcluirMarkerState extends State<BotaoExcluirMarker> {
       top: 160,
       left: 16,
       child: FloatingActionButton.small(
+        heroTag: 'Excluir Marcador',
         tooltip: 'Excluir Marcador',
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
