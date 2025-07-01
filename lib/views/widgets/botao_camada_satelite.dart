@@ -17,9 +17,7 @@ class CamadaSatelite extends StatelessWidget {
       child: FloatingActionButton.small(
         tooltip: 'Camada Satélite',
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        backgroundColor: themeProvider.isDarkMode
-            ? ThemeProvider.primaryColorDark
-            : ThemeProvider.primaryColor,
+        backgroundColor: themeProvider.primaryColor,
         onPressed: onToggle,
         child: Icon(
           ativo ? Icons.satellite_alt_outlined : Icons.layers_outlined,
