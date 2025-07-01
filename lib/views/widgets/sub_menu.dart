@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:provider/provider.dart';
+import '../../controllers/modo_app_controller.dart';
 import '../../controllers/tela_inicio_controller.dart';
+import '../../providers/themes/tema_provider.dart';
 
 class SubMenu extends StatelessWidget {
    SubMenu({super.key});
@@ -8,6 +11,9 @@ class SubMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final modoApp = context.watch<ModoAppController>();
+    final themeProvider = context.watch<ThemeProvider>();
+
     return  Transform.translate(
       offset: const Offset(0, 12),
       child: SpeedDial(
@@ -26,21 +32,30 @@ class SubMenu extends StatelessWidget {
           SpeedDialChild(
             backgroundColor: Colors.blueAccent,
             child: const Icon(
-              Icons.map_outlined,
-              color: Colors.white,
-            ),
-            label: 'Mapa Satélite',
-            onTap: () => print('Mapa Satélite'),
-          ),
-          SpeedDialChild(
-            backgroundColor: Colors.blueAccent,
-            child: const Icon(
               Icons.restart_alt_outlined,
               color: Colors.white,
             ),
             label: 'Atualizar localização',
             onTap: () => print('Atualizar localização'),
           ),
+
+          SpeedDialChild(
+            backgroundColor: modoApp.isCadastro ? Colors.green : Colors.blueAccent,
+            child: Icon(
+              modoApp.isCadastro ? Icons.assignment_turned_in_rounded : Icons.add_home,
+              color: Colors.white,
+            ),
+            label: modoApp.isCadastro ? 'Mudar para Vistoria' : 'Mudar para Cadastro',
+            onTap: () {
+              if (modoApp.isCadastro) {
+                modoApp.selecionarModoVistoria();
+                themeProvider.setModoApp(ModoApp.vistoria);
+              } else {
+                modoApp.selecionarModoCadastro();
+                themeProvider.setModoApp(ModoApp.cadastro);
+              }
+            },
+          )
         ],
       ),
     );
