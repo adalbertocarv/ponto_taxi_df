@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:ponto_taxi_df/views/screens/selecao.dart';
 import 'package:provider/provider.dart';
 import '../../providers/autenticacao/auth_provider.dart';
 import '../../services/login_service.dart';
@@ -44,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Future.delayed(const Duration(milliseconds: 500), () {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const TelaInicio()),
+          MaterialPageRoute(builder: (context) => const SelectionScreen()),
         );
       });
     } else if (result['error'] == 'Timeout') {
@@ -165,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (success) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => TelaInicio()),
+            MaterialPageRoute(builder: (context) => SelectionScreen()),
           );
         }
       },
