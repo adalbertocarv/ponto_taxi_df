@@ -30,27 +30,23 @@ class Perfil extends StatelessWidget {
                         Stack(
                           alignment: Alignment.bottomRight,
                           children: [
-                            CircleAvatar(
-                              radius: 50,
-                              backgroundColor: themeProvider.isDarkMode
-                                  ? ThemeProvider.primaryColorDark
-                                  : ThemeProvider.primaryColor,
-                              backgroundImage: usuario.fotoPath != null
-                                  ? AssetImage(usuario.fotoPath!)
-                                  : null,
-                              child: usuario.fotoPath == null
-                                  ? const Icon(
-                                Icons.person,
-                                size: 50,
-                                color: Colors.white,
-                              )
-                                  : null,
-                            ),
-                            Container(
+                      CircleAvatar(
+                      radius: 50,
+                      backgroundColor: themeProvider.primaryColor,
+                      backgroundImage: usuario.fotoPath != null
+                          ? AssetImage(usuario.fotoPath!)
+                          : null,
+                      child: usuario.fotoPath == null
+                          ? const Icon(
+                        Icons.person,
+                        size: 50,
+                        color: Colors.white,
+                      )
+                          : null,
+                    ),
+                    Container(
                               decoration: BoxDecoration(
-                                color: themeProvider.isDarkMode
-                                    ? ThemeProvider.primaryColorDark
-                                    : ThemeProvider.primaryColor,
+                                color:themeProvider.primaryColor,
                                 shape: BoxShape.circle,
                               ),
                               child: IconButton(
