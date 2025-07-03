@@ -15,7 +15,7 @@ class PontoMapa extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: SizedBox(
         height: 300,
-        width: 400,
+        width: 300,
         child: FlutterMap(
           options: MapOptions(
             initialCenter: pontos.point,
@@ -35,7 +35,7 @@ class PontoMapa extends StatelessWidget {
                     offset: const Offset(0, -22),
                     child: const Icon(
                       Icons.location_pin,
-                      color: Colors.red,
+                      color: Colors.green,
                       size: 45,
                     ),
                   ),

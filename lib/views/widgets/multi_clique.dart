@@ -36,7 +36,6 @@ class _MultiClickAudioButtonState extends State<MultiClickAudioButton>
 
   // Animação para indicar progresso
   late AnimationController _progressController;
-  late Animation<double> _progressAnimation;
 
   // Variáveis do confetti
   ConfettiController? controller1;
@@ -73,13 +72,6 @@ class _MultiClickAudioButtonState extends State<MultiClickAudioButton>
       vsync: this,
     );
 
-    _progressAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _progressController,
-      curve: Curves.easeOut,
-    ));
   }
 
   @override
