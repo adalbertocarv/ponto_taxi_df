@@ -5,16 +5,23 @@ import '../../controllers/mapa_controller.dart';
 import '../../controllers/modo_app_controller.dart';
 import '../../controllers/tela_inicio_controller.dart';
 import '../../providers/themes/tema_provider.dart';
+import 'confirmacao_modo_app.dart';
 
-class SubMenu extends StatelessWidget {
-   SubMenu({super.key});
+class SubMenu extends StatefulWidget {
+   const SubMenu({super.key});
+
+  @override
+  State<SubMenu> createState() => _SubMenuState();
+}
+
+class _SubMenuState extends State<SubMenu> {
   final controller = TelaInicioController();
 
   @override
   Widget build(BuildContext context) {
     final modoApp = context.watch<ModoAppController>();
     final themeProvider = context.watch<ThemeProvider>();
-    final mapaController = context.read<MapaController>();
+    final mapaController = context.watch<MapaController>();
 
     return  Transform.translate(
       offset: const Offset(0, 12),
@@ -32,14 +39,16 @@ class SubMenu extends StatelessWidget {
         openCloseDial: controller.isDialOpen,
         children: [
           SpeedDialChild(
-            backgroundColor: Colors.blueAccent,
+            backgroundColor: themeProvider.primaryColor,
             child: const Icon(
               Icons.restart_alt_outlined,
               color: Colors.white,
             ),
             label: 'Atualizar localização',
-            onTap: () => mapaController.resetarMapa(),
-          ),
+              onTap: () {
+                mapaController.obterLocalizacaoUsuario();
+            }
+    ),
 
           SpeedDialChild(
             backgroundColor: modoApp.isCadastro ? Colors.green : Colors.blueAccent,
@@ -48,17 +57,18 @@ class SubMenu extends StatelessWidget {
               color: Colors.white,
             ),
             label: modoApp.isCadastro ? 'Mudar para Vistoria' : 'Mudar para Cadastro',
-            onTap: () {
-              if (modoApp.isCadastro) {
-                modoApp.selecionarModoVistoria();
-                themeProvider.setModoApp(ModoApp.vistoria);
-              } else {
-                modoApp.selecionarModoCadastro();
-                themeProvider.setModoApp(ModoApp.cadastro);
-              }
-            },
-          )
-        ],
+              onTap: () {
+                // Exibe o diálogo de confirmação quando o item for tocado
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return ConfirmacaoDialog(
+                        modoApp: modoApp,
+                        themeProvider: themeProvider,
+                      );
+                    });
+              }),
+            ],
       ),
     );
   }

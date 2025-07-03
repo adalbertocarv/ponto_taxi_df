@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../../controllers/modo_app_controller.dart';
 import '../../providers/themes/tema_provider.dart';
 import '../../providers/autenticacao/auth_provider.dart';
+import '../widgets/confirmacao_modo_app.dart';
 import '../widgets/multi_clique.dart';
 
 class Menu extends StatelessWidget {
@@ -32,10 +33,10 @@ class Menu extends StatelessWidget {
                 requiredClicks: 5,
                 resetDelay: Duration(seconds: 3),
                 textStyle: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
-               SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Card com opção de tema
               Card(
@@ -47,8 +48,8 @@ class Menu extends StatelessWidget {
                       Text(
                         'Aparência',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                       const SizedBox(height: 16),
 
@@ -66,7 +67,9 @@ class Menu extends StatelessWidget {
                           themeProvider.toggleTheme();
                         },
                         secondary: Icon(
-                          themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                          themeProvider.isDarkMode
+                              ? Icons.dark_mode
+                              : Icons.light_mode,
                           color: themeProvider.primaryColor,
                         ),
                       ),
@@ -86,9 +89,8 @@ class Menu extends StatelessWidget {
                       title: const Text('Perfil'),
                       trailing: const Icon(Icons.arrow_forward_ios),
                       onTap: () {
-                        Navigator.push(
-                          context, MaterialPageRoute(builder: (context) => Perfil())
-                        );
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => Perfil()));
                       },
                     ),
                     const Divider(height: 1),
@@ -97,33 +99,48 @@ class Menu extends StatelessWidget {
                       title: const Text('Ajuda'),
                       trailing: const Icon(Icons.arrow_forward_ios),
                       onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => Ajuda()));
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => Ajuda()));
                       },
                     ),
                     const Divider(height: 1),
-          ListTile(
-            leading: Icon(
-              modoApp.isCadastro ? Icons.assignment_turned_in_rounded : Icons.add_home,
-              color: themeProvider.primaryColor,
-            ),
-            title: Text(
-              modoApp.isCadastro
-                  ? 'Mudar para Modo Vistoria'
-                  : 'Mudar para Modo Cadastro',
-              style: const TextStyle(fontSize: 16),
-            ),
-            trailing: const Icon(Icons.swap_horiz),
-            onTap: () {
-              if (modoApp.isCadastro) {
-                modoApp.selecionarModoVistoria();
-                themeProvider.setModoApp(ModoApp.vistoria);
-              } else {
-                modoApp.selecionarModoCadastro();
-                themeProvider.setModoApp(ModoApp.cadastro);
-              }
-            },
-          ),
-                    const Divider(height: 1,),
+                    ListTile(
+                      leading: const Icon(Icons.app_shortcut),
+                      title: const Text('Sobre'),
+                      trailing: const Icon(Icons.arrow_forward_ios),
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => Sobre()));
+                      },
+                    ),
+                    const Divider(height: 1),
+                    // ListTile para mudança de modo com diálogo de confirmação
+                    ListTile(
+                        leading: Icon(
+                          modoApp.isCadastro
+                              ? Icons.assignment_turned_in_rounded
+                              : Icons.add_home,
+                          color: themeProvider.primaryColor,
+                        ),
+                        title: Text(
+                          modoApp.isCadastro
+                              ? 'Mudar para Modo Vistoria'
+                              : 'Mudar para Modo Cadastro',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        trailing: const Icon(Icons.swap_horiz),
+                        onTap: () {
+                          // Exibe o diálogo de confirmação quando o item for tocado
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return ConfirmacaoDialog(
+                                  modoApp: modoApp,
+                                  themeProvider: themeProvider,
+                                );
+                              });
+                        }),
+                    const Divider(height: 1),
                     ListTile(
                       leading: const Icon(Icons.logout),
                       title: const Text('Sair'),
@@ -131,11 +148,12 @@ class Menu extends StatelessWidget {
                       onTap: () {
                         authProvider.logout();
                         Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (context) => LoginScreen()),
-                              (Route<dynamic> route) => false,
+                          MaterialPageRoute(
+                              builder: (context) => LoginScreen()),
+                          (Route<dynamic> route) => false,
                         );
                       },
-                    )
+                    ),
                   ],
                 ),
               ),
