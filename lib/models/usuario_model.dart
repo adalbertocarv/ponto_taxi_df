@@ -1,27 +1,33 @@
-class UsuarioModel {
-  final String nome;
-  final String email;
-  final String telefone;
-  final String? fotoPath;
+class Usuario {
+  final String nomeFuncionario;
+  final String matricula;
+  final String nomeCargo;
+  final String nomeUnidade;
+  final String codigoUnidade;
+  final String nomeUnidadeSuperior;
+  final String codigoUnidadeSuperior;
+  String? fotoPath;
 
-  UsuarioModel({
-    required this.nome,
-    required this.email,
-    required this.telefone,
+  Usuario({
+    required this.nomeFuncionario,
+    required this.matricula,
+    required this.nomeCargo,
+    required this.nomeUnidade,
+    required this.codigoUnidade,
+    required this.nomeUnidadeSuperior,
+    required this.codigoUnidadeSuperior,
     this.fotoPath,
   });
 
-  UsuarioModel copyWith({
-    String? nome,
-    String? email,
-    String? telefone,
-    String? fotoPath,
-  }) {
-    return UsuarioModel(
-      nome: nome ?? this.nome,
-      email: email ?? this.email,
-      telefone: telefone ?? this.telefone,
-      fotoPath: fotoPath ?? this.fotoPath,
+  factory Usuario.fromJson(Map<String, dynamic> json) {
+    return Usuario(
+      nomeFuncionario: json['nomeFuncionario'],
+      matricula: json['matricula'],
+      nomeCargo: json['nomeCargo'],
+      nomeUnidade: json['nomeUnidade'],
+      codigoUnidade: json['codigoUnidade'],
+      nomeUnidadeSuperior: json['nomeUnidadeSuperior'],
+      codigoUnidadeSuperior: json['codigoUnidadeSuperior'],
     );
   }
 }

@@ -1,18 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/usuario_model.dart';
+import '../services/perfil_service.dart';
 
 class PerfilController extends ChangeNotifier {
-  UsuarioModel _usuario = UsuarioModel(
-    nome: 'Adalberto Carvalho',
-    email: 'adalberto.junior2@semob.df.gov.br',
-    telefone: '(61) 99999-9999',
-    fotoPath: null,
+  final PerfilService _service = PerfilService();
+
+  Usuario usuario = Usuario(
+    nomeFuncionario: '',
+    matricula: '',
+    nomeCargo: '',
+    nomeUnidade: '',
+    codigoUnidade: '',
+    nomeUnidadeSuperior: '',
+    codigoUnidadeSuperior: '',
   );
 
-  UsuarioModel get usuario => _usuario;
+  Future<void> carregarPerfil(String idUsuario) async {
+    final fetchedUsuario = await _service.buscarInfoUsuario(idUsuario);
+    if (fetchedUsuario != null) {
+      usuario = fetchedUsuario;
 
-  void alterarFoto(String path) {
-    _usuario = _usuario.copyWith(fotoPath: path);
+      // Carrega a foto salva (se existir)
+      final prefs = await SharedPreferences.getInstance();
+      usuario.fotoPath = prefs.getString('fotoPath');
+
+      notifyListeners();
+    }
+  }
+
+  void alterarFoto(String path) async {
+    usuario.fotoPath = path;
     notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('fotoPath', path);
   }
 }
