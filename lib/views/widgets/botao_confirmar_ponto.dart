@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:ponto_taxi_df/views/screens/formulario_taxi.dart';
 import 'package:provider/provider.dart';
 
 import '../../controllers/mapa_controller.dart';
 import '../../controllers/modo_app_controller.dart';
 import '../../providers/themes/tema_provider.dart';
+import '../screens/selecao_formulario.dart';
+import '../../../models/constants/app_constants.dart'; // Adicione esta importação
 
 class BotaoConfirmar extends StatefulWidget {
   const BotaoConfirmar({super.key});
@@ -16,31 +17,37 @@ class BotaoConfirmar extends StatefulWidget {
 class _BotaoConfirmarState extends State<BotaoConfirmar> {
   bool _isProcessing = false;
 
+  // Helper method para calcular a posição do botão
+  double _calculateBottomPosition(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    return bottomPadding + AppConstants.navigationBarAltura + AppConstants.buttonEspacamento;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final mapa = context.watch<MapaController>();
+    final mapaController = context.watch<MapaController>();
     final tema = context.watch<ThemeProvider>();
     final modo = context.watch<ModoAppController>();
 
     // só aparece no modo Cadastro
     if (!modo.isCadastro) return const SizedBox.shrink();
 
-    final bool esperandoConfirmar = mapa.iconeVisivel; // TRUE antes do 1º clique
+    final bool esperandoConfirmar = mapaController.iconeVisivel; // TRUE antes do 1º clique
 
     return Positioned(
-      bottom: 90,
-      left: 36,
-      right: 36,
+      bottom: _calculateBottomPosition(context),
+      left: AppConstants.buttonHorizontalPadding,
+      right: AppConstants.buttonHorizontalPadding,
       child: esperandoConfirmar
-          ? _botaoConfirmar(mapa, tema)          // 1-a etapa
-          : _botoesCadastrarExcluir(mapa, tema), // 2-a etapa
+          ? _botaoConfirmar(mapaController, tema)          // 1-a etapa
+          : _botoesCadastrarExcluir(mapaController, tema), // 2-a etapa
     );
   }
 
   /// 1ª etapa – confirma e adiciona o marker
   Widget _botaoConfirmar(MapaController mapa, ThemeProvider tema) {
     return SizedBox(
-      height: 56,
+      height: AppConstants.buttonHeight,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(backgroundColor: tema.primaryColor),
         onPressed: _isProcessing
@@ -48,7 +55,7 @@ class _BotaoConfirmarState extends State<BotaoConfirmar> {
             : () async {
           setState(() => _isProcessing = true);
           mapa.adicionarMarkerNoCentro();      // adiciona + dá zoom
-          await Future.delayed(const Duration(milliseconds: 300));
+          await Future.delayed(AppConstants.buttonProcessingDelay);
           setState(() => _isProcessing = false);
         },
         child: _isProcessing
@@ -89,7 +96,9 @@ class _BotaoConfirmarState extends State<BotaoConfirmar> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const FormularioTaxi()),
+                MaterialPageRoute(
+                  builder: (context) => SelecaoForm(pontos: mapa.markers),
+                ),
               );
             },
           ),
@@ -101,14 +110,14 @@ class _BotaoConfirmarState extends State<BotaoConfirmar> {
 
 /// loader reutilizado
 class _Loader extends StatelessWidget {
-  const _Loader({Key? key}) : super(key: key);
+  const _Loader();
   @override
   Widget build(BuildContext context) => const SizedBox(
-    width: 20,
-    height: 20,
+    width: AppConstants.loaderSize,
+    height: AppConstants.loaderSize,
     child: CircularProgressIndicator(
       color: Colors.white,
-      strokeWidth: 2,
+      strokeWidth: AppConstants.loaderStrokeWidth,
     ),
   );
 }

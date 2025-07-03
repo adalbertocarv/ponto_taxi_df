@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../providers/themes/tema_provider.dart';
 import '/views/widgets/sub_menu.dart';
 import '../../controllers/tela_inicio_controller.dart';
+import '../../../models/constants/app_constants.dart'; // Adicione esta importação
 import 'registros.dart';
 import 'mapa_cadastrar.dart';
 import 'menu.dart';
@@ -29,45 +31,59 @@ class _TelaInicioState extends State<TelaInicio> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
-    return Scaffold(
-      extendBody: true,
-      body: PageView(
-        controller: controller.pageController,
-        physics: NeverScrollableScrollPhysics(),
-        children: [
-           Registros(),
-           MapaCadastrar(),
-          Menu(),
-        ],
+    return SafeArea(
+      top: false,
+      bottom: false,
+      child: Scaffold(
+        extendBody: true,
+        body: PageView(
+          controller: controller.pageController,
+          physics: const NeverScrollableScrollPhysics(),
+          children: const [
+            Registros(),
+            MapaCadastrar(),
+            Menu(),
+          ],
+        ),
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: CurvedNavigationBar(
+            color: themeProvider.primaryColor,
+            animationDuration: AppConstants.navigationAnimationDuration,
+            backgroundColor: Colors.transparent,
+            height: AppConstants.navigationBarAltura,
+            index: controller.pageIndex,
+            items: [
+              Icon(
+                Icons.add_circle_outline_rounded,
+                size: AppConstants.iconSize,
+                color: themeProvider.isDarkMode
+                    ? Colors.white
+                    : Colors.grey[100],
+              ),
+              Icon(
+                Icons.map,
+                size: AppConstants.iconSize,
+                color: themeProvider.isDarkMode
+                    ? Colors.white
+                    : Colors.grey[100],
+              ),
+              Icon(
+                Icons.menu,
+                size: AppConstants.iconSize,
+                color: themeProvider.isDarkMode
+                    ? Colors.white
+                    : Colors.grey[100],
+              ),
+            ],
+            onTap: (index) => controller.onNavTap(index, () => setState(() {})),
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: controller.pageIndex == 1
+            ? const SubMenu()
+            : null,
       ),
-      bottomNavigationBar: CurvedNavigationBar(
-        color: themeProvider.primaryColor,
-          animationDuration: const Duration(milliseconds: 300),
-        backgroundColor: Colors.transparent,
-        index: controller.pageIndex,
-        items: [
-          Icon(
-            Icons.add_circle_outline_rounded,
-            size: 30,
-            color: themeProvider.isDarkMode ? Colors.white : Colors.grey[100],
-          ),
-          Icon(
-            Icons.map,
-            size: 30,
-            color: themeProvider.isDarkMode ? Colors.white : Colors.grey[100],
-          ),
-          Icon(
-            Icons.menu,
-            size: 30,
-            color: themeProvider.isDarkMode ? Colors.white : Colors.grey[100],
-          ),
-        ],
-        onTap: (index) => controller.onNavTap(index, () => setState(() {})),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: controller.pageIndex == 1
-          ? SubMenu()
-          : null,
     );
   }
 }
