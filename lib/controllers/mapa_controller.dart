@@ -212,7 +212,7 @@ class MapaController extends ChangeNotifier {
     _safeNotifyListeners();
   }
 
-  /// método Adiciona marker no centro atual do mapa
+  // método Adiciona marker no centro atual do mapa
   void adicionarMarkerNoCentro({Widget? child}) {
     if (_disposed) return;
 
@@ -312,7 +312,7 @@ class MapaController extends ChangeNotifier {
     _safeNotifyListeners();
   }
 
-  int get totalMarkers => _pontos.length;
+  int get totalMarkers => markers.length;
 
   /// Resetar mapa
   void resetarMapa() {
