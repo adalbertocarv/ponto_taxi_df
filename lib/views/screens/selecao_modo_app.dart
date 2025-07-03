@@ -5,7 +5,7 @@ import '../../providers/themes/tema_provider.dart';
 import 'telainicio.dart';
 
 class SelectionScreen extends StatelessWidget {
-  const SelectionScreen({Key? key}) : super(key: key);
+  const SelectionScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +81,7 @@ class SelectionScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF4A90E2).withOpacity(0.3),
+                color: const Color(0xFF4A90E2).withValues(alpha: 0.3),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -159,7 +159,7 @@ class SelectionScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha:0.08),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -174,7 +174,7 @@ class SelectionScreen extends StatelessWidget {
                   width: 60,
                   height: 60,
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
+                    color: color.withValues(alpha:0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Icon(
@@ -187,7 +187,7 @@ class SelectionScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
+                    color: color.withValues(alpha:0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(

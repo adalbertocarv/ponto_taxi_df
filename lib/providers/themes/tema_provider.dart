@@ -31,7 +31,7 @@ class ThemeProvider extends ChangeNotifier {
 
   ThemeData get currentTheme => _isDarkMode ? darkTheme : lightTheme;
 
-  // 🔥 Cor primária dinâmica
+  //  Cor primária dinâmica
   Color get primaryColor {
     if (_modoApp == ModoApp.cadastro) {
       return _isDarkMode ? colorAzulDark : colorAzul;
@@ -42,7 +42,7 @@ class ThemeProvider extends ChangeNotifier {
 
   MaterialColor get primarySwatch => _createMaterialColor(primaryColor);
 
-  // 🎨 Tema Claro
+  //  Tema Claro
   ThemeData get lightTheme => ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
@@ -73,7 +73,7 @@ class ThemeProvider extends ChangeNotifier {
     cardTheme: CardThemeData(
       color: Colors.white,
       elevation: 4,
-      shadowColor: Colors.grey.withOpacity(0.3),
+      shadowColor: Colors.grey.withValues(alpha: 0.3),
     ),
     colorScheme: ColorScheme.fromSeed(
       seedColor: primaryColor,
@@ -81,7 +81,7 @@ class ThemeProvider extends ChangeNotifier {
     ),
   );
 
-  // 🎨 Tema Escuro
+  //  Tema Escuro
   ThemeData get darkTheme => ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,

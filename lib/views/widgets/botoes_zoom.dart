@@ -97,8 +97,8 @@ class _BotoesZoomState extends State<BotoesZoom> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: themeProvider.isDarkMode
-                  ? Colors.black.withOpacity(0.7)
-                  : Colors.white.withOpacity(0.9),
+                  ? Colors.black.withValues(alpha:0.7)
+                  : Colors.white.withValues(alpha:0.9),
               borderRadius: BorderRadius.circular(15),
             ),
             child: StreamBuilder(

@@ -28,7 +28,7 @@ class IconeCentralMapa extends StatelessWidget {
               height: 16,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.blue.withOpacity(0.3),
+                color: Colors.blue.withValues(alpha:0.3),
                 border: Border.all(
                   color: Colors.blue,
                   width: 2,
