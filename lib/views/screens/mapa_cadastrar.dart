@@ -8,8 +8,7 @@ import '../../providers/themes/map_themes.dart';
 import '../../providers/themes/tema_provider.dart';
 //WIDGETS
 import '../widgets/botao_camada_satelite.dart';
-import '../widgets/botao_excluir_marker.dart';
-import '../widgets/icone_central_mapa.dart';
+,import '../widgets/icone_central_mapa.dart';
 import '../widgets/botao_confirmar_ponto.dart';
 import '../widgets/centralizar_mapa.dart';
 import '../widgets/botao_norte.dart';
@@ -20,10 +19,7 @@ class MapaCadastrar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => MapaController(),
-      child: const _MapaCadastrarContent(),
-    );
+    return const _MapaCadastrarContent();
   }
 }
 
@@ -128,7 +124,6 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent> {
               ),
               /// Seus botões e widgets flutuantes
              //Botão excluir saiu pq foi substituido por outro
-              // BotaoExcluirMarker(),
                BotaoConfirmar(),
               const CentralizarMapa(),
               const BotaoNorte(),
