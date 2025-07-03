@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:provider/provider.dart';
-import '../../controllers/mapa_controller.dart';
 import '../../providers/themes/tema_provider.dart';
 import 'formulario_taxi.dart';
 import 'formulario_stip.dart';
@@ -13,7 +12,6 @@ class SelecaoForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mapaController = context.watch<MapaController>();
     final themeProvider = context.watch<ThemeProvider>();
 
     return Scaffold(
