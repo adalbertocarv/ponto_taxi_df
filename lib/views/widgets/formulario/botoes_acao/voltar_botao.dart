@@ -9,7 +9,7 @@ class VoltarButton extends StatelessWidget {
       width: double.infinity,
       height: 50,
       child: OutlinedButton(
-        onPressed: () => Navigator.pop(context),
+        onPressed: () => Navigator.of(context)..pop()..pop(),
         style: OutlinedButton.styleFrom(
           foregroundColor: const Color(0xFF4A90E2),
           side: const BorderSide(color: Color(0xFF4A90E2)),
