@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:provider/provider.dart';
@@ -6,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../../providers/themes/tema_provider.dart';
 import '/views/widgets/sub_menu.dart';
 import '../../controllers/tela_inicio_controller.dart';
-import '../../../models/constants/app_constants.dart'; // Adicione esta importação
+import '../../../models/constants/app_constants.dart';
 import 'registros.dart';
 import 'mapa_cadastrar.dart';
 import 'menu.dart';

@@ -245,7 +245,7 @@ class MapaController extends ChangeNotifier {
     _ampliarParaMarker(posicaoCentral);
 
     // Mostra mensagem de sucesso
-    _showSuccess('Ponto cadastrado com sucesso!');
+    _showSuccess('Ponto confirmado!');
 
     _safeNotifyListeners();
   }
