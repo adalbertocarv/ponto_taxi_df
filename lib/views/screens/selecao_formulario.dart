@@ -54,7 +54,7 @@ class SelecaoForm extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => FormularioStip(pontos: pontos),
+                            builder: (context) => FormularioSTIP(pontos: pontos),
                           ),
                         );
                       },
