@@ -7,8 +7,9 @@ import '../../controllers/mapa_controller.dart';
 import '../../providers/themes/map_themes.dart';
 import '../../providers/themes/tema_provider.dart';
 //WIDGETS
+import '../widgets/barra_pesquisa.dart';
 import '../widgets/botao_camada_satelite.dart';
-,import '../widgets/icone_central_mapa.dart';
+import '../widgets/icone_central_mapa.dart';
 import '../widgets/botao_confirmar_ponto.dart';
 import '../widgets/centralizar_mapa.dart';
 import '../widgets/botao_norte.dart';
@@ -123,8 +124,16 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent> {
                   if (mapaController.iconeVisivel) IconeCentralMapa(),                ],
               ),
               /// Seus botões e widgets flutuantes
-             //Botão excluir saiu pq foi substituido por outro
                BotaoConfirmar(),
+              BarraPesquisa(
+                onSearch: (String query) {
+                  // Implementar lógica de pesquisa
+                  print('Pesquisando: $query');
+                },
+                onTap: () {
+                  // Navegar para ponto no mapa
+                },
+              ),
               const CentralizarMapa(),
               const BotaoNorte(),
               CamadaSatelite(
