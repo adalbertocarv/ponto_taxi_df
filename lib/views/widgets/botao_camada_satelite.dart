@@ -12,7 +12,7 @@ class CamadaSatelite extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Positioned(
-      top: 210,
+      top: 200,
       right: 16,
       child: FloatingActionButton.small(
         heroTag: 'Camada Satélite',

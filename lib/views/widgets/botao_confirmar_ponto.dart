@@ -5,7 +5,7 @@ import '../../controllers/mapa_controller.dart';
 import '../../controllers/modo_app_controller.dart';
 import '../../providers/themes/tema_provider.dart';
 import '../screens/selecao_formulario.dart';
-import '../../../models/constants/app_constants.dart'; // Adicione esta importação
+import '../../../models/constants/app_constants.dart';
 
 class BotaoConfirmar extends StatefulWidget {
   const BotaoConfirmar({super.key});
@@ -60,8 +60,21 @@ class _BotaoConfirmarState extends State<BotaoConfirmar> {
         },
         child: _isProcessing
             ? const _Loader()
-            : const Text('Confirmar Ponto',
-            style: TextStyle(fontSize: 20, color: Colors.white)),
+            : const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.control_point_duplicate,
+              color: Colors.white,
+              size: 20,
+            ),
+            SizedBox(width: 8), // espaçamento entre ícone e texto
+            Text(
+              'Confirmar',
+              style: TextStyle(fontSize: 20, color: Colors.white),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -88,7 +101,7 @@ class _BotaoConfirmarState extends State<BotaoConfirmar> {
         Expanded(
           child: ElevatedButton.icon(
             icon: const Icon(Icons.save_alt_rounded, color: Colors.white),
-            label: const Text('Cadastrar',
+            label: const Text('Confirmar',
                 style: TextStyle(fontSize: 16, color: Colors.white)),
             style: ElevatedButton.styleFrom(
               backgroundColor: tema.primaryColor,

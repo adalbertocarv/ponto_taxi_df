@@ -12,7 +12,7 @@ class BotaoNorte extends StatelessWidget {
     final themeProvider = context.watch<ThemeProvider>();
 
     return Positioned(
-      top: 160,
+      top: 150,
       right: 16,
       child: FloatingActionButton.small(
         heroTag: 'Reorientar para o Norte',

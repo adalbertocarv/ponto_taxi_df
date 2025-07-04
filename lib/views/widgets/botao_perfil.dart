@@ -11,11 +11,11 @@ class BotaoPerfil extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Positioned(
-      top: 80,
+      top: 104, //tive que colocar 4px pra baixo para alinhar com os botões de centralizar com o usuário
       left: 16,
       child: FloatingActionButton(
         heroTag: 'Minha Conta',
-        tooltip: 'Minha Conta', // É bom ter um tooltip descritivo
+        tooltip: 'Minha Conta', // É bom ter um tooltip descritivo se não dá uns bug ae
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         backgroundColor: themeProvider.primaryColor,
 
@@ -25,7 +25,7 @@ class BotaoPerfil extends StatelessWidget {
           );
         },
 
-        // Deixe o ícone sem tamanho explícito para usar o padrão
+        //ícone sem tamanho explícito para usar o padrão
         child: Icon(Icons.account_circle_sharp,
           size: 56.0, // Tamanho do botão, não do ícone
         ),

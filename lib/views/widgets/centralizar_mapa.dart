@@ -12,7 +12,7 @@ class CentralizarMapa extends StatelessWidget {
     final themeProvider = context.watch<ThemeProvider>();
 
     return Positioned(
-      top: 110,
+      top: 100,
       right: 16,
       child: FloatingActionButton.small(
         heroTag: 'Centralizar localização',
