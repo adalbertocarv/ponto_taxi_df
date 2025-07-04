@@ -33,33 +33,33 @@ class PontoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FA),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFFE9ECEF),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        children: [
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CoordenadasInfo(pontos: marker.point),
-                const SizedBox(height: 20),
-                PontoMapa(pontos: marker),
-                const SizedBox(height: 20),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+    return
+      PontoMapa(pontos: marker);
+//       Container(
+// //      padding: const EdgeInsets.all(16),
+//       decoration: BoxDecoration(
+//         color: const Color(0xFFF8F9FA),
+//         borderRadius: BorderRadius.circular(12),
+//         border: Border.all(
+//           color: const Color(0xFFE9ECEF),
+//           width: 1,
+//         ),
+//       ),
+//       child: Row(
+//         crossAxisAlignment: CrossAxisAlignment.center,
+//         children: [
+//           const SizedBox(width: 16),
+//           Expanded(
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.center,
+//               children: [
+//                 const SizedBox(height: 20),
+//                 const SizedBox(height: 20),
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
   }
 }
