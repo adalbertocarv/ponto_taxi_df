@@ -60,7 +60,7 @@ class FormularioSection extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -107,7 +107,7 @@ class FormularioSection extends StatelessWidget {
           ),
 
           const SizedBox(height: 8),
-          Text('Tem Sinalização', style: TextStyle(fontWeight: FontWeight.w600)),
+          Text('Há Sinalização', style: TextStyle(fontWeight: FontWeight.w600)),
           Row(
             children: [
               Expanded(
@@ -145,7 +145,7 @@ class FormularioSection extends StatelessWidget {
             value: classificacaoEstrutura,
             decoration: const InputDecoration(
               labelText: 'Classificação da Estrutura',
-              prefixIcon: Icon(Icons.category),
+              prefixIcon: Icon(Icons.home_work),
             ),
             items: ['Coberto', 'Descoberto', 'Parcial']
                 .map((e) => DropdownMenuItem(value: e, child: Text(e)))
