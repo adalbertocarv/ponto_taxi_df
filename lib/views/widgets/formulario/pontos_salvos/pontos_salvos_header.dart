@@ -26,7 +26,7 @@ class PontosSalvosHeader extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         const Text(
-          'Pontos Cadastrados',
+          'Ponto Registrado',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,

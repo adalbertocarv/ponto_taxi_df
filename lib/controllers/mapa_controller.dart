@@ -17,6 +17,8 @@ class MapaController extends ChangeNotifier {
 
   static const LatLng _initialCenter = LatLng(-15.79, -47.88);
   static const double _initialZoom = 15.0;
+  static const double _minZoom = 14;
+  static const double _maxZoom = 20;
   static const String _userAgentPackage = 'com.ponto.certo.taxi.ponto_certo_taxi';
   bool iconeVisivel = true; // Controla a visibilidade do IconeCentralMapa
 
@@ -28,6 +30,8 @@ class MapaController extends ChangeNotifier {
   List<Marker> get markers => List.unmodifiable(_pontos);
   LatLng get initialCenter => _initialCenter;
   double get initialZoom => _initialZoom;
+  double get minZoom => _minZoom;
+  double get maxZoom => _maxZoom;
   String get userAgentPackage => _userAgentPackage;
   LatLng? get userLocation => _userLocation;
   String? get errorMessage => _errorMessage;
@@ -36,6 +40,8 @@ class MapaController extends ChangeNotifier {
   MapOptions get mapOptions => MapOptions(
     initialCenter: _initialCenter,
     initialZoom: _initialZoom,
+    minZoom: _minZoom,
+    maxZoom: _maxZoom,
     onMapEvent: (MapEvent event) {
       if (event is MapEventRotateEnd || event is MapEventRotate) {
         final angle = _flutterMapController?.camera.rotation ?? 0.0;

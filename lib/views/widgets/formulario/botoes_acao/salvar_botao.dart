@@ -83,7 +83,7 @@ class SalvarButton extends StatelessWidget {
             children: [
               const Text('Cadastro realizado com sucesso!'),
               const SizedBox(height: 8),
-              Text('Pontos cadastrados: ${mapaController.markers.length}'),
+              Text('Ponto cadastrado: ${mapaController.markers.length}'),
               if (enderecoController.text.isNotEmpty)
                 Text('Endereço: ${enderecoController.text}'),
               if (observacoesController.text.isNotEmpty)
