@@ -65,7 +65,6 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
                 observacoesController: _observacoesController,
                 vagasController: _vagasController,
                 telefoneController: _telefoneController,
-                necessidadesController: _necessidadesController,
                 pontoOficial: _pontoOficial,
                 temSinalizacao: _temSinalizacao,
                 classificacaoEstrutura: _classificacaoEstrutura,
@@ -84,7 +83,7 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
                 },
                 onImagemSelecionada: () {
                   // TODO: implementar picker de imagem
-                },
+                }, isLoadingEndereco: false,
               ),
               const SizedBox(height: 32),
               BotoesAcaoSecao(
