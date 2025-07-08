@@ -9,12 +9,13 @@ class FormularioSection extends StatelessWidget {
   final TextEditingController observacoesController;
   final TextEditingController vagasController;
   final TextEditingController telefoneController;
-  final TextEditingController necessidadesController;
 
   final bool pontoOficial;
   final bool temSinalizacao;
   final String classificacaoEstrutura;
   final String autorizatario;
+  final bool   isLoadingEndereco;
+
   final Function(bool) onPontoOficialChanged;
   final Function(bool) onTemSinalizacaoChanged;
   final Function(String?) onClassificacaoChanged;
@@ -27,7 +28,6 @@ class FormularioSection extends StatelessWidget {
     required this.observacoesController,
     required this.vagasController,
     required this.telefoneController,
-    required this.necessidadesController,
     required this.pontoOficial,
     required this.temSinalizacao,
     required this.classificacaoEstrutura,
@@ -37,6 +37,7 @@ class FormularioSection extends StatelessWidget {
     required this.onClassificacaoChanged,
     required this.onAutorizatarioChanged,
     required this.onImagemSelecionada,
+      required this.isLoadingEndereco,
   });
 
 
@@ -53,11 +54,14 @@ class FormularioSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
 
+
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: themeProvider.isDarkMode
+            ? const Color(0xFF252525)
+            : Colors.white,
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.08),
@@ -72,11 +76,30 @@ class FormularioSection extends StatelessWidget {
           const FormularioHeader(),
           const SizedBox(height: 20),
 
-          CustomTextField(
-            controller: enderecoController,
-            label: 'Endereço',
-            icon: Icons.location_on_outlined,
-            hint: 'Ex: Asa Norte SQN 410 - Asa Norte',
+          // ➜ Endereço + indicador de carregamento
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: CustomTextField(
+                  controller: enderecoController,
+                  label     : 'Endereço',
+                  icon      : Icons.location_on_outlined,
+                  hint      : isLoadingEndereco
+                      ? 'Buscando endereço...'
+                      : 'Ex: Asa Norte SQN 410 - Asa Norte',
+                  maxLines: 2,
+                ),
+              ),
+              if (isLoadingEndereco) ...[
+                const SizedBox(width: 12),
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ],
+            ],
           ),
 
           const SizedBox(height: 16),
@@ -136,7 +159,8 @@ class FormularioSection extends StatelessWidget {
             controller: vagasController,
             label: 'Nº de Vagas',
             icon: Icons.directions_car_filled,
-            keyboardType: TextInputType.number, hint: '',
+            keyboardType: TextInputType.number,
+            hint: 'ex: 4',
           ),
 
           const SizedBox(height: 16),
@@ -160,7 +184,7 @@ class FormularioSection extends StatelessWidget {
             label: 'Telefone',
             icon: Icons.phone,
             keyboardType: TextInputType.phone,
-            hint: '',
+            hint: 'ex: (61) 3321-8181',
           ),
 
           const SizedBox(height: 16),
@@ -203,13 +227,6 @@ class FormularioSection extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          CustomTextField(
-            controller: necessidadesController,
-            label: 'Necessidades',
-            icon: Icons.warning_amber,
-            hint: 'Ex: Fazer estudo visando a oficialização, Revitalizar.',
-            maxLines: 2,
-          ),
         ],
       ),
     );
