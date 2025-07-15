@@ -1,4 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../controllers/modo_app_controller.dart';
+import '../../data/app_database.dart';
 
 class Registros extends StatefulWidget {
   const Registros({super.key});
@@ -8,10 +13,134 @@ class Registros extends StatefulWidget {
 }
 
 class _RegistrosState extends State<Registros> {
+  final _db = AppDatabase();                 // singleton
+  void _refresh() => setState(() {});
+
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Colors.white10,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Registros salvos'),
+      ),
+      body: FutureBuilder<List<Ponto>>(
+        future: _db.getAllPontos(),          // ← busca tudo do banco
+        builder: (_, snap) {
+          if (snap.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!snap.hasData || snap.data!.isEmpty) {
+            return const Center(child: Text('Nenhum registro ainda.'));
+          }
+
+          final pontos = snap.data!;
+          return ListView.builder(
+            padding: const EdgeInsets.all(8),
+            itemCount: pontos.length,
+            itemBuilder: (_, i) => _PontoCard(
+              ponto: pontos[i],
+              onDeleted: _refresh,
+            ),
+          );
+        },
+      ),
     );
   }
 }
+class _PontoCard extends StatelessWidget {
+  final Ponto ponto;
+  final VoidCallback onDeleted;
+  final _db = AppDatabase();
+
+  _PontoCard({required this.ponto, required this.onDeleted, Key? key})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final modo = context.watch<ModoAppController>();
+
+    final img = ponto.imagens.isNotEmpty ? ponto.imagens.first : null;
+    // só aparece no modo Cadastro
+    if (!modo.isCadastro) return const SizedBox.shrink();
+    var pontos = _db.getAllPontos;
+    return Column(
+      children: [
+        Card(
+          elevation: 6,
+          color: Colors.orange[400]!.withOpacity(0.5),
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          child: Row(
+            children: [
+              Expanded(
+                child: ListTile(
+                  leading: img != null
+                      ? ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.file(File(img),
+                        width: 60, height: 60, fit: BoxFit.cover),
+                  )
+                      : const Icon(Icons.location_on, size: 40),
+                  title: Text(ponto.endereco),
+                  subtitle: Text(
+                    '${ponto.numVagas} vagas • ${ponto.classificacaoEstrutura}\n'
+                        'Tel.: ${ponto.telefones.join(', ')}'' \n• LatLong ${ponto.latitude}, ${ponto.longitude}',
+                  ),
+                  isThreeLine: true,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red),
+                tooltip: 'Excluir item',
+                onPressed: () => _confirmarExclusao(context),
+              ),
+    //           IconButton(onPressed: () async {
+    // final pontos = await _db.getAllPontos();   // ← chama () e await
+    // for (final p in pontos) {
+    // debugPrint(p.toString());                // ou print
+    // }
+    // },
+    //  icon: Icon(Icons.receipt, color: Colors.white)
+    //           )
+            ],
+          ),
+        ),
+      ],
+    );
+
+
+  }
+
+  Future<void> _confirmarExclusao(BuildContext context) async {
+    final bool? confirmar = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Excluir registro?'),
+        content: const Text('Esta ação não poderá ser desfeita.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(_, false),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(_, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Excluir'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmar == true) {
+      await _db.deletePonto(ponto.id!);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registro excluído')),
+        );
+      }
+      onDeleted(); // avisa o pai para atualizar a lista
+    }
+  }
+}
+

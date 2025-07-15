@@ -1,15 +1,21 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../providers/themes/tema_provider.dart';
 import '../../services/enderecoOSM_service.dart';
 import '../widgets/formulario/pontos_salvos/pontos_salvos_secao.dart';
-import '../widgets/formulario/secoes_formulario/formulario_section.dart';
+import '../widgets/formulario/secoes_formulario/formulario_secao.dart';
 import '../widgets/formulario/botoes_acao/botoes_acao_secao.dart';
+
+// -------------- IMPORT DO SQLITE --------------
+import '../../data/app_database.dart'; // ajuste o path se necessário
 
 class FormularioTaxi extends StatefulWidget {
   final List<Marker> pontos;
-
   const FormularioTaxi({super.key, required this.pontos});
 
   @override
@@ -17,21 +23,33 @@ class FormularioTaxi extends StatefulWidget {
 }
 
 class _FormularioTaxiState extends State<FormularioTaxi> {
-  final _enderecoController     = TextEditingController();
-  final _observacoesController  = TextEditingController();
-  final _vagasController        = TextEditingController();
-  final _telefoneController     = TextEditingController();
-  final _necessidadesController = TextEditingController();
+  // DB -----------------------------------------------------------------------
+  final _db = AppDatabase();      // singleton já trata abrir/fechar
 
-  bool   _pontoOficial          = false;
-  bool   _temSinalizacao        = false;
-  String _classificacaoEstrutura= 'Coberto';
-  String _autorizatario         = '';
+  // Controllers --------------------------------------------------------------
+  final _enderecoController    = TextEditingController();
+  final _observacoesController = TextEditingController();
+  final _vagasController       = TextEditingController();
+  final _telefoneController    = TextEditingController();
+  final _latitudeController    = TextEditingController();
+  final _longitudeController   = TextEditingController();
 
-  bool _isLoadingEndereco       = true;
+  // Estados booleanos --------------------------------------------------------
+  bool _pontoOficial   = false;
+  bool _temSinalizacao = false;
+  bool _temAbrigo      = false;
+  bool _temEnergia     = false;
+  bool _temAgua        = false;
 
+  // Outros dados -------------------------------------------------------------
+  String _classificacaoEstrutura = 'Estação';
+  String _autorizatario          = '';
+  String? _imagemPath;
+
+  bool _isLoadingEndereco = true;
   final EnderecoService _enderecoService = EnderecoService();
 
+  // -------------------------------------------------------------------------
   @override
   void initState() {
     super.initState();
@@ -39,25 +57,122 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
   }
 
   Future<void> _carregarEndereco() async {
-    try {
-      final endereco =
-      await _enderecoService.obterEnderecoFormatado(widget.pontos);
-
-      if (mounted) {
-        setState(() {
-          _enderecoController.text = endereco ?? '';
-          _isLoadingEndereco = false;
-        });
-      }
-    } catch (e) {
-      debugPrint('Erro ao buscar endereço: $e');
-      if (mounted) {
-        setState(() => _isLoadingEndereco = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Não foi possível obter o endereço.')),
-        );
-      }
+    final endereco = await _enderecoService.obterEnderecoFormatado(widget.pontos);
+    if (mounted) {
+      setState(() {
+        _enderecoController.text = endereco ?? '';
+        _isLoadingEndereco = false;
+      });
     }
+  }
+
+  // ---------------- CAPTURA IMAGEM -----------------------------------------
+  Future<void> _selecionarImagem() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.camera);
+    if (picked == null) return;
+
+    // copia a imagem para pasta Documents (para não ser apagada)
+    final docsDir = await getApplicationDocumentsDirectory();
+    final dst = File('${docsDir.path}/ponto_${DateTime.now().millisecondsSinceEpoch}.jpg');
+    await File(picked.path).copy(dst.path);
+
+    setState(() => _imagemPath = dst.path);
+  }
+
+  // ---------------- SALVAR NO SQLITE ---------------------------------------
+  Future<void> _salvar() async {
+    // converte textos
+    final firstMarker = widget.pontos.first;
+    final lat = firstMarker.point.latitude;
+    final lon = firstMarker.point.longitude;
+
+    final vagas = int.tryParse(_vagasController.text) ?? 0;
+
+    final ponto = Ponto(
+      latitude              : lat,
+      longitude             : lon,
+      endereco              : _enderecoController.text,
+      pontoOficial          : _pontoOficial,
+      classificacaoEstrutura: _classificacaoEstrutura,
+      numVagas              : vagas,
+      temAbrigo             : _temAbrigo,
+      temSinalizacao        : _temSinalizacao,
+      temEnergia            : _temEnergia,
+      temAgua               : _temAgua,
+      observacoes           : _observacoesController.text,
+      telefones             : [_telefoneController.text],
+      imagens               : _imagemPath != null ? [_imagemPath!] : [],
+    );
+
+    final id = await _db.insertPonto(ponto);
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ponto salvo')),
+      );
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  @override
+  Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+
+    return Scaffold(
+      backgroundColor: themeProvider.isDarkMode ? const Color(0xFF1A1A1A) : const Color(0xFFF5F7FA),
+      appBar: AppBar(
+        title: const Text('Formulário Táxi'),
+        //backgroundColor: themeProvider.primaryColor,
+        backgroundColor: Colors.amber,
+        foregroundColor: Colors.white,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              PontosSalvosSecao(pontos: widget.pontos),
+              const SizedBox(height: 24),
+              FormularioSection(
+                // controllers
+                enderecoController    : _enderecoController,
+                observacoesController : _observacoesController,
+                vagasController       : _vagasController,
+                telefoneController    : _telefoneController,
+                latitudeController    : _latitudeController,
+                longitudeController   : _longitudeController,
+                // valores
+                pontoOficial          : _pontoOficial,
+                temSinalizacao        : _temSinalizacao,
+                temAbrigo             : _temAbrigo,
+                temEnergia            : _temEnergia,
+                temAgua               : _temAgua,
+                classificacaoEstrutura: _classificacaoEstrutura,
+                autorizatario         : _autorizatario,
+                isLoadingEndereco     : _isLoadingEndereco,
+                imagemSelecionada     : _imagemPath,
+                // callbacks
+                onPontoOficialChanged : (v) => setState(() => _pontoOficial   = v),
+                onTemSinalizacaoChanged: (v) => setState(() => _temSinalizacao = v),
+                onTemAbrigoChanged    : (v) => setState(() => _temAbrigo      = v),
+                onTemEnergiaChanged   : (v) => setState(() => _temEnergia     = v),
+                onTemAguaChanged      : (v) => setState(() => _temAgua        = v),
+                onClassificacaoChanged: (v) => setState(() => _classificacaoEstrutura = v ?? ''),
+                onAutorizatarioChanged: (v) => setState(() => _autorizatario  = v ?? ''),
+                onImagemSelecionada   : _selecionarImagem,
+              ),
+              const SizedBox(height: 32),
+              BotoesAcaoSecao(
+                enderecoController   : _enderecoController,
+                observacoesController: _observacoesController,
+                onSalvar             : _salvar,         // <-- conecte no botão "Salvar"
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -66,60 +181,8 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
     _observacoesController.dispose();
     _vagasController.dispose();
     _telefoneController.dispose();
-    _necessidadesController.dispose();
+    _latitudeController.dispose();
+    _longitudeController.dispose();
     super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final themeProvider = context.watch<ThemeProvider>();
-
-    return Scaffold(
-      backgroundColor: themeProvider.isDarkMode
-          ? const Color(0xFF1A1A1A)
-          : const Color(0xFFF5F7FA),
-      appBar: AppBar(
-        title: const Text('Formulário Táxi'),
-        backgroundColor: themeProvider.primaryColor,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              PontosSalvosSecao(pontos: widget.pontos),
-              const SizedBox(height: 24),
-              FormularioSection(
-                // controllers
-                enderecoController     : _enderecoController,
-                observacoesController  : _observacoesController,
-                vagasController        : _vagasController,
-                telefoneController     : _telefoneController,
-                // valores
-                pontoOficial           : _pontoOficial,
-                temSinalizacao         : _temSinalizacao,
-                classificacaoEstrutura : _classificacaoEstrutura,
-                autorizatario          : _autorizatario,
-                isLoadingEndereco      : _isLoadingEndereco,
-                // callbacks
-                onPontoOficialChanged  : (v) => setState(() => _pontoOficial = v),
-                onTemSinalizacaoChanged: (v) => setState(() => _temSinalizacao = v),
-                onClassificacaoChanged : (v) => setState(() => _classificacaoEstrutura = v ?? ''),
-                onAutorizatarioChanged : (v) => setState(() => _autorizatario = v ?? ''),
-                onImagemSelecionada    : () {/* TODO: picker de imagem */},
-              ),
-              const SizedBox(height: 32),
-              BotoesAcaoSecao(
-                enderecoController   : _enderecoController,
-                observacoesController: _observacoesController,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

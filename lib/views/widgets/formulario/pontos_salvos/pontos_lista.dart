@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 
-import 'coordenadas_info.dart';
 import 'ponto_mapa.dart';
 
 class PontosLista extends StatelessWidget {
