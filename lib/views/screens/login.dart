@@ -18,32 +18,21 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   bool _obscurePassword = true;
 
-  // Adiciona proteção adicional contra múltiplos cliques
   DateTime? _lastClickTime;
-  static const int _debounceTimeMs = 1000; // 1 segundo de debounce
+  static const int _debounceTimeMs = 1000;
 
-  // Função para verificar se deve processar o clique
   bool _shouldProcessClick() {
     final now = DateTime.now();
-
-    // Se já está carregando, não processa
     if (_isLoading) return false;
-
-    // Verifica debounce
     if (_lastClickTime != null) {
       final timeSinceLastClick = now.difference(_lastClickTime!).inMilliseconds;
-      if (timeSinceLastClick < _debounceTimeMs) {
-        return false;
-      }
+      if (timeSinceLastClick < _debounceTimeMs) return false;
     }
-
     _lastClickTime = now;
     return true;
   }
 
-  // Funcao para o login
   void _login() async {
-    // Proteção aprimorada contra múltiplos cliques
     if (!_shouldProcessClick()) return;
 
     setState(() {
@@ -53,23 +42,18 @@ class _LoginScreenState extends State<LoginScreen> {
     final username = _usernameController.text.trim();
     final senha = _senhaController.text.trim();
 
-    // Validações básicas já são feitas no service, mas mantemos aqui por UX
     if (username.isEmpty || senha.isEmpty) {
       setState(() {
         _isLoading = false;
       });
-      _showSnackBar(
-          context,
-          'Por favor, preencha todos os campos.',
-          Colors.orange
-      );
+      _showSnackBar(context, 'Por favor, preencha todos os campos.', Colors.orange);
       return;
     }
 
     try {
       final result = await LoginService.login(username, senha);
 
-      if (!mounted) return; // Verifica se o widget ainda está montado
+      if (!mounted) return;
 
       setState(() {
         _isLoading = false;
@@ -78,7 +62,6 @@ class _LoginScreenState extends State<LoginScreen> {
       if (result['success'] == true) {
         _showSnackBar(context, 'Autenticado com sucesso!', Colors.green);
 
-        // Aguarda um pouco antes de navegar para mostrar o feedback
         await Future.delayed(const Duration(milliseconds: 800));
 
         if (!mounted) return;
@@ -88,11 +71,9 @@ class _LoginScreenState extends State<LoginScreen> {
           MaterialPageRoute(builder: (context) => const SelectionScreen()),
         );
       } else {
-        // Mostra a mensagem de erro específica retornada pelo service
         final errorMessage = result['error'] ?? 'Erro desconhecido';
         Color errorColor = Colors.red;
 
-        // Define cores diferentes baseado no tipo de erro
         if (errorMessage.contains('conexão') ||
             errorMessage.contains('internet') ||
             errorMessage.contains('Tempo limite')) {
@@ -104,27 +85,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
         _showSnackBar(context, errorMessage, errorColor);
       }
-    } catch (e) {
-      // Tratamento de erro extra caso algo não seja capturado no service
+    } catch (_) {
       if (!mounted) return;
-
       setState(() {
         _isLoading = false;
       });
 
-      _showSnackBar(
-        context,
-        'Erro inesperado. Tente novamente.',
-        Colors.red,
-      );
+      _showSnackBar(context, 'Erro inesperado. Tente novamente.', Colors.red);
     }
   }
 
   void _showSnackBar(BuildContext context, String message, Color backgroundColor) {
-    if (!mounted) return; // Previne erro se o widget foi desmontado
+    if (!mounted) return;
 
     final scaffold = ScaffoldMessenger.of(context);
-    scaffold.hideCurrentSnackBar(); // Remove snackbar anterior se existir
+    scaffold.hideCurrentSnackBar();
 
     scaffold.showSnackBar(
       SnackBar(
@@ -189,42 +164,62 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
 
-    return Scaffold(
-      backgroundColor: Colors.grey[200],
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 500),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
-            ),
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              children: [
-                Image.asset('assets/images/imagessemob.webp'),
-                const SizedBox(height: 20),
-                const Text(
-                  'Entrar',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 20),
-                _buildTextField('Nome de usuário', _usernameController, false),
-                const SizedBox(height: 20),
-                _buildTextField('Senha', _senhaController, true),
-                const SizedBox(height: 30),
-                _isLoading
-                    ? const CircularProgressIndicator()
-                    : _buildLoginButton(authProvider),
-                const SizedBox(height: 10),
-                if (authProvider.errorMessage != null)
-                  Text(
-                    authProvider.errorMessage!,
-                    style: const TextStyle(color: Colors.red),
+    /// o ThemeProvider
+    /// não afetem esta tela
+    final fixedTheme = Theme.of(context).copyWith(
+      colorScheme: ColorScheme.light(
+        primary: Colors.blue,
+        secondary: Colors.blueAccent,
+        surface: Colors.white,
+        background: Colors.grey[200]!,
+        error: Colors.red,
+        onPrimary: Colors.white,
+        onSecondary: Colors.white,
+        onSurface: Colors.black,
+        onBackground: Colors.black,
+        onError: Colors.white,
+      ),
+      scaffoldBackgroundColor: Colors.grey[200],
+    );
+
+    return Theme(
+      data: fixedTheme,
+      child: Scaffold(
+        body: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
+              ),
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                children: [
+                  Image.asset('assets/images/imagessemob.webp'),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Entrar',
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black),
                   ),
-              ],
+                  const SizedBox(height: 20),
+                  _buildTextField('Nome de usuário', _usernameController, false),
+                  const SizedBox(height: 20),
+                  _buildTextField('Senha', _senhaController, true),
+                  const SizedBox(height: 30),
+                  _isLoading
+                      ? const CircularProgressIndicator()
+                      : _buildLoginButton(authProvider),
+                  const SizedBox(height: 10),
+                  if (authProvider.errorMessage != null)
+                    Text(
+                      authProvider.errorMessage!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                ],
+              ),
             ),
           ),
         ),
@@ -244,8 +239,14 @@ class _LoginScreenState extends State<LoginScreen> {
       obscureText: isPassword ? _obscurePassword : false,
       keyboardType: keyboardType ?? TextInputType.text,
       inputFormatters: inputFormatters,
+      style: const TextStyle(
+        color: Colors.black, // força o texto digitado a ser preto
+      ),
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: const TextStyle(
+          color: Colors.black, // força o label a ser preto também
+        ),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(5)),
         suffixIcon: isPassword
             ? IconButton(
@@ -263,12 +264,12 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+
   Widget _buildLoginButton(AuthProvider authProvider) {
     return ElevatedButton(
-      // Múltiplas camadas de proteção
       onPressed: _isLoading ? null : _login,
       style: ElevatedButton.styleFrom(
-        backgroundColor: _isLoading ? Colors.grey : Colors.blue,
+        backgroundColor: _isLoading ? Colors.grey : Colors.blueAccent,
         padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
       ),
