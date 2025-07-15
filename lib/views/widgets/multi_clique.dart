@@ -26,34 +26,31 @@ class MultiClickAudioButton extends StatefulWidget {
 
 class _MultiClickAudioButtonState extends State<MultiClickAudioButton>
     with TickerProviderStateMixin {
-  int _clickCount = 0;
+  int _clickContador = 0;
   Timer? _resetTimer;
+  Timer? _cooldownTimer;
+  bool _isCooldown = false;
+
   final AudioPlayer _audioPlayer = AudioPlayer();
 
-  // Animação para feedback visual
   late AnimationController _scaleController;
   late Animation<double> _scaleAnimation;
 
-  // Animação para indicar progresso
   late AnimationController _progressController;
 
-  // Variáveis do confetti
   ConfettiController? controller1;
   ConfettiController? controller2;
   bool isDone = false;
 
   static const colors = [
-    Color(0xffbb0000),
-    Color(0xff000000),
-    // Color(0xffffff00), // Amarelo adicional
-    // Color(0xff00ff00), // Verde adicional
+    Color(0xff0091cf),
+    Color(0xffffffff),
   ];
 
   @override
   void initState() {
     super.initState();
 
-    // Configurar animações
     _scaleController = AnimationController(
       duration: const Duration(milliseconds: 150),
       vsync: this,
@@ -71,56 +68,76 @@ class _MultiClickAudioButtonState extends State<MultiClickAudioButton>
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-
   }
 
   @override
   void dispose() {
     _resetTimer?.cancel();
+    _cooldownTimer?.cancel();
     _audioPlayer.dispose();
     _scaleController.dispose();
     _progressController.dispose();
-    _stopConfetti();
+    _pararConfetti();
     super.dispose();
   }
 
-  void _handleClick() async {
-    // Feedback háptico
+  void _multiClick() async {
     HapticFeedback.lightImpact();
 
-    // Animação de scale
     _scaleController.forward().then((_) {
       _scaleController.reverse();
     });
 
     setState(() {
-      _clickCount++;
+      _clickContador++;
     });
 
-    // Atualizar animação de progresso
-    _progressController.animateTo(_clickCount / widget.requiredClicks);
+    _progressController.animateTo(_clickContador / widget.requiredClicks);
 
-    // Cancelar timer anterior se existir
     _resetTimer?.cancel();
 
-    if (_clickCount >= widget.requiredClicks) {
-      // Tocar o áudio e disparar confetti
+    if (_clickContador >= widget.requiredClicks) {
       await _playAudio();
-      _startConfetti();
+      _iniciarConfetti();
 
-      // Feedback háptico mais forte
       HapticFeedback.mediumImpact();
 
-      // Reset após um delay para permitir que o confetti seja visto
       Timer(const Duration(milliseconds: 500), () {
-        _resetClickCount();
+        _resetClickContador();
+        _inicarCooldown();
       });
     } else {
-      // Configurar timer para reset automático
       _resetTimer = Timer(widget.resetDelay, () {
-        _resetClickCount();
+        _resetClickContador();
       });
     }
+  }
+
+  void _inicarCooldown() {
+    setState(() {
+      _isCooldown = true;
+    });
+
+    _cooldownTimer?.cancel();
+    _cooldownTimer = Timer(const Duration(minutes: 5), () {
+      if (mounted) {
+        setState(() {
+          _isCooldown = false;
+        });
+      }
+    });
+  }
+
+  void _resetClickContador() {
+    if (mounted) {
+      setState(() {
+        _clickContador = 0;
+      });
+      _progressController.reset();
+    }
+    _resetTimer?.cancel();
+    _resetTimer = null;
+    _pararConfetti();
   }
 
   Future<void> _playAudio() async {
@@ -128,24 +145,15 @@ class _MultiClickAudioButtonState extends State<MultiClickAudioButton>
       await _audioPlayer.play(AssetSource(widget.audioAssetPath));
     } catch (e) {
       debugPrint('Erro ao tocar áudio: $e');
-      // Mostrar snackbar de erro (opcional)
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Erro ao reproduzir áudio'),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
     }
   }
 
-  void _startConfetti() {
+  void _iniciarConfetti() {
     if (!mounted) return;
 
     isDone = false;
     int frameTime = 1000 ~/ 24;
-    int total = 3 * 1000 ~/ frameTime; // 3 segundos de confetti
+    int total = 3 * 1000 ~/ frameTime;
     int progress = 0;
 
     Timer.periodic(Duration(milliseconds: frameTime), (timer) {
@@ -159,11 +167,10 @@ class _MultiClickAudioButtonState extends State<MultiClickAudioButton>
       if (progress >= total) {
         timer.cancel();
         isDone = true;
-        _stopConfetti();
+        _pararConfetti();
         return;
       }
 
-      // Confetti da esquerda
       if (controller1 == null) {
         controller1 = Confetti.launch(
           context,
@@ -175,16 +182,13 @@ class _MultiClickAudioButtonState extends State<MultiClickAudioButton>
             colors: colors,
           ),
           onFinished: (overlayEntry) {
-            if (isDone) {
-              overlayEntry.remove();
-            }
+            if (isDone) overlayEntry.remove();
           },
         );
       } else {
         controller1!.launch();
       }
 
-      // Confetti da direita
       if (controller2 == null) {
         controller2 = Confetti.launch(
           context,
@@ -196,9 +200,7 @@ class _MultiClickAudioButtonState extends State<MultiClickAudioButton>
             colors: colors,
           ),
           onFinished: (overlayEntry) {
-            if (isDone) {
-              overlayEntry.remove();
-            }
+            if (isDone) overlayEntry.remove();
           },
         );
       } else {
@@ -207,22 +209,10 @@ class _MultiClickAudioButtonState extends State<MultiClickAudioButton>
     });
   }
 
-  void _stopConfetti() {
+  void _pararConfetti() {
     controller1 = null;
     controller2 = null;
     isDone = true;
-  }
-
-  void _resetClickCount() {
-    if (mounted) {
-      setState(() {
-        _clickCount = 0;
-      });
-      _progressController.reset();
-    }
-    _resetTimer?.cancel();
-    _resetTimer = null;
-    _stopConfetti();
   }
 
   @override
@@ -235,29 +225,8 @@ class _MultiClickAudioButtonState extends State<MultiClickAudioButton>
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // // Indicador de progresso circular (opcional)
-              // if (_clickCount > 0)
-              //   AnimatedBuilder(
-              //     animation: _progressAnimation,
-              //     builder: (context, child) {
-              //       return SizedBox(
-              //         width: 80,
-              //         height: 80,
-              //         child: CircularProgressIndicator(
-              //           value: _progressAnimation.value,
-              //           strokeWidth: 3,
-              //           backgroundColor: Colors.grey.withOpacity(0.3),
-              //           valueColor: AlwaysStoppedAnimation<Color>(
-              //             Theme.of(context).primaryColor,
-              //           ),
-              //         ),
-              //       );
-              //     },
-              //   ),
-
-              // Botão principal
               TextButton(
-                onPressed: _handleClick,
+                onPressed: _isCooldown ? null : _multiClick,
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
@@ -274,19 +243,6 @@ class _MultiClickAudioButtonState extends State<MultiClickAudioButton>
                             fontWeight: FontWeight.bold,
                           ),
                     ),
-
-                    // // Indicador de cliques
-                    // if (_clickCount > 0)
-                    //   Padding(
-                    //     padding: const EdgeInsets.only(top: 4),
-                    //     child: Text(
-                    //       '${_clickCount}/${widget.requiredClicks}',
-                    //       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    //         color: Theme.of(context).primaryColor,
-                    //         fontWeight: FontWeight.w500,
-                    //       ),
-                    //     ),
-                    //   ),
                   ],
                 ),
               ),
@@ -294,163 +250,6 @@ class _MultiClickAudioButtonState extends State<MultiClickAudioButton>
           ),
         );
       },
-    );
-  }
-}
-
-// Exemplo de uso simples com confetti
-class SimpleMultiClickButton extends StatefulWidget {
-  const SimpleMultiClickButton({super.key});
-
-  @override
-  State<SimpleMultiClickButton> createState() => _SimpleMultiClickButtonState();
-}
-
-class _SimpleMultiClickButtonState extends State<SimpleMultiClickButton> {
-  int _clickCount = 0;
-  Timer? _resetTimer;
-  final AudioPlayer _audioPlayer = AudioPlayer();
-
-  // Variáveis do confetti
-  ConfettiController? controller1;
-  ConfettiController? controller2;
-  bool isDone = false;
-
-  static const colors = [
-    Color(0xffbb0000),
-    Color(0xffffffff),
-  ];
-
-  void _handleClick() async {
-    setState(() {
-      _clickCount++;
-    });
-
-    // Reset timer
-    _resetTimer?.cancel();
-
-    if (_clickCount >= 5) {
-      // Tocar áudio
-      try {
-        await _audioPlayer.play(AssetSource('sounds/your_audio_file.mp3'));
-      } catch (e) {
-        debugPrint('Erro ao tocar áudio: $e');
-      }
-
-      // Disparar confetti
-      _startConfetti();
-
-      // Reset após delay
-      Timer(const Duration(milliseconds: 500), () {
-        if (mounted) {
-          setState(() {
-            _clickCount = 0;
-          });
-        }
-      });
-    } else {
-      // Auto reset após 3 segundos
-      _resetTimer = Timer(const Duration(seconds: 3), () {
-        if (mounted) {
-          setState(() {
-            _clickCount = 0;
-          });
-        }
-      });
-    }
-  }
-
-  void _startConfetti() {
-    if (!mounted) return;
-
-    isDone = false;
-    int frameTime = 1000 ~/ 24;
-    int total = 15 * 1000 ~/ frameTime;
-    int progress = 0;
-
-    Timer.periodic(Duration(milliseconds: frameTime), (timer) {
-      if (!mounted) {
-        timer.cancel();
-        return;
-      }
-
-      progress++;
-
-      if (progress >= total) {
-        timer.cancel();
-        isDone = true;
-        return;
-      }
-
-      if (controller1 == null) {
-        controller1 = Confetti.launch(
-          context,
-          options: const ConfettiOptions(
-              particleCount: 2,
-              angle: 60,
-              spread: 55,
-              x: 0,
-              colors: colors),
-          onFinished: (overlayEntry) {
-            if (isDone) {
-              overlayEntry.remove();
-            }
-          },
-        );
-      } else {
-        controller1!.launch();
-      }
-
-      if (controller2 == null) {
-        controller2 = Confetti.launch(
-          context,
-          options: const ConfettiOptions(
-              particleCount: 2,
-              angle: 120,
-              spread: 55,
-              x: 1,
-              colors: colors),
-          onFinished: (overlayEntry) {
-            if (isDone) {
-              overlayEntry.remove();
-            }
-          },
-        );
-      } else {
-        controller2!.launch();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _resetTimer?.cancel();
-    _audioPlayer.dispose();
-    controller1 = null;
-    controller2 = null;
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: _handleClick,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Menu',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          if (_clickCount > 0)
-            Text(
-              '$_clickCount/5',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-        ],
-      ),
     );
   }
 }
