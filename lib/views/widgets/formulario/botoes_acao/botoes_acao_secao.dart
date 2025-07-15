@@ -5,11 +5,13 @@ import 'voltar_botao.dart';
 class BotoesAcaoSecao extends StatelessWidget {
   final TextEditingController enderecoController;
   final TextEditingController observacoesController;
+  final VoidCallback onSalvar;
 
   const BotoesAcaoSecao({
     super.key,
     required this.enderecoController,
     required this.observacoesController,
+    required this.onSalvar
   });
 
   @override
@@ -19,6 +21,7 @@ class BotoesAcaoSecao extends StatelessWidget {
         SalvarButton(
           enderecoController: enderecoController,
           observacoesController: observacoesController,
+          onSalvar: onSalvar,
         ),
         const SizedBox(height: 12),
         const VoltarButton(),

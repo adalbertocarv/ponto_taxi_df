@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_map/flutter_map.dart';
-import '../models/enderecoOSM_model.dart';
+import '../models/endereco_osm_model.dart';
 
 class EnderecoService {
   final http.Client _client;

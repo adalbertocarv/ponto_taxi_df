@@ -65,7 +65,6 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent> {
 
   @override
   Widget build(BuildContext context) {
-
     if (!_isInitialized) {
       return const Scaffold(
         body: Center(
@@ -75,9 +74,8 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent> {
     }
     return Consumer2<ThemeProvider, MapaController>(
       builder: (context, themeProvider, mapaController, child) {
-        final baseTheme = themeProvider.isDarkMode
-            ? AppMapThemes.dark
-            : AppMapThemes.light;
+        final baseTheme =
+            themeProvider.isDarkMode ? AppMapThemes.dark : AppMapThemes.light;
 
         return Scaffold(
           body: Stack(
@@ -97,22 +95,24 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent> {
                     TileLayer(
                       urlTemplate: AppMapThemes.satellite.urlTemplate,
                       subdomains: AppMapThemes.satellite.subdomains,
-                      additionalOptions: AppMapThemes.satellite.additionalOptions,
+                      additionalOptions:
+                          AppMapThemes.satellite.additionalOptions,
                       userAgentPackageName: mapaController.userAgentPackage,
                     ),
                   MarkerLayer(
                     markers: [
                       if (mapaController.userLocation != null)
                         Marker(
-                          point: mapaController.userLocation!, // LatLng do usuário
+                          point:
+                              mapaController.userLocation!, // LatLng do usuário
                           width: 78,
                           height: 78,
                           child: Transform.translate(
                             offset: const Offset(0, -20),
-                          child: Image.asset(
-                            'assets/images/icon_user.webp',
-                            fit: BoxFit.contain,
-                          ),
+                            child: Image.asset(
+                              'assets/images/icon_user.webp',
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
                     ],
@@ -121,14 +121,15 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent> {
                     markers: mapaController.markers,
                   ),
                   // Mostrar o ícone central apenas se _iconeVisivel for verdadeiro
-                  if (mapaController.iconeVisivel) IconeCentralMapa(),                ],
+                  if (mapaController.iconeVisivel) IconeCentralMapa(),
+                ],
               ),
+
               /// Seus botões e widgets flutuantes
-               BotaoConfirmar(),
+              BotaoConfirmar(),
               BarraPesquisa(
                 onSearch: (String query) {
                   // Implementar lógica de pesquisa
-                  print('Pesquisando: $query');
                 },
                 onTap: () {
                   // Navegar para ponto no mapa
@@ -193,7 +194,8 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent> {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.check_circle, color: Colors.green.shade700),
+                          Icon(Icons.check_circle,
+                              color: Colors.green.shade700),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -215,6 +217,7 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent> {
       },
     );
   }
+
   @override
   void dispose() {
     // O ChangeNotifierProvider já cuida do dispose do MapaController
