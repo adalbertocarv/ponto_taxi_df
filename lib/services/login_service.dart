@@ -54,7 +54,7 @@ class LoginService {
       } else if (response.statusCode == 401) {
         return {'success': false, 'error': 'Credenciais inválidas'};
       }else if (response.statusCode == 403){
-        return {'success': false, 'error': 'Acesso não permitido'};
+        return {'success': false, 'error': 'Acesso não permitido. \nEntre em contato com o Administrador'};
       }
       else {
         return {'success': false, 'error': 'Erro no servidor: ${response.statusCode}'};
