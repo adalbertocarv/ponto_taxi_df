@@ -5,6 +5,7 @@ import '../services/perfil_service.dart';
 
 class PerfilController extends ChangeNotifier {
   final PerfilService _service = PerfilService();
+  bool isLoading = false;
 
   Usuario usuario = Usuario(
     nomeFuncionario: '',
