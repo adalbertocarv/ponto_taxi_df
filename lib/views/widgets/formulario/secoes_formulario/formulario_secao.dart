@@ -63,11 +63,11 @@ class FormularioSection extends StatelessWidget {
   });
 
   final List<String> autorizatarios = [
-    'Alessandra Silva - REG001',
-    'Maria Santos - REG002',
-    'Pedro Oliveira - REG003',
-    'Ana Costa - REG004',
-    'Carlos Ferreira - REG005',
+    'Alessandra Silva - Num 001',
+    'Maria Santos - Num 002',
+    'Pedro Oliveira - Num 003',
+    'Ana Costa - Num 004',
+    'Carlos Ferreira - Num 005',
   ];
 
   Widget buildBooleanField({
@@ -75,29 +75,47 @@ class FormularioSection extends StatelessWidget {
     required IconData icon,
     required bool value,
     required Function(bool) onChanged,
+    required BuildContext context,
   }) {
+    final themeProvider = context.watch<ThemeProvider>();
+    final theme = Theme.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: themeProvider.isDarkMode ? Colors.white : Colors.black87,
+          ),
+        ),
         const SizedBox(height: 4),
         Container(
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: theme.cardTheme.color,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
+            border: Border.all(
+              color: themeProvider.isDarkMode
+                  ? Colors.grey.shade700
+                  : Colors.grey.shade200,
+            ),
           ),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0069B4).withValues(alpha: 0.1),
+                  color: themeProvider.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(icon, color: const Color(0xFF0069B4), size: 20),
+                child: Icon(
+                  icon,
+                  color: themeProvider.primaryColor,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -110,8 +128,16 @@ class FormularioSection extends StatelessWidget {
                           onChanged: (val) {
                             if (val == true) onChanged(true);
                           },
+                          activeColor: themeProvider.primaryColor,
                         ),
-                        const Text('Sim'),
+                        Text(
+                          'Sim',
+                          style: TextStyle(
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black87,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(width: 48),
@@ -122,8 +148,16 @@ class FormularioSection extends StatelessWidget {
                           onChanged: (val) {
                             if (val == true) onChanged(false);
                           },
+                          activeColor: themeProvider.primaryColor,
                         ),
-                        const Text('Não'),
+                        Text(
+                          'Não',
+                          style: TextStyle(
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black87,
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -139,16 +173,18 @@ class FormularioSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
+    final theme = Theme.of(context);
 
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color:
-        themeProvider.isDarkMode ? const Color(0xFF252525) : Colors.white,
+        color: theme.cardTheme.color,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
+            color: themeProvider.isDarkMode
+                ? Colors.black.withValues(alpha: 0.3)
+                : Colors.black.withValues(alpha: 0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -178,10 +214,15 @@ class FormularioSection extends StatelessWidget {
               ),
               if (isLoadingEndereco) ...[
                 const SizedBox(width: 12),
-                const SizedBox(
+                SizedBox(
                   width: 20,
                   height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      themeProvider.primaryColor,
+                    ),
+                  ),
                 ),
               ],
             ],
@@ -194,6 +235,7 @@ class FormularioSection extends StatelessWidget {
             icon: Icons.location_on,
             value: pontoOficial,
             onChanged: onPontoOficialChanged,
+            context: context,
           ),
 
           buildBooleanField(
@@ -201,6 +243,7 @@ class FormularioSection extends StatelessWidget {
             icon: Icons.signpost,
             value: temSinalizacao,
             onChanged: onTemSinalizacaoChanged,
+            context: context,
           ),
 
           buildBooleanField(
@@ -208,6 +251,7 @@ class FormularioSection extends StatelessWidget {
             icon: Icons.home_filled,
             value: temAbrigo,
             onChanged: onTemAbrigoChanged,
+            context: context,
           ),
 
           buildBooleanField(
@@ -215,6 +259,7 @@ class FormularioSection extends StatelessWidget {
             icon: Icons.bolt,
             value: temEnergia,
             onChanged: onTemEnergiaChanged,
+            context: context,
           ),
 
           buildBooleanField(
@@ -222,6 +267,7 @@ class FormularioSection extends StatelessWidget {
             icon: Icons.water_drop,
             value: temAgua,
             onChanged: onTemAguaChanged,
+            context: context,
           ),
 
           CustomTextField(
@@ -235,19 +281,55 @@ class FormularioSection extends StatelessWidget {
           const SizedBox(height: 16),
 
           DropdownButtonFormField<String>(
-            value: ['Coberto', 'Descoberto', 'Parcial'].contains(classificacaoEstrutura)
+            value: ['Edificado', 'Não Edificado', 'Edificado Padrão Oscar Niemeyer'].contains(classificacaoEstrutura)
                 ? classificacaoEstrutura
-                : null,                // força dropdown a não selecionar nada
-            decoration: const InputDecoration(
+                : null,
+            decoration: InputDecoration(
               labelText: 'Tipo do Abrigo',
-              prefixIcon: Icon(Icons.home_filled),
+              prefixIcon: Icon(
+                Icons.home_filled,
+                color: themeProvider.primaryColor,
+              ),
+              labelStyle: TextStyle(
+                color: themeProvider.isDarkMode ? Colors.white70 : Colors.black87,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: themeProvider.isDarkMode
+                      ? Colors.grey.shade700
+                      : Colors.grey.shade300,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: themeProvider.primaryColor,
+                  width: 2,
+                ),
+              ),
+              filled: true,
+              fillColor: theme.cardTheme.color,
             ),
-            items: ['Coberto', 'Descoberto', 'Parcial']
-                .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+            dropdownColor: theme.cardTheme.color,
+            style: TextStyle(
+              color: themeProvider.isDarkMode ? Colors.white : Colors.black87,
+            ),
+            items: ['Edificado', 'Não Edificado', 'Edificado Padrão Oscar Niemeyer']
+                .map((e) => DropdownMenuItem(
+              value: e,
+              child: Text(
+                e,
+                style: TextStyle(
+                  color: themeProvider.isDarkMode
+                      ? Colors.white
+                      : Colors.black87,
+                ),
+              ),
+            ))
                 .toList(),
             onChanged: onClassificacaoChanged,
           ),
-
 
           const SizedBox(height: 16),
 
@@ -263,14 +345,48 @@ class FormularioSection extends StatelessWidget {
 
           DropdownButtonFormField<String>(
             value: autorizatario.isNotEmpty ? autorizatario : null,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Autorizatário',
-              prefixIcon: Icon(Icons.person_search),
+              prefixIcon: Icon(
+                Icons.person_search,
+                color: themeProvider.primaryColor,
+              ),
+              labelStyle: TextStyle(
+                color: themeProvider.isDarkMode ? Colors.white70 : Colors.black87,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: themeProvider.isDarkMode
+                      ? Colors.grey.shade700
+                      : Colors.grey.shade300,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: themeProvider.primaryColor,
+                  width: 2,
+                ),
+              ),
+              filled: true,
+              fillColor: theme.cardTheme.color,
+            ),
+            dropdownColor: theme.cardTheme.color,
+            style: TextStyle(
+              color: themeProvider.isDarkMode ? Colors.white : Colors.black87,
             ),
             items: autorizatarios.map((e) {
               return DropdownMenuItem<String>(
                 value: e,
-                child: Text(e),
+                child: Text(
+                  e,
+                  style: TextStyle(
+                    color: themeProvider.isDarkMode
+                        ? Colors.white
+                        : Colors.black87,
+                  ),
+                ),
               );
             }).toList(),
             onChanged: onAutorizatarioChanged,
@@ -287,28 +403,47 @@ class FormularioSection extends StatelessWidget {
                 label: const Text('Selecionar Imagem'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: themeProvider.primaryColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
-              // --- dentro do Column que exibe a miniatura ---
               if ((imagemSelecionada?.isNotEmpty ?? false) &&
                   File(imagemSelecionada!).existsSync()) ...[
-                Text('Imagem selecionada:',
-                    style: Theme.of(context).textTheme.bodyMedium),
+                Text(
+                  'Imagem selecionada:',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: themeProvider.isDarkMode ? Colors.white : Colors.black87,
+                  ),
+                ),
                 const SizedBox(height: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.file(
-                    File(imagemSelecionada!),
-                    width: 150,
-                    height: 150,
-                    fit: BoxFit.cover,
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: themeProvider.primaryColor.withValues(alpha: 0.3),
+                      width: 2,
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.file(
+                      File(imagemSelecionada!),
+                      width: 150,
+                      height: 150,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ],
             ],
           ),
-          const SizedBox(height: 16),
 
           const SizedBox(height: 16),
 
