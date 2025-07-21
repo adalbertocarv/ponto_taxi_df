@@ -9,7 +9,7 @@ import 'pontos_salvos_header.dart';
 class PontosSalvosSecao extends StatelessWidget {
   final List<Marker> pontos;
 
-   PontosSalvosSecao({
+   const PontosSalvosSecao({
     super.key,
     required this.pontos,
   });

@@ -23,7 +23,7 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
-    final theme = Theme.of(context);
+    Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -11,7 +11,7 @@ class FormularioSTIP extends StatefulWidget {
 
   final List<Marker> pontos;
 
-  FormularioSTIP({super.key, required this.pontos});
+  const FormularioSTIP({super.key, required this.pontos});
 
   @override
   State<FormularioSTIP> createState() => _FormularioSTIPState();
