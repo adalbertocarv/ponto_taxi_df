@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../providers/themes/tema_provider.dart';
 
 class FormularioHeader extends StatelessWidget {
   const FormularioHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+
     return Row(
       children: [
         Container(
@@ -20,12 +25,14 @@ class FormularioHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        const Text(
+        Text(
           'Informações Adicionais',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF2C3E50),
+            color: themeProvider.isDarkMode
+                ? Colors.white
+                : const Color(0xFF2C3E50),
           ),
         ),
       ],
