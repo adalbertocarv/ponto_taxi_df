@@ -73,7 +73,7 @@ class MapaController extends ChangeNotifier {
       if (_disposed) return;
 
       if (!serviceEnabled) {
-        _showError('Serviço de localização desativado.');
+        showError('Serviço de localização desativado.');
         return;
       }
 
@@ -85,13 +85,13 @@ class MapaController extends ChangeNotifier {
         if (_disposed) return;
 
         if (permission == LocationPermission.denied) {
-          _showError('Permissão de localização negada.');
+          showError('Permissão de localização negada.');
           return;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        _showError('Permissão de localização negada permanentemente.');
+        showError('Permissão de localização negada permanentemente.');
         return;
       }
 
@@ -103,7 +103,7 @@ class MapaController extends ChangeNotifier {
       _safeNotifyListeners();
     } catch (e) {
       if (!_disposed) {
-        _showError('Erro ao obter localização: $e');
+        showError('Erro ao obter localização: $e');
       }
     }
   }
@@ -113,12 +113,12 @@ class MapaController extends ChangeNotifier {
     if (_disposed) return;
 
     if (_userLocation == null) {
-      _showError('Localização do usuário não disponível.');
+      showError('Localização do usuário não disponível.');
       return;
     }
 
     if (_flutterMapController == null) {
-      _showError('Mapa não inicializado.');
+      showError('Mapa não inicializado.');
       return;
     }
 
@@ -174,7 +174,7 @@ class MapaController extends ChangeNotifier {
       _flutterMapController!.rotate(0);
       _safeNotifyListeners();
     } else {
-      _showError('Mapa não inicializado.');
+      showError('Mapa não inicializado.');
     }
   }
 
@@ -223,7 +223,7 @@ class MapaController extends ChangeNotifier {
     if (_disposed) return;
 
     if (_flutterMapController == null) {
-      _showError('Mapa não inicializado.');
+      showError('Mapa não inicializado.');
       return;
     }
 
@@ -251,7 +251,7 @@ class MapaController extends ChangeNotifier {
     _ampliarParaMarker(posicaoCentral);
 
     // Mostra mensagem de sucesso
-    _showSuccess('Ponto confirmado!');
+    showSuccess('Ponto confirmado!');
 
     _safeNotifyListeners();
   }
@@ -332,7 +332,7 @@ class MapaController extends ChangeNotifier {
   }
 
   /// Mensagens de erro
-  void _showError(String message) {
+  void showError(String message) {
     if (_disposed) return;
 
     _errorMessage = message;
@@ -347,8 +347,9 @@ class MapaController extends ChangeNotifier {
     });
   }
 
+
   /// Mensagens de sucesso (seguindo o mesmo padrão das mensagens de erro)
-  void _showSuccess(String message) {
+  void showSuccess(String message) {
     if (_disposed) return;
 
     _successMessage = message;
