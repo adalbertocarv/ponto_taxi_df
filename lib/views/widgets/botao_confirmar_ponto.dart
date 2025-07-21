@@ -70,8 +70,13 @@ class _BotaoConfirmarState extends State<BotaoConfirmar> {
             ),
             SizedBox(width: 8), // espaçamento entre ícone e texto
             Text(
-              'Confirmar',
-              style: TextStyle(fontSize: 20, color: Colors.white),
+              'C O N F I R M A R',
+              style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                fontFamily: 'OpenSans',
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ],
         ),
@@ -101,8 +106,14 @@ class _BotaoConfirmarState extends State<BotaoConfirmar> {
         Expanded(
           child: ElevatedButton.icon(
             icon: const Icon(Icons.save_alt_rounded, color: Colors.white),
-            label: const Text('Confirmar',
-                style: TextStyle(fontSize: 16, color: Colors.white)),
+            label: const Text('Cadastrar',
+                style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                    fontFamily: 'OpenSans',
+                    fontWeight: FontWeight.w800,
+                ),
+            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: tema.primaryColor,
             ),
