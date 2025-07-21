@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../providers/themes/tema_provider.dart';
 
 class PontosSalvosHeader extends StatelessWidget {
   final int pontosCount;
@@ -10,6 +13,8 @@ class PontosSalvosHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+
     return Row(
       children: [
         Container(
@@ -25,12 +30,14 @@ class PontosSalvosHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        const Text(
+        Text(
           'Ponto Registrado',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF2C3E50),
+            color: themeProvider.isDarkMode
+                ? Colors.white
+                : const Color(0xFF2C3E50),
           ),
         ),
         const Spacer(),
