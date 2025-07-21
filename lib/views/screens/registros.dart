@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../controllers/mapa_controller.dart';
 import '../../controllers/modo_app_controller.dart';
 import '../../data/app_database.dart';
 
@@ -18,9 +19,16 @@ class _RegistrosState extends State<Registros> {
 
   @override
   Widget build(BuildContext context) {
+    final modoApp = context.read<ModoAppController>();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Registros salvos'),
+        title: const Text(
+            'R E G I S T R O S',
+        style: TextStyle(
+          fontFamily: 'OpenSans',
+          fontWeight: FontWeight.w800,
+        ),),
       ),
       body: FutureBuilder<List<Ponto>>(
         future: _db.getAllPontos(),          // ← busca tudo do banco
@@ -29,7 +37,30 @@ class _RegistrosState extends State<Registros> {
             return const Center(child: CircularProgressIndicator());
           }
           if (!snap.hasData || snap.data!.isEmpty) {
-            return const Center(child: Text('Nenhum registro ainda.'));
+            return Center(child: Column(
+             // mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 120,),
+                const Text(
+                  'Nenhum registro hoje',
+                  style: TextStyle(
+                      fontSize: 24,
+                      fontFamily: 'OpenSans',
+                      fontWeight: FontWeight.w800,
+                      fontStyle: FontStyle.italic
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Text('Paradas cadastradas ou em fila de envio estarão aqui disponíveis para visualização',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontFamily: 'OpenSans', fontWeight: FontWeight.w100),),
+                ),
+                modoApp.isCadastro
+                ? Image.asset('assets/images/bus_stop_azul.webp')
+          : Image.asset('assets/images/bus_stop_verde.webp')
+              ],
+            ));
           }
 
           final pontos = snap.data!;
@@ -56,6 +87,8 @@ class _PontoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mapaController = context.watch<MapaController>();
+
     final modo = context.watch<ModoAppController>();
 
     final img = ponto.imagens.isNotEmpty ? ponto.imagens.first : null;

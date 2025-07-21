@@ -51,7 +51,7 @@ class SalvarButton extends StatelessWidget {
     );
   }
 
-  void _salvarFormulario(BuildContext context) async {
+  Future<void> _salvarFormulario(BuildContext context) async {
     final mapaController = context.read<MapaController>();
 
     // Validação: precisa ter marcador
@@ -69,10 +69,10 @@ class SalvarButton extends StatelessWidget {
     }
 
     ///  GRAVA NO BANCO
-    onSalvar();          // <<< essa linha faltava
+    onSalvar();
 
     // Diálogo de sucesso
-    showDialog(
+    await showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: const Row(
@@ -97,11 +97,7 @@ class SalvarButton extends StatelessWidget {
         ),
         actions: [
           ElevatedButton(
-            onPressed: () {
-              mapaController.desfazerUltimoPonto();
-              Navigator.of(context).popUntil((r) => r.isFirst);
-            },
-
+            onPressed: () => Navigator.of(context).pop(),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF27AE60),
               foregroundColor: Colors.white,
@@ -111,5 +107,8 @@ class SalvarButton extends StatelessWidget {
         ],
       ),
     );
+
+    mapaController.desfazerUltimoPonto();
+    Navigator.of(context).popUntil((r) => r.isFirst);
   }
 }

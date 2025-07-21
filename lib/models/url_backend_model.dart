@@ -1,3 +1,3 @@
-class caminhoBackend {
-  static const String baseUrl = 'http://dados.semob.df.gov.br';
+class CaminhoBackend {
+  static const String baseUrl = 'http://10.233.144.111:';
 }
