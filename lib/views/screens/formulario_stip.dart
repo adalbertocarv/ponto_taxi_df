@@ -33,7 +33,7 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
   bool   _temEnergia            = false;
   bool   _temAgua               = false;
 
-  String _classificacaoEstrutura= 'Coberto';
+  String _classificacaoEstrutura= 'Edificado';
   String _autorizatario         = '';
   String? _imagemPath;
 

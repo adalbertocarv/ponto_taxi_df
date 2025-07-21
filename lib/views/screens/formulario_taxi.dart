@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ponto_taxi_df/controllers/mapa_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../providers/themes/tema_provider.dart';
@@ -107,10 +108,10 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
 
     final id = await _db.insertPonto(ponto);
 
+    final mapaController = context.watch<MapaController>();
+
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ponto salvo')),
-      );
+      return mapaController.showSuccess('Ponto Salvo');
     }
   }
 
