@@ -7,13 +7,13 @@ import 'package:ponto_taxi_df/controllers/mapa_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../providers/themes/tema_provider.dart';
-import '../../services/enderecoOSM_service.dart';
+import '../../services/endereco_osm_service.dart';
 import '../widgets/formulario/pontos_salvos/pontos_salvos_secao.dart';
 import '../widgets/formulario/secoes_formulario/formulario_secao.dart';
 import '../widgets/formulario/botoes_acao/botoes_acao_secao.dart';
 
 // -------------- IMPORT DO SQLITE --------------
-import '../../data/app_database.dart'; // ajuste o path se necessário
+import '../../data/app_database.dart';
 
 class FormularioTaxi extends StatefulWidget {
   final List<Marker> pontos;
@@ -106,13 +106,17 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
       imagens               : _imagemPath != null ? [_imagemPath!] : [],
     );
 
+
     final id = await _db.insertPonto(ponto);
 
-    final mapaController = context.watch<MapaController>();
-
     if (mounted) {
-      return mapaController.showSuccess('Ponto Salvo');
+      final mapaController = context.read<MapaController>();
+      mapaController.showSuccess('Ponto salvo com sucesso! 🎉');
+
+
+      Future.delayed(const Duration(seconds: 2));
     }
+
   }
 
   // -------------------------------------------------------------------------
@@ -167,7 +171,7 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
               BotoesAcaoSecao(
                 enderecoController   : _enderecoController,
                 observacoesController: _observacoesController,
-                onSalvar             : _salvar,         // <-- conecte no botão "Salvar"
+                onSalvar             : _salvar,
               ),
             ],
           ),

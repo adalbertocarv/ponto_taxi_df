@@ -23,7 +23,7 @@ class SelectionScreen extends StatelessWidget {
               // Header
               _buildHeader(),
 
-              const SizedBox(height: 80),
+              const SizedBox(height: 65),
 
               // Cards de Seleção
               Expanded(

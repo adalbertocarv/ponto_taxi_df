@@ -107,7 +107,19 @@ class MapaController extends ChangeNotifier {
       }
     }
   }
+  ///--------------funcionamento-notificacoes---------------------
+  void clearErrorMessage() {
+    if (_disposed) return;
+    _errorMessage = null;
+    _safeNotifyListeners();
+  }
 
+  void clearSuccessMessage() {
+    if (_disposed) return;
+    _successMessage = null;
+    _safeNotifyListeners();
+  }
+  //---------------------------------
   /// Centraliza a localização do usuário com animação
   void centralizarLocalizacaoUsuario() {
     if (_disposed) return;

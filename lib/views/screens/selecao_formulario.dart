@@ -37,7 +37,7 @@ class SelecaoForm extends StatelessWidget {
               // Header
               _buildHeader(themeProvider),
 
-              const SizedBox(height: 60),
+              const SizedBox(height: 65),
 
               // Cards de Seleção
               Expanded(
