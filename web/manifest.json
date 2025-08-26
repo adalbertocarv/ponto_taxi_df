@@ -1,6 +1,6 @@
 {
-    "name": "ponto_certo_taxi",
-    "short_name": "ponto_certo_taxi",
+    "name": "Ponto Certo Taxi",
+    "short_name": "Ponto Certo Taxi",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
