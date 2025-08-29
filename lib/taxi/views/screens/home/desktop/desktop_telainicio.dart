@@ -17,8 +17,14 @@ class DesktopTelaInicio extends StatefulWidget {
 }
 
 class _DesktopTelaInicioState extends State<DesktopTelaInicio> {
-  final controller = TelaInicioController();
+  late final TelaInicioController controller;
   bool _isCollapsed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = TelaInicioController(isDesktop: true, pageIndex: 1);
+  }
 
   @override
   void dispose() {
@@ -40,7 +46,8 @@ class _DesktopTelaInicioState extends State<DesktopTelaInicio> {
             width: _isCollapsed ? 80 : 320,
             child: Container(
               decoration: BoxDecoration(
-                color: themeProvider.primaryColor,
+                //color: themeProvider.primaryColor,
+                color: themeProvider.isDarkMode ? Colors.grey[900] : Colors.grey[100],
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.1),
@@ -57,43 +64,48 @@ class _DesktopTelaInicioState extends State<DesktopTelaInicio> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
                       children: [
-                        // Icon(
-                        //   Icons.local_taxi,
-                        //   color: themeProvider.isDarkMode ? Colors.white : Colors.grey[100],
-                        //   size: 32,
-                        // ),
                         if (!_isCollapsed) ...[
-                          Image.asset('assets/images/gdf.png', width: 80,),
                           const SizedBox(width: 16),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                SizedBox(height: 8,),
+                                const SizedBox(height: 8),
                                 Text(
                                   'SEMOB',
                                   style: TextStyle(
-                                    color: themeProvider.isDarkMode ? Colors.white : Colors.grey[100],
+                                    color: themeProvider.isDarkMode ? Colors.white : Colors.black,
+                                    //color: Colors.black,
                                     fontSize: 16,
-                                    //fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                Text('Ponto Certo - Táxi',
-                                style: TextStyle(
-                                  color: themeProvider.isDarkMode ? Colors.white : Colors.grey[100],
-                                  fontSize: 16,
-                                  //fontWeight: FontWeight.bold
-                                ),)
+                                Text(
+                                  'Ponto Certo - Táxi',
+                                  style: TextStyle(
+                                    //color: themeProvider.isDarkMode ? Colors.white : Colors.grey[100],
+                                    color: themeProvider.isDarkMode ? Colors.white : Colors.black,
+                                    fontSize: 16,
+                                  ),
+                                )
                               ],
                             ),
                           ),
+                          Container(
+                            width: 90,
+                            clipBehavior: Clip.antiAlias,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(3)
+                            ),
+                            child: Image.asset('assets/images/gdf.png', fit: BoxFit.cover,),
+                          )
                         ],
                         IconButton(
                           onPressed: () => setState(() => _isCollapsed = !_isCollapsed),
                           icon: Icon(
-                            _isCollapsed ? Icons.menu_open : Icons.menu,
-                            color: themeProvider.isDarkMode ? Colors.white : Colors.grey[100],
+                            _isCollapsed ? Icons.menu : Icons.menu_open,
+                            //color: themeProvider.isDarkMode ? Colors.white : Colors.grey[100],
+                            color: themeProvider.isDarkMode ? Colors.white : Colors.black,
                           ),
                         ),
                       ],
@@ -106,7 +118,6 @@ class _DesktopTelaInicioState extends State<DesktopTelaInicio> {
                   if (!_isCollapsed)
                     InkWell(
                       onTap: () {
-                        // Exibe o diálogo de confirmação quando o item for tocado
                         showDialog(
                             context: context,
                             builder: (BuildContext context) {
@@ -116,6 +127,7 @@ class _DesktopTelaInicioState extends State<DesktopTelaInicio> {
                               );
                             });
                       },
+                      borderRadius: BorderRadius.circular(8),
                       child: Container(
                         margin: const EdgeInsets.all(16),
                         padding: const EdgeInsets.all(12),
@@ -139,9 +151,10 @@ class _DesktopTelaInicioState extends State<DesktopTelaInicio> {
                               child: Text(
                                 'Modo ${modoApp.isCadastro ? 'Cadastro' : 'Vistoria'}',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  //color: Colors.white,
+                                  color: modoApp.isCadastro ? Colors.blue : Colors.green,
                                   fontWeight: FontWeight.w600,
-                                  fontSize: 12,
+                                  fontSize: 14,
                                 ),
                               ),
                             ),
@@ -169,7 +182,7 @@ class _DesktopTelaInicioState extends State<DesktopTelaInicio> {
                           themeProvider: themeProvider,
                         ),
                         _buildNavItem(
-                          icon: Icons.menu,
+                          icon: Icons.info,
                           label: 'Menu',
                           index: 2,
                           isSelected: controller.pageIndex == 2,
@@ -185,31 +198,42 @@ class _DesktopTelaInicioState extends State<DesktopTelaInicio> {
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         children: [
-                          const Divider(color: Colors.white24),
+                          Divider(color: Colors.grey[400]),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Icon(
-                                themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                                color: themeProvider.isDarkMode ? Colors.white : Colors.grey[100],
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                themeProvider.isDarkMode ? 'Tema Escuro' : 'Tema Claro',
-                                style: TextStyle(
-                                  color: themeProvider.isDarkMode ? Colors.white : Colors.grey[100],
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const Spacer(),
-                              Switch(
-                                value: themeProvider.isDarkMode,
-                                onChanged: (value) => themeProvider.toggleTheme(),
-                                activeColor: Colors.white,
-                                activeTrackColor: Colors.white24,
-                              ),
-                            ],
-                          ),
+                            Text('SUBSECRETARIA DE TECNOLOGIA \nDA INFORMAÇÃO – SUTINF',
+                            style: TextStyle(
+                              color: Colors.grey[900],
+                                      fontSize: 12,
+                                    ),
+                            ),
+                            Icon(Icons.computer)
+                          ],)
+                          // Row(
+                          //   children: [
+                          //     Icon(
+                          //       themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                          //       color: themeProvider.isDarkMode ? Colors.white : Colors.grey[100],
+                          //       size: 20,
+                          //     ),
+                          //     const SizedBox(width: 8),
+                          //     Text(
+                          //       themeProvider.isDarkMode ? 'Tema Escuro' : 'Tema Claro',
+                          //       style: TextStyle(
+                          //         color: themeProvider.isDarkMode ? Colors.white : Colors.grey[100],
+                          //         fontSize: 12,
+                          //       ),
+                          //     ),
+                          //     const Spacer(),
+                          //     Switch(
+                          //       value: themeProvider.isDarkMode,
+                          //       onChanged: (value) => themeProvider.toggleTheme(),
+                          //       activeColor: Colors.white,
+                          //       activeTrackColor: Colors.white24,
+                          //     ),
+                          //   ],
+                          // ),
                         ],
                       ),
                     ),
@@ -222,103 +246,18 @@ class _DesktopTelaInicioState extends State<DesktopTelaInicio> {
           Expanded(
             child: Column(
               children: [
-                // Top Bar
-                // Container(
-                //   height: 60,
-                //   decoration: BoxDecoration(
-                //     color: Theme.of(context).cardColor,
-                //     boxShadow: [
-                //       BoxShadow(
-                //         color: Colors.black.withValues(alpha: 0.05),
-                //         blurRadius: 4,
-                //         offset: const Offset(0, 2),
-                //       ),
-                //     ],
-                //   ),
-                //   child: Row(
-                //     children: [
-                //       const SizedBox(width: 24),
-                //       Text(
-                //         _getPageTitle(),
-                //         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                //           fontWeight: FontWeight.w600,
-                //         ),
-                //       ),
-                //       const Spacer(),
-                //
-                //       // Quick Actions
-                //       // if (controller.pageIndex == 1) ...[
-                //       //   IconButton(
-                //       //     onPressed: () {
-                //       //       // Ação para atualizar localização
-                //       //     },
-                //       //     icon: const Icon(Icons.my_location),
-                //       //     tooltip: 'Atualizar Localização',
-                //       //   ),
-                //       //   const SizedBox(width: 8),
-                //       //   IconButton(
-                //       //     onPressed: () {
-                //       //       // Ação para alternar satélite
-                //       //     },
-                //       //     icon: const Icon(Icons.satellite_alt),
-                //       //     tooltip: 'Visão Satélite',
-                //       //   ),
-                //       //   const SizedBox(width: 8),
-                //       // ],
-                //
-                //       // User Menu
-                //       PopupMenuButton<String>(
-                //         tooltip: 'Perfil',
-                //         icon: CircleAvatar(
-                //           backgroundColor: themeProvider.primaryColor,
-                //           child: const Icon(Icons.person, color: Colors.white),
-                //         ),
-                //         onSelected: (value) {
-                //           switch (value) {
-                //             case 'profile':
-                //             // Navegar para perfil
-                //               break;
-                //             case 'logout':
-                //             // Fazer logout
-                //               break;
-                //           }
-                //         },
-                //         itemBuilder: (context) => [
-                //           const PopupMenuItem(
-                //             value: 'profile',
-                //             child: Row(
-                //               children: [
-                //                 Icon(Icons.person),
-                //                 SizedBox(width: 8),
-                //                 Text('Perfil'),
-                //               ],
-                //             ),
-                //           ),
-                //           const PopupMenuItem(
-                //             value: 'logout',
-                //             child: Row(
-                //               children: [
-                //                 Icon(Icons.logout),
-                //                 SizedBox(width: 8),
-                //                 Text('Sair'),
-                //               ],
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //       const SizedBox(width: 16),
-                //     ],
-                //   ),
-                // ),
-
                 // Page Content
                 Expanded(
-                  child: IndexedStack(
-                    index: controller.pageIndex,
-                    children: const [
-                      DesktopRegistrosWrapper(),
-                      DesktopMapaWrapper(),
-                      DesktopMenuWrapper(),
+                  child: Stack(
+                    children: [
+                      IndexedStack(
+                        index: controller.pageIndex,
+                        children: const [
+                          DesktopRegistrosWrapper(),
+                          DesktopMapaWrapper(),
+                          DesktopMenuWrapper(),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -353,9 +292,10 @@ class _DesktopTelaInicioState extends State<DesktopTelaInicio> {
               children: [
                 Icon(
                   icon,
-                  color: isSelected
-                      ? Colors.white
-                      : (themeProvider.isDarkMode ? Colors.white : Colors.grey[100])?.withValues(alpha: 0.7),
+                  // color: isSelected
+                  //     ? Colors.white
+                  //     : (themeProvider.isDarkMode ? Colors.white : Colors.grey[100])?.withValues(alpha: 0.7),
+                  color: themeProvider.isDarkMode ? Colors.white : Colors.grey[500],
                   size: 24,
                 ),
                 if (!_isCollapsed) ...[
@@ -364,9 +304,10 @@ class _DesktopTelaInicioState extends State<DesktopTelaInicio> {
                     child: Text(
                       label,
                       style: TextStyle(
-                        color: isSelected
-                            ? Colors.white
-                            : (themeProvider.isDarkMode ? Colors.white : Colors.grey[100])?.withValues(alpha: 0.7),
+                        // color: isSelected
+                        //     // ? Colors.white
+                        //     // : (themeProvider.isDarkMode ? Colors.white : Colors.grey[100])?.withValues(alpha: 0.7),
+                        color: themeProvider.isDarkMode ? Colors.white : Colors.black,
                         fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                         fontSize: 16,
                       ),
@@ -378,7 +319,8 @@ class _DesktopTelaInicioState extends State<DesktopTelaInicio> {
                     width: 4,
                     height: 20,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      // color: Colors.white,
+                      color: Colors.grey,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),

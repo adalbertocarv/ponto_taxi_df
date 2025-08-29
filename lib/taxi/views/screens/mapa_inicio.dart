@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:ponto_taxi_df/taxi/views/screens/home/desktop/botao_modoclick.dart';
 import 'package:provider/provider.dart';
 // CONTROLLERS
 import '../../controllers/mapa_controller.dart';
@@ -132,6 +134,7 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent>
                 options: mapaController.mapOptions,
                 children: [
                   TileLayer(
+                    tileProvider: CancellableNetworkTileProvider(),
                     urlTemplate: baseTheme.urlTemplate,
                     subdomains: baseTheme.subdomains,
                     tileBuilder: baseTheme.tileBuilder,
@@ -181,9 +184,11 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent>
                       ),
                     ],
                   ),
-                  const SimpleAttributionWidget(
-                    source: Text('OpenStreetMap contributors'),
-                  ),
+                  // const SimpleAttributionWidget(
+                  //   source: Text('OpenStreetMap contributors'),
+                  // ),
+                  BotaoModoClick()
+
                 ],
               ),
               if (showBottomSheet)
@@ -280,7 +285,7 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent>
                                                 backgroundColor:
                                                     Theme.of(context)
                                                         .colorScheme
-                                                        .surfaceVariant
+                                                        .surfaceContainerHighest
                                                         .withValues(alpha: 0.3),
                                                 shape: const CircleBorder(),
                                                 padding:
@@ -556,7 +561,7 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color:
-            Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.3),
+            Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),

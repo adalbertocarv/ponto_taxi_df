@@ -22,6 +22,10 @@ class MapaController extends ChangeNotifier {
   static const String _userAgentPackage = 'com.ponto.certo.taxi.ponto_certo_taxi';
   bool iconeVisivel = true; // Controla a visibilidade do IconeCentralMapa
 
+  // NOVO: Controla o modo de clique no mapa
+  bool _modoClickMapa = false;
+  bool get modoClickMapa => _modoClickMapa;
+
   String? _errorMessage;
   String? _successMessage; // Adicionado para mensagens de sucesso
 
@@ -48,7 +52,64 @@ class MapaController extends ChangeNotifier {
         corrigirRotacao(angle);
       }
     },
+    // Adiciona o tratamento de tap no mapa
+    onTap: (tapPosition, point) {
+      if (_modoClickMapa) {
+        adicionarMarkerPorClick(point);
+      }
+    },
   );
+
+  /// Ativa/desativa o modo de clique no mapa
+  void toggleModoClickMapa() {
+    if (_disposed) return;
+    _modoClickMapa = !_modoClickMapa;
+
+    if (_modoClickMapa) {
+      showSuccess('Modo clique ativo! Clique no mapa para adicionar o ponto.');
+      // Oculta o ícone central quando ativa o modo click
+      iconeVisivel = false;
+    } else {
+      showSuccess('Modo clique desativado.');
+      // Mostra o ícone central quando desativa o modo click
+      iconeVisivel = true;
+    }
+
+    _safeNotifyListeners();
+  }
+
+  /// Adiciona marker baseado no clique do usuário
+  void adicionarMarkerPorClick(LatLng posicao, {Widget? child}) {
+    if (_disposed) return;
+
+    // Adiciona o marcador na posição clicada
+    final marker = Marker(
+      point: posicao,
+      child: child ??
+          Transform.translate(
+            offset: const Offset(-6, -26),
+            child: Icon(
+              Icons.location_on_rounded,
+              color: Colors.green,
+              size: 42,
+            ),
+          ),
+    );
+    _pontos.add(marker);
+
+    // Amplia o mapa para o marker criado com animação
+    _ampliarParaMarker(posicao);
+
+    // Mostra mensagem de sucesso
+    showSuccess('Ponto adicionado!');
+
+    // Desativa o modo click após adicionar o ponto
+    _modoClickMapa = false;
+    // NÃO volta a mostrar o ícone central - deixa para os botões aparecerem
+    iconeVisivel = false;
+
+    _safeNotifyListeners();
+  }
 
   /// Define o controller do mapa
   void setFlutterMapController(MapController controller) {
@@ -283,6 +344,8 @@ class MapaController extends ChangeNotifier {
   void mostrarIconeCentral() {
     if (_disposed) return;
     iconeVisivel = true;
+    // Desativa o modo click quando mostra o ícone central
+    _modoClickMapa = false;
     _safeNotifyListeners();
   }
 
@@ -340,6 +403,7 @@ class MapaController extends ChangeNotifier {
     _pontos.clear();
     _userLocation = null;
     iconeVisivel = true; // Restaura o ícone central quando resetar o mapa
+    _modoClickMapa = false; // Desativa o modo click
     _safeNotifyListeners();
   }
 
@@ -358,7 +422,6 @@ class MapaController extends ChangeNotifier {
       }
     });
   }
-
 
   /// Mensagens de sucesso (seguindo o mesmo padrão das mensagens de erro)
   void showSuccess(String message) {

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:provider/provider.dart';
+import '../../models/constants/versao_app.dart';
 import '../../providers/themes/tema_provider.dart';
 import 'formulario_taxi.dart';
 import 'formulario_stip.dart';
 
 class SelecaoForm extends StatelessWidget {
   final List<Marker> pontos;
+  static const String numero = VersaoApp.numero;
 
   const SelecaoForm({super.key, required this.pontos});
 
@@ -535,7 +537,7 @@ class SelecaoForm extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         Text(
-          'Versão 1.0.0',
+          'Versão $numero',
           style: TextStyle(
             color: themeProvider.isDarkMode
                 ? Colors.white54
