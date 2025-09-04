@@ -25,7 +25,7 @@ class FormularioTaxi extends StatefulWidget {
 
 class _FormularioTaxiState extends State<FormularioTaxi> {
   // DB -----------------------------------------------------------------------
-  final _db = AppDatabase();      // singleton já trata abrir/fechar
+  final _db = AppDatabase();
 
   // Controllers --------------------------------------------------------------
   final _enderecoController    = TextEditingController();
@@ -106,17 +106,279 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
       imagens               : _imagemPath != null ? [_imagemPath!] : [],
     );
 
-
     final id = await _db.insertPonto(ponto);
 
     if (mounted) {
       final mapaController = context.read<MapaController>();
       mapaController.showSuccess('Ponto salvo com sucesso! 🎉');
 
-
       Future.delayed(const Duration(seconds: 2));
     }
+  }
 
+  // Função para determinar se é desktop
+  bool _isDesktop(BuildContext context) {
+    return MediaQuery.of(context).size.width >= 900;
+  }
+
+  // Layout para mobile/tablet
+  Widget _buildMobileLayout(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          PontosSalvosSecao(pontos: widget.pontos),
+          const SizedBox(height: 24),
+          FormularioSection(
+            // controllers
+            enderecoController    : _enderecoController,
+            observacoesController : _observacoesController,
+            vagasController       : _vagasController,
+            telefoneController    : _telefoneController,
+            latitudeController    : _latitudeController,
+            longitudeController   : _longitudeController,
+            // valores
+            pontoOficial          : _pontoOficial,
+            temSinalizacao        : _temSinalizacao,
+            temAbrigo             : _temAbrigo,
+            temEnergia            : _temEnergia,
+            temAgua               : _temAgua,
+            classificacaoEstrutura: _classificacaoEstrutura,
+            autorizatario         : _autorizatario,
+            isLoadingEndereco     : _isLoadingEndereco,
+            imagemSelecionada     : _imagemPath,
+            // callbacks
+            onPontoOficialChanged : (v) => setState(() => _pontoOficial   = v),
+            onTemSinalizacaoChanged: (v) => setState(() => _temSinalizacao = v),
+            onTemAbrigoChanged    : (v) => setState(() => _temAbrigo      = v),
+            onTemEnergiaChanged   : (v) => setState(() => _temEnergia     = v),
+            onTemAguaChanged      : (v) => setState(() => _temAgua        = v),
+            onClassificacaoChanged: (v) => setState(() => _classificacaoEstrutura = v ?? ''),
+            onAutorizatarioChanged: (v) => setState(() => _autorizatario  = v ?? ''),
+            onImagemSelecionada   : _selecionarImagem,
+          ),
+          const SizedBox(height: 32),
+          BotoesAcaoSecao(
+            enderecoController   : _enderecoController,
+            observacoesController: _observacoesController,
+            onSalvar             : _salvar,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Layout para desktop
+  Widget _buildDesktopLayout(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(32),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1400),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Coluna esquerda - Mapa e informações do ponto
+              Expanded(
+                flex: 4,
+                child: Column(
+                  children: [
+                    PontosSalvosSecao(pontos: widget.pontos),
+                    const SizedBox(height: 24),
+                    // Informações de coordenadas em desktop
+                    _buildCoordenadasCard(),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 32),
+              // Coluna direita - Formulário
+              Expanded(
+                flex: 6,
+                child: Column(
+                  children: [
+                    FormularioSection(
+                      // controllers
+                      enderecoController    : _enderecoController,
+                      observacoesController : _observacoesController,
+                      vagasController       : _vagasController,
+                      telefoneController    : _telefoneController,
+                      latitudeController    : _latitudeController,
+                      longitudeController   : _longitudeController,
+                      // valores
+                      pontoOficial          : _pontoOficial,
+                      temSinalizacao        : _temSinalizacao,
+                      temAbrigo             : _temAbrigo,
+                      temEnergia            : _temEnergia,
+                      temAgua               : _temAgua,
+                      classificacaoEstrutura: _classificacaoEstrutura,
+                      autorizatario         : _autorizatario,
+                      isLoadingEndereco     : _isLoadingEndereco,
+                      imagemSelecionada     : _imagemPath,
+                      // callbacks
+                      onPontoOficialChanged : (v) => setState(() => _pontoOficial   = v),
+                      onTemSinalizacaoChanged: (v) => setState(() => _temSinalizacao = v),
+                      onTemAbrigoChanged    : (v) => setState(() => _temAbrigo      = v),
+                      onTemEnergiaChanged   : (v) => setState(() => _temEnergia     = v),
+                      onTemAguaChanged      : (v) => setState(() => _temAgua        = v),
+                      onClassificacaoChanged: (v) => setState(() => _classificacaoEstrutura = v ?? ''),
+                      onAutorizatarioChanged: (v) => setState(() => _autorizatario  = v ?? ''),
+                      onImagemSelecionada   : _selecionarImagem,
+                    ),
+                    const SizedBox(height: 32),
+                    BotoesAcaoSecao(
+                      enderecoController   : _enderecoController,
+                      observacoesController: _observacoesController,
+                      onSalvar             : _salvar,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Card com informações de coordenadas para desktop
+  Widget _buildCoordenadasCard() {
+    final themeProvider = context.watch<ThemeProvider>();
+    final theme = Theme.of(context);
+    final marker = widget.pontos.first;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: theme.cardTheme.color,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: themeProvider.isDarkMode
+                ? Colors.black.withValues(alpha: 0.3)
+                : Colors.black.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF4A90E2).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.my_location,
+                  color: Color(0xFF4A90E2),
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Coordenadas',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: themeProvider.isDarkMode
+                      ? Colors.white
+                      : const Color(0xFF2C3E50),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: _buildCoordenadasItem(
+                  'Latitude',
+                  marker.point.latitude.toStringAsFixed(6),
+                  Icons.horizontal_rule,
+                  themeProvider,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildCoordenadasItem(
+                  'Longitude',
+                  marker.point.longitude.toStringAsFixed(6),
+                  Icons.vertical_align_center,
+                  themeProvider,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCoordenadasItem(
+      String label,
+      String value,
+      IconData icon,
+      ThemeProvider themeProvider,
+      ) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: themeProvider.isDarkMode
+            ? const Color(0xFF2A2A2A)
+            : const Color(0xFFF8F9FA),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: themeProvider.isDarkMode
+              ? Colors.grey.shade700
+              : const Color(0xFFE9ECEF),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            color: themeProvider.primaryColor,
+            size: 18,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: themeProvider.isDarkMode
+                        ? Colors.grey.shade400
+                        : Colors.grey.shade600,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontFamily: 'monospace',
+                    fontWeight: FontWeight.bold,
+                    color: themeProvider.isDarkMode
+                        ? Colors.white
+                        : Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   // -------------------------------------------------------------------------
@@ -125,57 +387,23 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
     final themeProvider = context.watch<ThemeProvider>();
 
     return Scaffold(
-      backgroundColor: themeProvider.isDarkMode ? const Color(0xFF1A1A1A) : const Color(0xFFF5F7FA),
+      backgroundColor: themeProvider.isDarkMode
+          ? const Color(0xFF1A1A1A)
+          : const Color(0xFFF5F7FA),
       appBar: AppBar(
-        title: const Text('Formulário Táxi', style: TextStyle(fontWeight: FontWeight.bold),),
-        //backgroundColor: themeProvider.primaryColor,
+        title: const Text(
+          'Formulário Táxi',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.amber,
         foregroundColor: Colors.white,
+        elevation: _isDesktop(context) ? 0 : null,
+        centerTitle: !_isDesktop(context),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              PontosSalvosSecao(pontos: widget.pontos),
-              const SizedBox(height: 24),
-              FormularioSection(
-                // controllers
-                enderecoController    : _enderecoController,
-                observacoesController : _observacoesController,
-                vagasController       : _vagasController,
-                telefoneController    : _telefoneController,
-                latitudeController    : _latitudeController,
-                longitudeController   : _longitudeController,
-                // valores
-                pontoOficial          : _pontoOficial,
-                temSinalizacao        : _temSinalizacao,
-                temAbrigo             : _temAbrigo,
-                temEnergia            : _temEnergia,
-                temAgua               : _temAgua,
-                classificacaoEstrutura: _classificacaoEstrutura,
-                autorizatario         : _autorizatario,
-                isLoadingEndereco     : _isLoadingEndereco,
-                imagemSelecionada     : _imagemPath,
-                // callbacks
-                onPontoOficialChanged : (v) => setState(() => _pontoOficial   = v),
-                onTemSinalizacaoChanged: (v) => setState(() => _temSinalizacao = v),
-                onTemAbrigoChanged    : (v) => setState(() => _temAbrigo      = v),
-                onTemEnergiaChanged   : (v) => setState(() => _temEnergia     = v),
-                onTemAguaChanged      : (v) => setState(() => _temAgua        = v),
-                onClassificacaoChanged: (v) => setState(() => _classificacaoEstrutura = v ?? ''),
-                onAutorizatarioChanged: (v) => setState(() => _autorizatario  = v ?? ''),
-                onImagemSelecionada   : _selecionarImagem,
-              ),
-              const SizedBox(height: 32),
-              BotoesAcaoSecao(
-                enderecoController   : _enderecoController,
-                observacoesController: _observacoesController,
-                onSalvar             : _salvar,
-              ),
-            ],
-          ),
-        ),
+        child: _isDesktop(context)
+            ? _buildDesktopLayout(context)
+            : _buildMobileLayout(context),
       ),
     );
   }

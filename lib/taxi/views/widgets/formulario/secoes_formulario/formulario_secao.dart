@@ -70,6 +70,22 @@ class FormularioSection extends StatelessWidget {
     'Carlos Ferreira - Num 005',
   ];
 
+  // Função para determinar se é desktop/tablet
+  bool _isDesktop(BuildContext context) {
+    return MediaQuery
+        .of(context)
+        .size
+        .width >= 900;
+  }
+
+  bool _isTablet(BuildContext context) {
+    final width = MediaQuery
+        .of(context)
+        .size
+        .width;
+    return width >= 600 && width < 900;
+  }
+
   Widget buildBooleanField({
     required String label,
     required IconData icon,
@@ -90,7 +106,7 @@ class FormularioSection extends StatelessWidget {
             color: themeProvider.isDarkMode ? Colors.white : Colors.black87,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8),
         Container(
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(16),
@@ -140,7 +156,7 @@ class FormularioSection extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(width: 48),
+                    SizedBox(width: _isDesktop(context) ? 24 : 48),
                     Row(
                       children: [
                         Checkbox(
@@ -170,8 +186,343 @@ class FormularioSection extends StatelessWidget {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildDesktopLayout(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: theme.cardTheme.color,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: themeProvider.isDarkMode
+                ? Colors.black.withValues(alpha: 0.3)
+                : Colors.black.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const FormularioHeader(),
+          const SizedBox(height: 24),
+
+          // Endereço com loading indicator
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: CustomTextField(
+                  controller: enderecoController,
+                  label: 'Endereço',
+                  icon: Icons.location_on_outlined,
+                  hint: isLoadingEndereco
+                      ? 'Buscando endereço...'
+                      : 'Ex: Asa Norte SQN 410',
+                  maxLines: 2,
+                ),
+              ),
+              if (isLoadingEndereco) ...[
+                const SizedBox(width: 12),
+                SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      themeProvider.primaryColor,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 20),
+
+          // Row com campos de seleção (2 colunas)
+          Row(
+            children: [
+              Expanded(
+                child: DropdownButtonFormField<String>(
+                  value: [
+                    'Edificado',
+                    'Não Edificado',
+                    'Edificado Padrão Oscar Niemeyer'
+                  ].contains(classificacaoEstrutura)
+                      ? classificacaoEstrutura
+                      : null,
+                  decoration: InputDecoration(
+                    labelText: 'Tipo do Abrigo',
+                    prefixIcon: Icon(
+                      Icons.home_filled,
+                      color: themeProvider.primaryColor,
+                    ),
+                    labelStyle: TextStyle(
+                      color: themeProvider.isDarkMode ? Colors.white70 : Colors
+                          .black87,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: themeProvider.primaryColor,
+                        width: 2,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: theme.cardTheme.color,
+                  ),
+                  dropdownColor: theme.cardTheme.color,
+                  style: TextStyle(
+                    color: themeProvider.isDarkMode ? Colors.white : Colors
+                        .black87,
+                  ),
+                  items: [
+                    'Edificado',
+                    'Não Edificado',
+                    'Edificado Padrão Oscar Niemeyer'
+                  ]
+                      .map((e) =>
+                      DropdownMenuItem(
+                        value: e,
+                        child: Text(e),
+                      ))
+                      .toList(),
+                  onChanged: onClassificacaoChanged,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: DropdownButtonFormField<String>(
+                  value: autorizatario.isNotEmpty ? autorizatario : null,
+                  decoration: InputDecoration(
+                    labelText: 'Autorizatário',
+                    prefixIcon: Icon(
+                      Icons.person_search,
+                      color: themeProvider.primaryColor,
+                    ),
+                    labelStyle: TextStyle(
+                      color: themeProvider.isDarkMode ? Colors.white70 : Colors
+                          .black87,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: themeProvider.primaryColor,
+                        width: 2,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: theme.cardTheme.color,
+                  ),
+                  dropdownColor: theme.cardTheme.color,
+                  style: TextStyle(
+                    color: themeProvider.isDarkMode ? Colors.white : Colors
+                        .black87,
+                  ),
+                  items: autorizatarios.map((e) {
+                    return DropdownMenuItem<String>(
+                      value: e,
+                      child: Text(e),
+                    );
+                  }).toList(),
+                  onChanged: onAutorizatarioChanged,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+
+          // Row com campos numéricos (2 colunas)
+          Row(
+            children: [
+              Expanded(
+                child: CustomTextField(
+                  controller: vagasController,
+                  label: 'Nº de Vagas',
+                  icon: Icons.directions_car_filled,
+                  keyboardType: TextInputType.number,
+                  hint: 'ex: 4',
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: CustomTextField(
+                  controller: telefoneController,
+                  label: 'Telefone',
+                  icon: Icons.phone,
+                  keyboardType: TextInputType.phone,
+                  hint: 'ex: (61) 3321-8181',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+
+          // Grid com campos booleanos (2x3)
+          Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: buildBooleanField(
+                      label: 'Ponto Oficial',
+                      icon: Icons.location_on,
+                      value: pontoOficial,
+                      onChanged: onPontoOficialChanged,
+                      context: context,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: buildBooleanField(
+                      label: 'Há Sinalização',
+                      icon: Icons.signpost,
+                      value: temSinalizacao,
+                      onChanged: onTemSinalizacaoChanged,
+                      context: context,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: buildBooleanField(
+                      label: 'Tem Abrigo',
+                      icon: Icons.home_filled,
+                      value: temAbrigo,
+                      onChanged: onTemAbrigoChanged,
+                      context: context,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: buildBooleanField(
+                      label: 'Tem Energia',
+                      icon: Icons.bolt,
+                      value: temEnergia,
+                      onChanged: onTemEnergiaChanged,
+                      context: context,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: buildBooleanField(
+                      label: 'Tem Água',
+                      icon: Icons.water_drop,
+                      value: temAgua,
+                      onChanged: onTemAguaChanged,
+                      context: context,
+                    ),
+                  ),
+                  const Expanded(child: SizedBox()), // Para manter alinhamento
+                ],
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          // Seção de imagem
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Botão de seleção de imagem
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: onImagemSelecionada,
+                    icon: const Icon(Icons.camera_alt),
+                    label: const Text('Selecionar Imagem'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: themeProvider.primaryColor,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 24),
+              // Preview da imagem
+              if ((imagemSelecionada?.isNotEmpty ?? false) &&
+                  File(imagemSelecionada!).existsSync()) ...[
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Imagem selecionada:',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: themeProvider.isDarkMode
+                              ? Colors.white
+                              : Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: themeProvider.primaryColor.withValues(
+                                alpha: 0.3),
+                            width: 2,
+                          ),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: Image.file(
+                            File(imagemSelecionada!),
+                            width: 180,
+                            height: 180,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          // Campo de observações (full width)
+          CustomTextField(
+            controller: observacoesController,
+            label: 'Observações',
+            icon: Icons.notes_rounded,
+            hint: 'Ex: Não há obra a ser executada.',
+            maxLines: 3,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMobileLayout(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
     final theme = Theme.of(context);
 
@@ -196,8 +547,7 @@ class FormularioSection extends StatelessWidget {
           const FormularioHeader(),
           const SizedBox(height: 20),
 
-          const SizedBox(height: 16),
-
+          // Endereço com loading indicator
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -230,7 +580,11 @@ class FormularioSection extends StatelessWidget {
           const SizedBox(height: 16),
 
           DropdownButtonFormField<String>(
-            value: ['Edificado', 'Não Edificado', 'Edificado Padrão Oscar Niemeyer'].contains(classificacaoEstrutura)
+            value: [
+              'Edificado',
+              'Não Edificado',
+              'Edificado Padrão Oscar Niemeyer'
+            ].contains(classificacaoEstrutura)
                 ? classificacaoEstrutura
                 : null,
             decoration: InputDecoration(
@@ -240,7 +594,8 @@ class FormularioSection extends StatelessWidget {
                 color: themeProvider.primaryColor,
               ),
               labelStyle: TextStyle(
-                color: themeProvider.isDarkMode ? Colors.white70 : Colors.black87,
+                color: themeProvider.isDarkMode ? Colors.white70 : Colors
+                    .black87,
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -264,18 +619,23 @@ class FormularioSection extends StatelessWidget {
             style: TextStyle(
               color: themeProvider.isDarkMode ? Colors.white : Colors.black87,
             ),
-            items: ['Edificado', 'Não Edificado', 'Edificado Padrão Oscar Niemeyer']
-                .map((e) => DropdownMenuItem(
-              value: e,
-              child: Text(
-                e,
-                style: TextStyle(
-                  color: themeProvider.isDarkMode
-                      ? Colors.white
-                      : Colors.black87,
-                ),
-              ),
-            ))
+            items: [
+              'Edificado',
+              'Não Edificado',
+              'Edificado Padrão Oscar Niemeyer'
+            ]
+                .map((e) =>
+                DropdownMenuItem(
+                  value: e,
+                  child: Text(
+                    e,
+                    style: TextStyle(
+                      color: themeProvider.isDarkMode
+                          ? Colors.white
+                          : Colors.black87,
+                    ),
+                  ),
+                ))
                 .toList(),
             onChanged: onClassificacaoChanged,
           ),
@@ -330,8 +690,6 @@ class FormularioSection extends StatelessWidget {
             hint: 'ex: 4',
           ),
 
-
-
           const SizedBox(height: 16),
 
           CustomTextField(
@@ -353,7 +711,8 @@ class FormularioSection extends StatelessWidget {
                 color: themeProvider.primaryColor,
               ),
               labelStyle: TextStyle(
-                color: themeProvider.isDarkMode ? Colors.white70 : Colors.black87,
+                color: themeProvider.isDarkMode ? Colors.white70 : Colors
+                    .black87,
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -420,7 +779,8 @@ class FormularioSection extends StatelessWidget {
                 Text(
                   'Imagem selecionada:',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: themeProvider.isDarkMode ? Colors.white : Colors.black87,
+                    color: themeProvider.isDarkMode ? Colors.white : Colors
+                        .black87,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -460,5 +820,12 @@ class FormularioSection extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _isDesktop(context)
+        ? _buildDesktopLayout(context)
+        : _buildMobileLayout(context);
   }
 }
