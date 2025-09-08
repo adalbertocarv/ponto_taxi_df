@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:provider/provider.dart';
-import '../../data/app_database.dart';
 import '../../providers/themes/tema_provider.dart';
 import '../widgets/formulario/pontos_salvos/pontos_salvos_secao.dart';
 import '../widgets/formulario/secoes_formulario/formulario_secao.dart';
@@ -25,7 +24,7 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
   final _latitudeController     = TextEditingController();
   final _longitudeController    = TextEditingController();
 
-  final _db = AppDatabase();      // singleton já trata abrir/fechar
+  // final _db = AppDatabase();      // singleton já trata abrir/fechar
 
   bool   _pontoOficial          = false;
   bool   _temSinalizacao        = false;
@@ -54,30 +53,30 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
     final lon = double.tryParse(_longitudeController.text) ?? 0.0;
     final vagas = int.tryParse(_vagasController.text) ?? 0;
 
-    final ponto = Ponto(
-      latitude              : lat,
-      longitude             : lon,
-      endereco              : _enderecoController.text,
-      pontoOficial          : _pontoOficial,
-      classificacaoEstrutura: _classificacaoEstrutura,
-      numVagas              : vagas,
-      temAbrigo             : _temAbrigo,
-      temSinalizacao        : _temSinalizacao,
-      temEnergia            : _temEnergia,
-      temAgua               : _temAgua,
-      observacoes           : _observacoesController.text,
-      telefones             : [_telefoneController.text],
-      imagens               : _imagemPath != null ? [_imagemPath!] : [],
-    );
+    // final ponto = Ponto(
+    //   latitude              : lat,
+    //   longitude             : lon,
+    //   endereco              : _enderecoController.text,
+    //   pontoOficial          : _pontoOficial,
+    //   classificacaoEstrutura: _classificacaoEstrutura,
+    //   numVagas              : vagas,
+    //   temAbrigo             : _temAbrigo,
+    //   temSinalizacao        : _temSinalizacao,
+    //   temEnergia            : _temEnergia,
+    //   temAgua               : _temAgua,
+    //   observacoes           : _observacoesController.text,
+    //   telefones             : [_telefoneController.text],
+    //   imagens               : _imagemPath != null ? [_imagemPath!] : [],
+    // );
 
-    final id = await _db.insertPonto(ponto);
+    // final id = await _db.insertPonto(ponto);
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ponto salvo com ID $id')),
-      );
-      Navigator.of(context).pop(); // ou limpar formulário, como preferir
-    }
+    // if (mounted) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text('Ponto salvo com ID $id')),
+    //   );
+    //   Navigator.of(context).pop(); // ou limpar formulário, como preferir
+    // }
   }
 
   // -------------------------------------------------------------------------
@@ -140,6 +139,7 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
               BotoesAcaoSecao(
                 enderecoController: _enderecoController,
                 observacoesController: _observacoesController,
+                vagasController: _vagasController,
                 onSalvar: _salvar,
               ),
             ],

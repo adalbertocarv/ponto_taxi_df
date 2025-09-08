@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../models/autorizatario.dart';
 import '../../../../providers/themes/tema_provider.dart';
+import '../../../../services/autorizatario_service.dart';
 import 'custom_text_field.dart';
 import 'formulario_header.dart';
 
@@ -299,44 +301,37 @@ class FormularioSection extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: DropdownButtonFormField<String>(
-                  value: autorizatario.isNotEmpty ? autorizatario : null,
-                  decoration: InputDecoration(
-                    labelText: 'Autorizatário',
-                    prefixIcon: Icon(
-                      Icons.person_search,
-                      color: themeProvider.primaryColor,
-                    ),
-                    labelStyle: TextStyle(
-                      color: themeProvider.isDarkMode ? Colors.white70 : Colors
-                          .black87,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: themeProvider.primaryColor,
-                        width: 2,
+                child:Autocomplete<Autorizatario>(
+                  optionsBuilder: (TextEditingValue textEditingValue) async {
+                    if (textEditingValue.text.isEmpty) {
+                      return const Iterable<Autorizatario>.empty();
+                    }
+                    try {
+                      final results = await AutorizatarioService.buscarAutorizatarios(textEditingValue.text);
+                      return results;
+                    } catch (e) {
+                      return const Iterable<Autorizatario>.empty();
+                    }
+                  },
+                  displayStringForOption: (Autorizatario option) => option.toString(),
+                  fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                    return TextFormField(
+                      controller: controller,
+                      focusNode: focusNode,
+                      decoration: InputDecoration(
+                        labelText: 'Autorizatário',
+                        prefixIcon: Icon(Icons.person_search, color: Theme.of(context).primaryColor),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                    ),
-                    filled: true,
-                    fillColor: theme.cardTheme.color,
-                  ),
-                  dropdownColor: theme.cardTheme.color,
-                  style: TextStyle(
-                    color: themeProvider.isDarkMode ? Colors.white : Colors
-                        .black87,
-                  ),
-                  items: autorizatarios.map((e) {
-                    return DropdownMenuItem<String>(
-                      value: e,
-                      child: Text(e),
                     );
-                  }).toList(),
-                  onChanged: onAutorizatarioChanged,
-                ),
+                  },
+                  onSelected: (Autorizatario selection) {
+                    onAutorizatarioChanged(selection.toString());
+                  },
+                )
+                ,
               ),
             ],
           ),
@@ -702,54 +697,35 @@ class FormularioSection extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          DropdownButtonFormField<String>(
-            value: autorizatario.isNotEmpty ? autorizatario : null,
-            decoration: InputDecoration(
-              labelText: 'Autorizatário',
-              prefixIcon: Icon(
-                Icons.person_search,
-                color: themeProvider.primaryColor,
-              ),
-              labelStyle: TextStyle(
-                color: themeProvider.isDarkMode ? Colors.white70 : Colors
-                    .black87,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: themeProvider.isDarkMode
-                      ? Colors.grey.shade700
-                      : Colors.grey.shade300,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: themeProvider.primaryColor,
-                  width: 2,
-                ),
-              ),
-              filled: true,
-              fillColor: theme.cardTheme.color,
-            ),
-            dropdownColor: theme.cardTheme.color,
-            style: TextStyle(
-              color: themeProvider.isDarkMode ? Colors.white : Colors.black87,
-            ),
-            items: autorizatarios.map((e) {
-              return DropdownMenuItem<String>(
-                value: e,
-                child: Text(
-                  e,
-                  style: TextStyle(
-                    color: themeProvider.isDarkMode
-                        ? Colors.white
-                        : Colors.black87,
+          Autocomplete<Autorizatario>(
+            optionsBuilder: (TextEditingValue textEditingValue) async {
+              if (textEditingValue.text.isEmpty) {
+                return const Iterable<Autorizatario>.empty();
+              }
+              try {
+                final results = await AutorizatarioService.buscarAutorizatarios(textEditingValue.text);
+                return results;
+              } catch (e) {
+                return const Iterable<Autorizatario>.empty();
+              }
+            },
+            displayStringForOption: (Autorizatario option) => option.toString(),
+            fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+              return TextFormField(
+                controller: controller,
+                focusNode: focusNode,
+                decoration: InputDecoration(
+                  labelText: 'Autorizatário',
+                  prefixIcon: Icon(Icons.person_search, color: Theme.of(context).primaryColor),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
               );
-            }).toList(),
-            onChanged: onAutorizatarioChanged,
+            },
+            onSelected: (Autorizatario selection) {
+              onAutorizatarioChanged(selection.toString());
+            },
           ),
 
           const SizedBox(height: 16),

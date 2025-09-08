@@ -13,7 +13,6 @@ import '../widgets/formulario/secoes_formulario/formulario_secao.dart';
 import '../widgets/formulario/botoes_acao/botoes_acao_secao.dart';
 
 // -------------- IMPORT DO SQLITE --------------
-import '../../data/app_database.dart';
 
 class FormularioTaxi extends StatefulWidget {
   final List<Marker> pontos;
@@ -25,7 +24,6 @@ class FormularioTaxi extends StatefulWidget {
 
 class _FormularioTaxiState extends State<FormularioTaxi> {
   // DB -----------------------------------------------------------------------
-  final _db = AppDatabase();
 
   // Controllers --------------------------------------------------------------
   final _enderecoController    = TextEditingController();
@@ -84,29 +82,9 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
   // ---------------- SALVAR NO SQLITE ---------------------------------------
   Future<void> _salvar() async {
     // converte textos
-    final firstMarker = widget.pontos.first;
-    final lat = firstMarker.point.latitude;
-    final lon = firstMarker.point.longitude;
 
-    final vagas = int.tryParse(_vagasController.text) ?? 0;
 
-    final ponto = Ponto(
-      latitude              : lat,
-      longitude             : lon,
-      endereco              : _enderecoController.text,
-      pontoOficial          : _pontoOficial,
-      classificacaoEstrutura: _classificacaoEstrutura,
-      numVagas              : vagas,
-      temAbrigo             : _temAbrigo,
-      temSinalizacao        : _temSinalizacao,
-      temEnergia            : _temEnergia,
-      temAgua               : _temAgua,
-      observacoes           : _observacoesController.text,
-      telefones             : [_telefoneController.text],
-      imagens               : _imagemPath != null ? [_imagemPath!] : [],
-    );
 
-    final id = await _db.insertPonto(ponto);
 
     if (mounted) {
       final mapaController = context.read<MapaController>();
@@ -161,6 +139,7 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
           BotoesAcaoSecao(
             enderecoController   : _enderecoController,
             observacoesController: _observacoesController,
+            vagasController       : _vagasController,
             onSalvar             : _salvar,
           ),
         ],
@@ -175,63 +154,70 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1400),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Column(
             children: [
-              // Coluna esquerda - Mapa e informações do ponto
-              Expanded(
-                flex: 4,
-                child: Column(
-                  children: [
-                    PontosSalvosSecao(pontos: widget.pontos),
-                    const SizedBox(height: 24),
-                    // Informações de coordenadas em desktop
-                    _buildCoordenadasCard(),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 32),
-              // Coluna direita - Formulário
-              Expanded(
-                flex: 6,
-                child: Column(
-                  children: [
-                    FormularioSection(
-                      // controllers
-                      enderecoController    : _enderecoController,
-                      observacoesController : _observacoesController,
-                      vagasController       : _vagasController,
-                      telefoneController    : _telefoneController,
-                      latitudeController    : _latitudeController,
-                      longitudeController   : _longitudeController,
-                      // valores
-                      pontoOficial          : _pontoOficial,
-                      temSinalizacao        : _temSinalizacao,
-                      temAbrigo             : _temAbrigo,
-                      temEnergia            : _temEnergia,
-                      temAgua               : _temAgua,
-                      classificacaoEstrutura: _classificacaoEstrutura,
-                      autorizatario         : _autorizatario,
-                      isLoadingEndereco     : _isLoadingEndereco,
-                      imagemSelecionada     : _imagemPath,
-                      // callbacks
-                      onPontoOficialChanged : (v) => setState(() => _pontoOficial   = v),
-                      onTemSinalizacaoChanged: (v) => setState(() => _temSinalizacao = v),
-                      onTemAbrigoChanged    : (v) => setState(() => _temAbrigo      = v),
-                      onTemEnergiaChanged   : (v) => setState(() => _temEnergia     = v),
-                      onTemAguaChanged      : (v) => setState(() => _temAgua        = v),
-                      onClassificacaoChanged: (v) => setState(() => _classificacaoEstrutura = v ?? ''),
-                      onAutorizatarioChanged: (v) => setState(() => _autorizatario  = v ?? ''),
-                      onImagemSelecionada   : _selecionarImagem,
+              _buildBackButton(context),
+              SizedBox(height: 12,),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Coluna esquerda - Mapa e informações do ponto
+                  Expanded(
+                    flex: 4,
+                    child: Column(
+                      children: [
+                        PontosSalvosSecao(pontos: widget.pontos),
+                        const SizedBox(height: 24),
+                        // Informações de coordenadas em desktop
+                        _buildCoordenadasCard(),
+                      ],
                     ),
-                    const SizedBox(height: 32),
-                    BotoesAcaoSecao(
-                      enderecoController   : _enderecoController,
-                      observacoesController: _observacoesController,
-                      onSalvar             : _salvar,
+                  ),
+                  const SizedBox(width: 32),
+                  // Coluna direita - Formulário
+                  Expanded(
+                    flex: 6,
+                    child: Column(
+                      children: [
+                        FormularioSection(
+                          // controllers
+                          enderecoController    : _enderecoController,
+                          observacoesController : _observacoesController,
+                          vagasController       : _vagasController,
+                          telefoneController    : _telefoneController,
+                          latitudeController    : _latitudeController,
+                          longitudeController   : _longitudeController,
+                          // valores
+                          pontoOficial          : _pontoOficial,
+                          temSinalizacao        : _temSinalizacao,
+                          temAbrigo             : _temAbrigo,
+                          temEnergia            : _temEnergia,
+                          temAgua               : _temAgua,
+                          classificacaoEstrutura: _classificacaoEstrutura,
+                          autorizatario         : _autorizatario,
+                          isLoadingEndereco     : _isLoadingEndereco,
+                          imagemSelecionada     : _imagemPath,
+                          // callbacks
+                          onPontoOficialChanged : (v) => setState(() => _pontoOficial   = v),
+                          onTemSinalizacaoChanged: (v) => setState(() => _temSinalizacao = v),
+                          onTemAbrigoChanged    : (v) => setState(() => _temAbrigo      = v),
+                          onTemEnergiaChanged   : (v) => setState(() => _temEnergia     = v),
+                          onTemAguaChanged      : (v) => setState(() => _temAgua        = v),
+                          onClassificacaoChanged: (v) => setState(() => _classificacaoEstrutura = v ?? ''),
+                          onAutorizatarioChanged: (v) => setState(() => _autorizatario  = v ?? ''),
+                          onImagemSelecionada   : _selecionarImagem,
+                        ),
+                        const SizedBox(height: 32),
+                        BotoesAcaoSecao(
+                          enderecoController   : _enderecoController,
+                          observacoesController: _observacoesController,
+                          vagasController: _vagasController,
+                          onSalvar             : _salvar,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -390,16 +376,25 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
       backgroundColor: themeProvider.isDarkMode
           ? const Color(0xFF1A1A1A)
           : const Color(0xFFF5F7FA),
-      appBar: AppBar(
-        title: const Text(
-          'Formulário Táxi',
-          style: TextStyle(fontWeight: FontWeight.bold),
+
+      appBar: !_isDesktop(context)
+      ?
+      AppBar(
+        title: Column(
+          children: [
+            const Text(
+              'Formulário Táxi',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
         backgroundColor: Colors.amber,
         foregroundColor: Colors.white,
         elevation: _isDesktop(context) ? 0 : null,
         centerTitle: !_isDesktop(context),
-      ),
+      )
+          : null,
+
       body: SafeArea(
         child: _isDesktop(context)
             ? _buildDesktopLayout(context)
@@ -417,5 +412,30 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
     _latitudeController.dispose();
     _longitudeController.dispose();
     super.dispose();
+  }
+
+  Widget _buildBackButton(BuildContext context) {
+    return Container(
+      alignment: Alignment.topLeft,
+      child: InkWell(
+        onTap: () => Navigator.pop(context),
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: const Icon(Icons.arrow_back, size: 24),
+        ),
+      ),
+    );
   }
 }

@@ -5,12 +5,14 @@ import '../../../../providers/themes/tema_provider.dart';
 class BotoesAcaoSecao extends StatelessWidget {
   final TextEditingController enderecoController;
   final TextEditingController observacoesController;
+  final TextEditingController vagasController;
   final VoidCallback onSalvar;
 
   const BotoesAcaoSecao({
     super.key,
     required this.enderecoController,
     required this.observacoesController,
+    required this.vagasController,
     required this.onSalvar,
   });
 
@@ -388,6 +390,7 @@ class BotoesAcaoSecao extends StatelessWidget {
               onPressed: () {
                 enderecoController.clear();
                 observacoesController.clear();
+                vagasController.clear();
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
