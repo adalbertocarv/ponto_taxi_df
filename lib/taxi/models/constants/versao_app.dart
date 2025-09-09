@@ -1,3 +1,3 @@
 class VersaoApp{
-  static const String numero = '1.0.0';
+  static const String numero = '1.0.0 beta';
 }

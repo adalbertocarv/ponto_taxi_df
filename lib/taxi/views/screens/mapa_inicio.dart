@@ -46,7 +46,7 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent>
   late Animation<Offset> _slideAnimation;
 
   bool showBottomSheet = false;
-  final LatLng markerLocation = LatLng(-15.7942, -47.8822); // Brasília
+  final LatLng markerLocation = LatLng(-15.798778, -47.87865); // Brasília
   static const _desktopBreakpoint = 780.0;
 
   void _onMarkerTapped() {
