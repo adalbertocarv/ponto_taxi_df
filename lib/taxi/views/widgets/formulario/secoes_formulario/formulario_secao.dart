@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../models/autorizatario.dart';
@@ -15,6 +14,7 @@ class FormularioSection extends StatelessWidget {
   final TextEditingController telefoneController;
   final TextEditingController latitudeController;
   final TextEditingController longitudeController;
+  final ValueNotifier<double> sliderValue = ValueNotifier(1);
 
   final bool pontoOficial;
   final bool temSinalizacao;
@@ -62,6 +62,7 @@ class FormularioSection extends StatelessWidget {
     required this.onAutorizatarioChanged,
     required this.onImagemSelecionada,
     required this.isLoadingEndereco,
+    //required this.sliderValue,
   });
 
   final List<String> autorizatarios = [
@@ -74,17 +75,11 @@ class FormularioSection extends StatelessWidget {
 
   // Função para determinar se é desktop/tablet
   bool _isDesktop(BuildContext context) {
-    return MediaQuery
-        .of(context)
-        .size
-        .width >= 900;
+    return MediaQuery.of(context).size.width >= 900;
   }
 
   bool _isTablet(BuildContext context) {
-    final width = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final width = MediaQuery.of(context).size.width;
     return width >= 600 && width < 900;
   }
 
@@ -264,8 +259,9 @@ class FormularioSection extends StatelessWidget {
                       color: themeProvider.primaryColor,
                     ),
                     labelStyle: TextStyle(
-                      color: themeProvider.isDarkMode ? Colors.white70 : Colors
-                          .black87,
+                      color: themeProvider.isDarkMode
+                          ? Colors.white70
+                          : Colors.black87,
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -282,45 +278,50 @@ class FormularioSection extends StatelessWidget {
                   ),
                   dropdownColor: theme.cardTheme.color,
                   style: TextStyle(
-                    color: themeProvider.isDarkMode ? Colors.white : Colors
-                        .black87,
+                    color: themeProvider.isDarkMode
+                        ? Colors.white
+                        : Colors.black87,
                   ),
                   items: [
                     'Edificado',
                     'Não Edificado',
                     'Edificado Padrão Oscar Niemeyer'
                   ]
-                      .map((e) =>
-                      DropdownMenuItem(
-                        value: e,
-                        child: Text(e),
-                      ))
+                      .map((e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e),
+                          ))
                       .toList(),
                   onChanged: onClassificacaoChanged,
                 ),
               ),
               const SizedBox(width: 16),
               Expanded(
-                child:Autocomplete<Autorizatario>(
+                child: Autocomplete<Autorizatario>(
                   optionsBuilder: (TextEditingValue textEditingValue) async {
                     if (textEditingValue.text.isEmpty) {
                       return const Iterable<Autorizatario>.empty();
                     }
                     try {
-                      final results = await AutorizatarioService.buscarAutorizatarios(textEditingValue.text);
+                      final results =
+                          await AutorizatarioService.buscarAutorizatarios(
+                              textEditingValue.text);
                       return results;
                     } catch (e) {
                       return const Iterable<Autorizatario>.empty();
                     }
                   },
-                  displayStringForOption: (Autorizatario option) => option.toString(),
-                  fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                  displayStringForOption: (Autorizatario option) =>
+                      option.toString(),
+                  fieldViewBuilder:
+                      (context, controller, focusNode, onFieldSubmitted) {
                     return TextFormField(
                       controller: controller,
                       focusNode: focusNode,
                       decoration: InputDecoration(
                         labelText: 'Autorizatário',
-                        prefixIcon: Icon(Icons.person_search, color: Theme.of(context).primaryColor),
+                        prefixIcon: Icon(Icons.person_search,
+                            color: Theme.of(context).primaryColor),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -330,8 +331,7 @@ class FormularioSection extends StatelessWidget {
                   onSelected: (Autorizatario selection) {
                     onAutorizatarioChanged(selection.toString());
                   },
-                )
-                ,
+                ),
               ),
             ],
           ),
@@ -433,6 +433,76 @@ class FormularioSection extends StatelessWidget {
 
           const SizedBox(height: 20),
 
+          //slider para notas
+          Text(
+            'Nota',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: themeProvider.isDarkMode
+                  ? Colors.white
+                  : const Color(0xFF2C3E50),
+            ),
+          ),
+          Container(
+            width: 480,
+            child: Row(
+              children: [
+                Expanded(
+                  child: ValueListenableBuilder<double>(
+                    valueListenable: sliderValue,
+                    builder: (context, value, _) {
+                      final themeProvider = context.watch<ThemeProvider>();
+
+                      return SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          trackHeight: 6,
+                          thumbColor: themeProvider.primaryColor,
+                          valueIndicatorTextStyle: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        child: Slider(
+                          value: value,
+                          min: 1,
+                          max: 5,
+                          divisions: 4,
+                          label: value.toStringAsFixed(0),
+                          onChanged: (novoValor) {
+                            sliderValue.value = novoValor;
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                ValueListenableBuilder<double>(
+                  valueListenable: sliderValue,
+                  builder: (context, value, _) {
+                    return Text(
+                      value.toStringAsFixed(0),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: context.watch<ThemeProvider>().primaryColor,
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          CustomTextField(
+            controller: observacoesController,
+            label: 'Observações da Avaliação',
+            icon: Icons.notes_rounded,
+            hint: 'Ex: Não há obra a ser executada.',
+            maxLines: 3,
+          ),
+          const SizedBox(height: 20),
+
           // Seção de imagem
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -480,8 +550,8 @@ class FormularioSection extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: themeProvider.primaryColor.withValues(
-                                alpha: 0.3),
+                            color: themeProvider.primaryColor
+                                .withValues(alpha: 0.3),
                             width: 2,
                           ),
                         ),
@@ -589,8 +659,8 @@ class FormularioSection extends StatelessWidget {
                 color: themeProvider.primaryColor,
               ),
               labelStyle: TextStyle(
-                color: themeProvider.isDarkMode ? Colors.white70 : Colors
-                    .black87,
+                color:
+                    themeProvider.isDarkMode ? Colors.white70 : Colors.black87,
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -619,18 +689,17 @@ class FormularioSection extends StatelessWidget {
               'Não Edificado',
               'Edificado Padrão Oscar Niemeyer'
             ]
-                .map((e) =>
-                DropdownMenuItem(
-                  value: e,
-                  child: Text(
-                    e,
-                    style: TextStyle(
-                      color: themeProvider.isDarkMode
-                          ? Colors.white
-                          : Colors.black87,
-                    ),
-                  ),
-                ))
+                .map((e) => DropdownMenuItem(
+                      value: e,
+                      child: Text(
+                        e,
+                        style: TextStyle(
+                          color: themeProvider.isDarkMode
+                              ? Colors.white
+                              : Colors.black87,
+                        ),
+                      ),
+                    ))
                 .toList(),
             onChanged: onClassificacaoChanged,
           ),
@@ -703,20 +772,23 @@ class FormularioSection extends StatelessWidget {
                 return const Iterable<Autorizatario>.empty();
               }
               try {
-                final results = await AutorizatarioService.buscarAutorizatarios(textEditingValue.text);
+                final results = await AutorizatarioService.buscarAutorizatarios(
+                    textEditingValue.text);
                 return results;
               } catch (e) {
                 return const Iterable<Autorizatario>.empty();
               }
             },
             displayStringForOption: (Autorizatario option) => option.toString(),
-            fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+            fieldViewBuilder:
+                (context, controller, focusNode, onFieldSubmitted) {
               return TextFormField(
                 controller: controller,
                 focusNode: focusNode,
                 decoration: InputDecoration(
                   labelText: 'Autorizatário',
-                  prefixIcon: Icon(Icons.person_search, color: Theme.of(context).primaryColor),
+                  prefixIcon: Icon(Icons.person_search,
+                      color: Theme.of(context).primaryColor),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -755,8 +827,9 @@ class FormularioSection extends StatelessWidget {
                 Text(
                   'Imagem selecionada:',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: themeProvider.isDarkMode ? Colors.white : Colors
-                        .black87,
+                    color: themeProvider.isDarkMode
+                        ? Colors.white
+                        : Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 8),
