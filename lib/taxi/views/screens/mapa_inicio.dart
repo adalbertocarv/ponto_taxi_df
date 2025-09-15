@@ -136,7 +136,7 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent>
                   TileLayer(
                     tileProvider: CancellableNetworkTileProvider(),
                     urlTemplate: baseTheme.urlTemplate,
-                    subdomains: baseTheme.subdomains,
+                    //subdomains: baseTheme.subdomains,
                     tileBuilder: baseTheme.tileBuilder,
                     additionalOptions: baseTheme.additionalOptions,
                     userAgentPackageName: mapaController.userAgentPackage,
@@ -377,7 +377,7 @@ class _MapaCadastrarContentState extends State<_MapaCadastrarContent>
                                               _buildInfoRow(
                                                   context,
                                                   'Autorizatário',
-                                                  'Maria Santos - Num 002'),
+                                                  'GEDILSON LUCIO MARTINS- Num 1'),
                                             ],
                                           ),
                                           const SizedBox(height: 16),
