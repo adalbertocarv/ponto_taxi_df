@@ -1,5 +1,3 @@
-// ignore_for_file: depend_on_referenced_packages
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'url_backend_model.dart';

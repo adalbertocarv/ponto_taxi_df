@@ -3,7 +3,7 @@ import '../../models/tile_layer_model.dart';
 
 class AppMapThemes {
   static final MapThemeData dark = MapThemeData(
-    urlTemplate: 'https://{s}.tile.openstreetmap.org/.png',
+    urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     tileBuilder: (context, tileWidget, tile) {
       return ColorFiltered(
         colorFilter: ColorFilter.matrix([
