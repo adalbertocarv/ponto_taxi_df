@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../../models/autorizatario.dart';
 import '../../../../providers/themes/tema_provider.dart';
 import '../../../../services/autorizatario_service.dart';
+import '../../../infraestrutura_dropdown.dart';
 import 'custom_text_field.dart';
 import 'formulario_header.dart';
 
@@ -16,6 +17,8 @@ class FormularioSection extends StatefulWidget {
   final TextEditingController telefoneController;
   final TextEditingController latitudeController;
   final TextEditingController longitudeController;
+  final ValueChanged<String?> onClassificacaoChanged;
+  final ValueChanged<int?> onIdChanged;
 
   final bool pontoOficial;
   final bool temSinalizacao;
@@ -34,7 +37,6 @@ class FormularioSection extends StatefulWidget {
   final Function(bool) onTemAbrigoChanged;
   final Function(bool) onTemEnergiaChanged;
   final Function(bool) onTemAguaChanged;
-  final Function(String?) onClassificacaoChanged;
   final Function(String?) onAutorizatarioChanged;
   final Function(double) onNotaChanged; // Nova callback para nota
   final Function(Uint8List?, String?) onImagemSelecionada; // Atualizada
@@ -57,6 +59,7 @@ class FormularioSection extends StatefulWidget {
     required this.autorizatario,
     required this.imagemSelecionada,
     required this.onPontoOficialChanged,
+    required this.onIdChanged,
     required this.onTemSinalizacaoChanged,
     required this.onTemAbrigoChanged,
     required this.onTemEnergiaChanged,
@@ -320,91 +323,102 @@ class _FormularioSectionState extends State<FormularioSection> {
           const SizedBox(height: 20),
 
           // Row com campos de seleção (2 colunas)
-          Row(
-            children: [
-              Expanded(
-                child: DropdownButtonFormField<String>(
-                  value: [
-                    'Edificado',
-                    'Não Edificado',
-                    'Edificado Padrão Oscar Niemeyer'
-                  ].contains(widget.classificacaoEstrutura)
-                      ? widget.classificacaoEstrutura
-                      : null,
-                  decoration: InputDecoration(
-                    labelText: 'Tipo do Abrigo',
-                    prefixIcon: Icon(
-                      Icons.home_filled,
-                      color: themeProvider.primaryColor,
-                    ),
-                    labelStyle: TextStyle(
-                      color: themeProvider.isDarkMode ? Colors.white70 : Colors.black87,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: themeProvider.primaryColor,
-                        width: 2,
-                      ),
-                    ),
-                    filled: true,
-                    fillColor: theme.cardTheme.color,
-                  ),
-                  dropdownColor: theme.cardTheme.color,
-                  style: TextStyle(
-                    color: themeProvider.isDarkMode ? Colors.white : Colors.black87,
-                  ),
-                  items: [
-                    'Edificado',
-                    'Não Edificado',
-                    'Edificado Padrão Oscar Niemeyer'
-                  ]
-                      .map((e) => DropdownMenuItem(
-                    value: e,
-                    child: Text(e),
-                  ))
-                      .toList(),
-                  onChanged: widget.onClassificacaoChanged,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Autocomplete<Autorizatario>(
-                  optionsBuilder: (TextEditingValue textEditingValue) async {
-                    if (textEditingValue.text.isEmpty) {
-                      return const Iterable<Autorizatario>.empty();
-                    }
-                    try {
-                      final results = await AutorizatarioService.buscarAutorizatarios(textEditingValue.text);
-                      return results;
-                    } catch (e) {
-                      return const Iterable<Autorizatario>.empty();
-                    }
-                  },
-                  displayStringForOption: (Autorizatario option) => option.toString(),
-                  fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
-                    return TextFormField(
-                      controller: controller,
-                      focusNode: focusNode,
-                      decoration: InputDecoration(
-                        labelText: 'Autorizatário',
-                        prefixIcon: Icon(Icons.person_search, color: Theme.of(context).primaryColor),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    );
-                  },
-                  onSelected: (Autorizatario selection) {
-                    widget.onAutorizatarioChanged(selection.toString());
-                  },
-                ),
-              ),
-            ],
-          ),
+          // Row(
+          //   children: [
+          //     Expanded(
+          //       child: DropdownButtonFormField<String>(
+          //         value: [
+          //           'Edificado',
+          //           'Não Edificado',
+          //           'Edificado Padrão Oscar Niemeyer'
+          //         ].contains(widget.classificacaoEstrutura)
+          //             ? widget.classificacaoEstrutura
+          //             : null,
+          //         decoration: InputDecoration(
+          //           labelText: 'Tipo do Abrigo',
+          //           prefixIcon: Icon(
+          //             Icons.home_filled,
+          //             color: themeProvider.primaryColor,
+          //           ),
+          //           labelStyle: TextStyle(
+          //             color: themeProvider.isDarkMode ? Colors.white70 : Colors.black87,
+          //           ),
+          //           border: OutlineInputBorder(
+          //             borderRadius: BorderRadius.circular(12),
+          //           ),
+          //           focusedBorder: OutlineInputBorder(
+          //             borderRadius: BorderRadius.circular(12),
+          //             borderSide: BorderSide(
+          //               color: themeProvider.primaryColor,
+          //               width: 2,
+          //             ),
+          //           ),
+          //           filled: true,
+          //           fillColor: theme.cardTheme.color,
+          //         ),
+          //         dropdownColor: theme.cardTheme.color,
+          //         style: TextStyle(
+          //           color: themeProvider.isDarkMode ? Colors.white : Colors.black87,
+          //         ),
+          //         items: [
+          //           'Edificado',
+          //           'Não Edificado',
+          //           'Edificado Padrão Oscar Niemeyer'
+          //         ]
+          //             .map((e) => DropdownMenuItem(
+          //           value: e,
+          //           child: Text(e),
+          //         ))
+          //             .toList(),
+          //         onChanged: widget.onClassificacaoChanged,
+          //       ),
+          //     ),
+          //     const SizedBox(width: 16),
+          //     Expanded(
+          //       child: Autocomplete<Autorizatario>(
+          //         optionsBuilder: (TextEditingValue textEditingValue) async {
+          //           if (textEditingValue.text.isEmpty) {
+          //             return const Iterable<Autorizatario>.empty();
+          //           }
+          //           try {
+          //             final results = await AutorizatarioService.buscarAutorizatarios(textEditingValue.text);
+          //             return results;
+          //           } catch (e) {
+          //             return const Iterable<Autorizatario>.empty();
+          //           }
+          //         },
+          //         displayStringForOption: (Autorizatario option) => option.toString(),
+          //         fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+          //           return TextFormField(
+          //             controller: controller,
+          //             focusNode: focusNode,
+          //             decoration: InputDecoration(
+          //               labelText: 'Autorizatário',
+          //               prefixIcon: Icon(Icons.person_search, color: Theme.of(context).primaryColor),
+          //               border: OutlineInputBorder(
+          //                 borderRadius: BorderRadius.circular(12),
+          //               ),
+          //             ),
+          //           );
+          //         },
+          //         onSelected: (Autorizatario selection) {
+          //           widget.onAutorizatarioChanged(selection.toString());
+          //         },
+          //       ),
+          //     ),
+          //   ],
+          // ),
+
+          // InfraestruturaDropdown(
+          //   initialValue: widget.classificacaoEstrutura, // se houver
+          //   onChanged: (infra) {
+          //     widget.onClassificacaoChanged(infra.nomeInfraestrutura);
+          //     // Se precisar do id também:
+          //     widget.onIdChanged(infra.idTipoInfraestrutura);
+          //   },
+          // ),
+
+
           const SizedBox(height: 20),
 
           // Row com campos numéricos (2 colunas)

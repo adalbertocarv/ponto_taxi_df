@@ -1,12 +1,8 @@
-import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:ponto_taxi_df/taxi/controllers/mapa_controller.dart';
 import 'package:provider/provider.dart';
-import 'package:path_provider/path_provider.dart';
 import '../../providers/themes/tema_provider.dart';
 import '../../services/endereco_osm_service.dart';
 import '../../services/pre_cadastro.dart';
@@ -86,18 +82,7 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
     });
   }
 
-  // Método para capturar imagem (mantido para compatibilidade)
-  Future<void> _selecionarImagem() async {
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.camera);
-    if (picked == null) return;
 
-    final docsDir = await getApplicationDocumentsDirectory();
-    final dst = File('${docsDir.path}/ponto_${DateTime.now().millisecondsSinceEpoch}.jpg');
-    await File(picked.path).copy(dst.path);
-
-    setState(() => _imagemPath = dst.path);
-  }
 
   // Método para mapear classificação para IDs
   int _getIdTipoInfraestrutura() {
@@ -186,7 +171,6 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
         }
       }
     } catch (e) {
-      print('Erro ao salvar ponto: $e');
       if (mounted) {
         _mostrarErro('Erro inesperado ao salvar o ponto.');
       }
@@ -208,7 +192,7 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
   }
 
   bool _isDesktop(BuildContext context) {
-    return MediaQuery.of(context).size.width >= 900;
+    return MediaQuery.of(context).size.width >= 780;
   }
 
   Widget _buildMobileLayout(BuildContext context) {
@@ -247,7 +231,7 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
             onClassificacaoChanged: (v) => setState(() => _classificacaoEstrutura = v ?? ''),
             onAutorizatarioChanged: (v) => setState(() => _autorizatario = v ?? ''),
             onImagemSelecionada: _onImagemSelecionada,
-            onNotaChanged: (v) => setState(() => _notaAvaliacao = v),
+            onNotaChanged: (v) => setState(() => _notaAvaliacao = v), onIdChanged: (int? value) {  },
           ),
           const SizedBox(height: 32),
           BotoesAcaoSecao(
@@ -319,7 +303,7 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
                           onClassificacaoChanged: (v) => setState(() => _classificacaoEstrutura = v ?? ''),
                           onAutorizatarioChanged: (v) => setState(() => _autorizatario = v ?? ''),
                           onImagemSelecionada: _onImagemSelecionada,
-                          onNotaChanged: (v) => setState(() => _notaAvaliacao = v),
+                          onNotaChanged: (v) => setState(() => _notaAvaliacao = v), onIdChanged: (int? value) {  },
                         ),
                         const SizedBox(height: 32),
                         BotoesAcaoSecao(
