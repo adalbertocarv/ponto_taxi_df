@@ -13,16 +13,17 @@ class CustomTextField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final int? maxLength;
 
-  const CustomTextField(
-      {super.key,
-      required this.controller,
-      required this.label,
-      required this.icon,
-      required this.hint,
-      this.maxLines = 1,
-      this.keyboardType = TextInputType.text,
-      this.inputFormatters,
-      this.maxLength,});
+  const CustomTextField({
+    super.key,
+    required this.controller,
+    required this.label,
+    required this.icon,
+    required this.hint,
+    this.maxLines = 1,
+    this.keyboardType = TextInputType.text,
+    this.inputFormatters,
+    this.maxLength,
+  });
 
   @override
   Widget build(BuildContext context) {

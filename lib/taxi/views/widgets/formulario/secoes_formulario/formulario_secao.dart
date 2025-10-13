@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show FilteringTextInputFormatter;
+import 'package:flutter/services.dart';
 import 'package:ponto_taxi_df/taxi/views/widgets/formulario/secoes_formulario/seletor_imagem.dart';
 import 'package:provider/provider.dart';
 import '../../../../models/autorizatario.dart';
@@ -9,6 +9,7 @@ import '../../../../services/autorizatario_service.dart';
 import '../../../infraestrutura_dropdown.dart';
 import 'custom_text_field.dart';
 import 'formulario_header.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class FormularioSection extends StatefulWidget {
   final TextEditingController enderecoController;
@@ -79,6 +80,18 @@ class FormularioSection extends StatefulWidget {
 
 class _FormularioSectionState extends State<FormularioSection> {
   late ValueNotifier<double> sliderValue;
+
+  //---------------------------------------------------------
+  //---------------------------------------------------------
+  // O FORMATO ESTÁ EM TELEFONE FIXO (SEM O 9 DE PREFIXO)
+  //PARA ADICIONAR O NOVE, ADICIONE MAIS UM "#" NO "mask"
+  //---------------------------------------------------------
+  //---------------------------------------------------------
+
+  final phoneFormatter = MaskTextInputFormatter(
+    mask: '(##) ####-####',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
 
   @override
   void initState() {
@@ -443,12 +456,11 @@ class _FormularioSectionState extends State<FormularioSection> {
                   controller: widget.telefoneController,
                   label: 'Telefone',
                   icon: Icons.phone,
-                  keyboardType: TextInputType.phone,
+                  //keyboardType: TextInputType.phone,
                   hint: 'ex: (61) 3321-8181',
-                  maxLength: 11,
+                  //maxLength: 11,
                   inputFormatters: [
-                    FilteringTextInputFormatter
-                        .digitsOnly, // permite apenas números
+                    phoneFormatter,
                   ],
                 ),
               ),
@@ -537,7 +549,7 @@ class _FormularioSectionState extends State<FormularioSection> {
             icon: Icons.notes_rounded,
             hint: 'Ex: Estrutura precarizada',
             maxLines: 3,
-            maxLength: 200,
+            //maxLength: 200,
           ),
 
           const SizedBox(height: 20),
@@ -557,7 +569,7 @@ class _FormularioSectionState extends State<FormularioSection> {
             icon: Icons.notes_rounded,
             hint: 'Ex: Não há obra a ser executada.',
             maxLines: 3,
-            maxLength: 200,
+            //maxLength: 200,
           ),
         ],
       ),
@@ -729,6 +741,10 @@ class _FormularioSectionState extends State<FormularioSection> {
             icon: Icons.directions_car_filled,
             keyboardType: TextInputType.number,
             hint: 'ex: 4',
+            //maxLength: 2,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+            ],
           ),
 
           const SizedBox(height: 16),
@@ -739,6 +755,10 @@ class _FormularioSectionState extends State<FormularioSection> {
             icon: Icons.phone,
             keyboardType: TextInputType.phone,
             hint: 'ex: (61) 3321-8181',
+            //maxLength: 11,
+            inputFormatters: [
+              phoneFormatter,
+            ],
           ),
 
           const SizedBox(height: 16),
@@ -790,7 +810,7 @@ class _FormularioSectionState extends State<FormularioSection> {
             icon: Icons.notes_rounded,
             hint: 'Ex: Estrutura precarizada',
             maxLines: 3,
-            maxLength: 10,
+            //maxLength: 200,
           ),
 
           const SizedBox(height: 16),
@@ -808,6 +828,7 @@ class _FormularioSectionState extends State<FormularioSection> {
             icon: Icons.notes_rounded,
             hint: 'Ex: Não há obra a ser executada.',
             maxLines: 3,
+            //maxLength: 200,
           ),
 
           const SizedBox(height: 16),
