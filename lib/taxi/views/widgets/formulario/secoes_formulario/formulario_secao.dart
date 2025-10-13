@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show FilteringTextInputFormatter;
 import 'package:ponto_taxi_df/taxi/views/widgets/formulario/secoes_formulario/seletor_imagem.dart';
 import 'package:provider/provider.dart';
 import '../../../../models/autorizatario.dart';
@@ -418,7 +419,6 @@ class _FormularioSectionState extends State<FormularioSection> {
           //   },
           // ),
 
-
           const SizedBox(height: 20),
 
           // Row com campos numéricos (2 colunas)
@@ -431,6 +431,10 @@ class _FormularioSectionState extends State<FormularioSection> {
                   icon: Icons.directions_car_filled,
                   keyboardType: TextInputType.number,
                   hint: 'ex: 4',
+                  inputFormatters: [
+                    FilteringTextInputFormatter
+                        .digitsOnly, // permite apenas números
+                  ],
                 ),
               ),
               const SizedBox(width: 16),
@@ -441,6 +445,11 @@ class _FormularioSectionState extends State<FormularioSection> {
                   icon: Icons.phone,
                   keyboardType: TextInputType.phone,
                   hint: 'ex: (61) 3321-8181',
+                  maxLength: 11,
+                  inputFormatters: [
+                    FilteringTextInputFormatter
+                        .digitsOnly, // permite apenas números
+                  ],
                 ),
               ),
             ],
@@ -528,6 +537,7 @@ class _FormularioSectionState extends State<FormularioSection> {
             icon: Icons.notes_rounded,
             hint: 'Ex: Estrutura precarizada',
             maxLines: 3,
+            maxLength: 200,
           ),
 
           const SizedBox(height: 20),
@@ -547,6 +557,7 @@ class _FormularioSectionState extends State<FormularioSection> {
             icon: Icons.notes_rounded,
             hint: 'Ex: Não há obra a ser executada.',
             maxLines: 3,
+            maxLength: 200,
           ),
         ],
       ),
@@ -625,7 +636,8 @@ class _FormularioSectionState extends State<FormularioSection> {
                 color: themeProvider.primaryColor,
               ),
               labelStyle: TextStyle(
-                color: themeProvider.isDarkMode ? Colors.white70 : Colors.black87,
+                color:
+                    themeProvider.isDarkMode ? Colors.white70 : Colors.black87,
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -655,16 +667,16 @@ class _FormularioSectionState extends State<FormularioSection> {
               'Edificado Padrão Oscar Niemeyer'
             ]
                 .map((e) => DropdownMenuItem(
-              value: e,
-              child: Text(
-                e,
-                style: TextStyle(
-                  color: themeProvider.isDarkMode
-                      ? Colors.white
-                      : Colors.black87,
-                ),
-              ),
-            ))
+                      value: e,
+                      child: Text(
+                        e,
+                        style: TextStyle(
+                          color: themeProvider.isDarkMode
+                              ? Colors.white
+                              : Colors.black87,
+                        ),
+                      ),
+                    ))
                 .toList(),
             onChanged: widget.onClassificacaoChanged,
           ),
@@ -737,20 +749,23 @@ class _FormularioSectionState extends State<FormularioSection> {
                 return const Iterable<Autorizatario>.empty();
               }
               try {
-                final results = await AutorizatarioService.buscarAutorizatarios(textEditingValue.text);
+                final results = await AutorizatarioService.buscarAutorizatarios(
+                    textEditingValue.text);
                 return results;
               } catch (e) {
                 return const Iterable<Autorizatario>.empty();
               }
             },
             displayStringForOption: (Autorizatario option) => option.toString(),
-            fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+            fieldViewBuilder:
+                (context, controller, focusNode, onFieldSubmitted) {
               return TextFormField(
                 controller: controller,
                 focusNode: focusNode,
                 decoration: InputDecoration(
                   labelText: 'Autorizatário',
-                  prefixIcon: Icon(Icons.person_search, color: Theme.of(context).primaryColor),
+                  prefixIcon: Icon(Icons.person_search,
+                      color: Theme.of(context).primaryColor),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -775,6 +790,7 @@ class _FormularioSectionState extends State<FormularioSection> {
             icon: Icons.notes_rounded,
             hint: 'Ex: Estrutura precarizada',
             maxLines: 3,
+            maxLength: 10,
           ),
 
           const SizedBox(height: 16),

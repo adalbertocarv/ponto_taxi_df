@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../../providers/themes/tema_provider.dart';
 
@@ -9,16 +10,19 @@ class CustomTextField extends StatelessWidget {
   final String hint;
   final int maxLines;
   final TextInputType keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
+  final int? maxLength;
 
-  const CustomTextField({
-    super.key,
-    required this.controller,
-    required this.label,
-    required this.icon,
-    required this.hint,
-    this.maxLines = 1,
-    this.keyboardType = TextInputType.text,
-  });
+  const CustomTextField(
+      {super.key,
+      required this.controller,
+      required this.label,
+      required this.icon,
+      required this.hint,
+      this.maxLines = 1,
+      this.keyboardType = TextInputType.text,
+      this.inputFormatters,
+      this.maxLength,});
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +47,9 @@ class CustomTextField extends StatelessWidget {
           controller: controller,
           maxLines: maxLines,
           keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
+          maxLength: maxLength,
+          //buildCounter: ,
           style: TextStyle(
             color: themeProvider.isDarkMode ? Colors.white : Colors.black87,
           ),
