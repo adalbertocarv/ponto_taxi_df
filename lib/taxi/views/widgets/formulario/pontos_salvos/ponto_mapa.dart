@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../controllers/mapa_controller.dart';
@@ -49,8 +50,9 @@ class PontoMapa extends StatelessWidget {
           ),
           children: [
             TileLayer(
+              tileProvider: CancellableNetworkTileProvider(),
               urlTemplate: baseTheme.urlTemplate,
-              subdomains: baseTheme.subdomains,
+              //subdomains: baseTheme.subdomains,
               tileBuilder: baseTheme.tileBuilder,
               additionalOptions: baseTheme.additionalOptions,
               userAgentPackageName: mapaController.userAgentPackage,

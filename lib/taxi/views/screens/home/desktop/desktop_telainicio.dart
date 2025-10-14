@@ -202,7 +202,7 @@ class _DesktopTelaInicioState extends State<DesktopTelaInicio> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                            Text('SUBSECRETARIA DE TECNOLOGIA \nDA INFORMAÇÃO – SUTINF 🔥🥵',
+                            Text('SUBSECRETARIA DE TECNOLOGIA \nDA INFORMAÇÃO – SUTINF',
                             style: TextStyle(
                               color: Colors.grey[900],
                                       fontSize: 12,

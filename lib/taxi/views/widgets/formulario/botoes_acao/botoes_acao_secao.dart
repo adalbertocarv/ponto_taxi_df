@@ -7,6 +7,7 @@ class BotoesAcaoSecao extends StatelessWidget {
   final TextEditingController observacoesController;
   final TextEditingController vagasController;
   final VoidCallback onSalvar;
+  final bool isLoading;
 
   const BotoesAcaoSecao({
     super.key,
@@ -14,6 +15,7 @@ class BotoesAcaoSecao extends StatelessWidget {
     required this.observacoesController,
     required this.vagasController,
     required this.onSalvar,
+    required this.isLoading,
   });
 
   // Função para determinar se é desktop
@@ -138,7 +140,7 @@ class BotoesAcaoSecao extends StatelessWidget {
               Expanded(
                 flex: 3,
                 child: ElevatedButton.icon(
-                  onPressed: _isFormValid() ? onSalvar : null,
+                  onPressed: isLoading ? null : onSalvar, // Desabilita quando carregando
                   icon: const Icon(Icons.save_rounded),
                   label: const Text('Salvar Ponto'),
                   style: ElevatedButton.styleFrom(

@@ -4,7 +4,6 @@ import '../../models/tile_layer_model.dart';
 class AppMapThemes {
   static final MapThemeData dark = MapThemeData(
     urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    subdomains: ['a', 'b', 'c'],
     tileBuilder: (context, tileWidget, tile) {
       return ColorFiltered(
         colorFilter: ColorFilter.matrix([
@@ -20,7 +19,6 @@ class AppMapThemes {
 
   static final MapThemeData light = MapThemeData(
     urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    subdomains: ['a', 'b', 'c'],
   );
 
   static final MapThemeData satellite = MapThemeData(

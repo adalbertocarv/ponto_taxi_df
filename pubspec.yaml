@@ -1,6 +1,8 @@
 name: ponto_taxi_df
 description: "Aplicativo para cadastramento de pontos de taxi no Distrito Federal"
+
 publish_to: 'none'
+
 version: 1.0.0+1
 
 environment:
@@ -34,7 +36,7 @@ dev_dependencies:
     sdk: flutter
   drift_dev: ^2.16.0
   build_runner: ^2.4.8
-
+  
   flutter_lints: ^5.0.0
 
 flutter:
