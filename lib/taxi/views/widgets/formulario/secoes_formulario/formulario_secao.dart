@@ -89,7 +89,7 @@ class _FormularioSectionState extends State<FormularioSection> {
   //---------------------------------------------------------
 
   final phoneFormatter = MaskTextInputFormatter(
-    mask: '(##) ####-####',
+    mask: '(##) #########',
     filter: {"#": RegExp(r'[0-9]')},
   );
 
@@ -444,6 +444,7 @@ class _FormularioSectionState extends State<FormularioSection> {
                   icon: Icons.directions_car_filled,
                   keyboardType: TextInputType.number,
                   hint: 'ex: 4',
+                  maxLength: 2,
                   inputFormatters: [
                     FilteringTextInputFormatter
                         .digitsOnly, // permite apenas números
@@ -741,7 +742,7 @@ class _FormularioSectionState extends State<FormularioSection> {
             icon: Icons.directions_car_filled,
             keyboardType: TextInputType.number,
             hint: 'ex: 4',
-            //maxLength: 2,
+            maxLength: 2,
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
             ],
