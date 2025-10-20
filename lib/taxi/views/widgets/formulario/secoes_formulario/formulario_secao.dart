@@ -89,7 +89,7 @@ class _FormularioSectionState extends State<FormularioSection> {
   //---------------------------------------------------------
 
   final phoneFormatter = MaskTextInputFormatter(
-    mask: '(##) ####-####',
+    mask: '(##) #########',
     filter: {"#": RegExp(r'[0-9]')},
   );
 
@@ -337,91 +337,91 @@ class _FormularioSectionState extends State<FormularioSection> {
           const SizedBox(height: 20),
 
           // Row com campos de seleção (2 colunas)
-          // Row(
-          //   children: [
-          //     Expanded(
-          //       child: DropdownButtonFormField<String>(
-          //         value: [
-          //           'Edificado',
-          //           'Não Edificado',
-          //           'Edificado Padrão Oscar Niemeyer'
-          //         ].contains(widget.classificacaoEstrutura)
-          //             ? widget.classificacaoEstrutura
-          //             : null,
-          //         decoration: InputDecoration(
-          //           labelText: 'Tipo do Abrigo',
-          //           prefixIcon: Icon(
-          //             Icons.home_filled,
-          //             color: themeProvider.primaryColor,
-          //           ),
-          //           labelStyle: TextStyle(
-          //             color: themeProvider.isDarkMode ? Colors.white70 : Colors.black87,
-          //           ),
-          //           border: OutlineInputBorder(
-          //             borderRadius: BorderRadius.circular(12),
-          //           ),
-          //           focusedBorder: OutlineInputBorder(
-          //             borderRadius: BorderRadius.circular(12),
-          //             borderSide: BorderSide(
-          //               color: themeProvider.primaryColor,
-          //               width: 2,
-          //             ),
-          //           ),
-          //           filled: true,
-          //           fillColor: theme.cardTheme.color,
-          //         ),
-          //         dropdownColor: theme.cardTheme.color,
-          //         style: TextStyle(
-          //           color: themeProvider.isDarkMode ? Colors.white : Colors.black87,
-          //         ),
-          //         items: [
-          //           'Edificado',
-          //           'Não Edificado',
-          //           'Edificado Padrão Oscar Niemeyer'
-          //         ]
-          //             .map((e) => DropdownMenuItem(
-          //           value: e,
-          //           child: Text(e),
-          //         ))
-          //             .toList(),
-          //         onChanged: widget.onClassificacaoChanged,
-          //       ),
-          //     ),
-          //     const SizedBox(width: 16),
-          //     Expanded(
-          //       child: Autocomplete<Autorizatario>(
-          //         optionsBuilder: (TextEditingValue textEditingValue) async {
-          //           if (textEditingValue.text.isEmpty) {
-          //             return const Iterable<Autorizatario>.empty();
-          //           }
-          //           try {
-          //             final results = await AutorizatarioService.buscarAutorizatarios(textEditingValue.text);
-          //             return results;
-          //           } catch (e) {
-          //             return const Iterable<Autorizatario>.empty();
-          //           }
-          //         },
-          //         displayStringForOption: (Autorizatario option) => option.toString(),
-          //         fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
-          //           return TextFormField(
-          //             controller: controller,
-          //             focusNode: focusNode,
-          //             decoration: InputDecoration(
-          //               labelText: 'Autorizatário',
-          //               prefixIcon: Icon(Icons.person_search, color: Theme.of(context).primaryColor),
-          //               border: OutlineInputBorder(
-          //                 borderRadius: BorderRadius.circular(12),
-          //               ),
-          //             ),
-          //           );
-          //         },
-          //         onSelected: (Autorizatario selection) {
-          //           widget.onAutorizatarioChanged(selection.toString());
-          //         },
-          //       ),
-          //     ),
-          //   ],
-          // ),
+          Row(
+            children: [
+              Expanded(
+                child: DropdownButtonFormField<String>(
+                  value: [
+                    'Edificado',
+                    'Não Edificado',
+                    'Edificado Padrão Oscar Niemeyer'
+                  ].contains(widget.classificacaoEstrutura)
+                      ? widget.classificacaoEstrutura
+                      : null,
+                  decoration: InputDecoration(
+                    labelText: 'Tipo do Abrigo',
+                    prefixIcon: Icon(
+                      Icons.home_filled,
+                      color: themeProvider.primaryColor,
+                    ),
+                    labelStyle: TextStyle(
+                      color: themeProvider.isDarkMode ? Colors.white70 : Colors.black87,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: themeProvider.primaryColor,
+                        width: 2,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: theme.cardTheme.color,
+                  ),
+                  dropdownColor: theme.cardTheme.color,
+                  style: TextStyle(
+                    color: themeProvider.isDarkMode ? Colors.white : Colors.black87,
+                  ),
+                  items: [
+                    'Edificado',
+                    'Não Edificado',
+                    'Edificado Padrão Oscar Niemeyer'
+                  ]
+                      .map((e) => DropdownMenuItem(
+                    value: e,
+                    child: Text(e),
+                  ))
+                      .toList(),
+                  onChanged: widget.onClassificacaoChanged,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Autocomplete<Autorizatario>(
+                  optionsBuilder: (TextEditingValue textEditingValue) async {
+                    if (textEditingValue.text.isEmpty) {
+                      return const Iterable<Autorizatario>.empty();
+                    }
+                    try {
+                      final results = await AutorizatarioService.buscarAutorizatarios(textEditingValue.text);
+                      return results;
+                    } catch (e) {
+                      return const Iterable<Autorizatario>.empty();
+                    }
+                  },
+                  displayStringForOption: (Autorizatario option) => option.toString(),
+                  fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                    return TextFormField(
+                      controller: controller,
+                      focusNode: focusNode,
+                      decoration: InputDecoration(
+                        labelText: 'Autorizatário',
+                        prefixIcon: Icon(Icons.person_search, color: Theme.of(context).primaryColor),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    );
+                  },
+                  onSelected: (Autorizatario selection) {
+                    widget.onAutorizatarioChanged(selection.toString());
+                  },
+                ),
+              ),
+            ],
+          ),
 
           // InfraestruturaDropdown(
           //   initialValue: widget.classificacaoEstrutura, // se houver
@@ -624,7 +624,7 @@ class _FormularioSectionState extends State<FormularioSection> {
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      themeProvider.primaryColor,
+                      Colors.green,
                     ),
                   ),
                 ),
