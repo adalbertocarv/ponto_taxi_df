@@ -30,6 +30,7 @@ dependencies:
   shimmer: ^3.0.0
   flutter_map_cancellable_tile_provider: ^3.1.1
   image_picker_web: ^4.0.0
+  auto_size_text: ^3.0.0 
 
 dev_dependencies:
   flutter_test:
