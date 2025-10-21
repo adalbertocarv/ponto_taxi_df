@@ -39,8 +39,8 @@ class PontoCertoTaxi extends StatelessWidget {
               debugShowCheckedModeBanner: false,
               title: 'Ponto Certo - Táxi',
               theme: themeProvider.currentTheme,
-              home: authProvider.isAuthenticated ? Sobre() : Sobre(),
-              // home: authProvider.isAuthenticated ? TelaInicioPage() : TelaInicioPage(),
+              //home: authProvider.isAuthenticated ? Sobre() : Sobre(),
+              home: authProvider.isAuthenticated ? TelaInicioPage() : TelaInicioPage(),
              //home: authProvider.isAuthenticated ? SelectionScreen() : LoginScreen(),
             );
           },
