@@ -154,7 +154,7 @@ class _SobreState extends State<Sobre> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues( alpha:0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -220,7 +220,7 @@ class _SobreState extends State<Sobre> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0069B4).withOpacity(0.1),
+                      color: const Color(0xFF0069B4).withValues( alpha:0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
@@ -277,7 +277,7 @@ class _SobreState extends State<Sobre> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues( alpha:0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -364,7 +364,7 @@ class _SobreState extends State<Sobre> {
               ),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? const Color(0xFF0069B4).withOpacity(0.15)
+                    ? const Color(0xFF0069B4).withValues( alpha:0.15)
                     : Colors.white, // Fundo branco no estado normal
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
@@ -376,14 +376,14 @@ class _SobreState extends State<Sobre> {
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: const Color(0xFF0069B4).withOpacity(0.3),
+                          color: const Color(0xFF0069B4).withValues( alpha:0.3),
                           blurRadius: 15,
                           offset: const Offset(0, 6),
                         )
                       ]
                     : [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues( alpha:0.05),
                           blurRadius: 5,
                           offset: const Offset(0, 2),
                         ),
@@ -483,7 +483,7 @@ class _SobreState extends State<Sobre> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues( alpha:0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -497,7 +497,7 @@ class _SobreState extends State<Sobre> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0069B4).withOpacity(0.1),
+                  color: const Color(0xFF0069B4).withValues( alpha:0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(

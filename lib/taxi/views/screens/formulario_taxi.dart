@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import '../../providers/themes/tema_provider.dart';
 import '../../services/endereco_osm_service.dart';
 import '../../services/login_service.dart';
-import '../../services/pre_cadastro.dart';
+import '../../services/pre_cadastro_service.dart';
 import '../widgets/formulario/pontos_salvos/pontos_salvos_secao.dart';
 import '../widgets/formulario/secoes_formulario/formulario_secao.dart';
 import '../widgets/formulario/botoes_acao/botoes_acao_secao.dart';
