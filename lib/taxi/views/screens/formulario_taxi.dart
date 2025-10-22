@@ -5,6 +5,7 @@ import 'package:ponto_taxi_df/taxi/controllers/mapa_controller.dart';
 import 'package:provider/provider.dart';
 import '../../providers/themes/tema_provider.dart';
 import '../../services/endereco_osm_service.dart';
+import '../../services/login_service.dart';
 import '../../services/pre_cadastro.dart';
 import '../widgets/formulario/pontos_salvos/pontos_salvos_secao.dart';
 import '../widgets/formulario/secoes_formulario/formulario_secao.dart';
@@ -49,12 +50,30 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
   bool _isSaving = false; // Estado de carregamento para salvamento
   final EnderecoService _enderecoService = EnderecoService();
 
+  int? _userId;
+
   @override
   void initState() {
     super.initState();
     _carregarEndereco();
     _preencherCoordenadas();
+    _loadUserId();
   }
+
+
+  // Função para carregar o ID do usuário
+  void _loadUserId() async {
+    // Chama o método do seu serviço que lê do SharedPreferences
+    final id = await LoginService.getUsuarioId();
+
+    // Atualiza o estado da tela com o ID recuperado
+    if (mounted) {
+      setState(() {
+        _userId = id;
+      });
+    }
+  }
+
 
   Future<void> _carregarEndereco() async {
     final endereco = await _enderecoService.obterEnderecoFormatado(widget.pontos);
@@ -131,7 +150,7 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
       }
 
       final sucesso = await _pontoService.salvarPonto(
-        idUsuario: 1, // Ajuste conforme sua lógica de usuário
+        idUsuario: _userId!,
         latitude: marker.point.latitude,
         longitude: marker.point.longitude,
         endereco: _enderecoController.text.trim(),
@@ -145,7 +164,7 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
             ? 'Sem observações'
             : _observacoesController.text.trim(),
         idAutorizatario: idAutorizatario,
-        paradaProxima: true, // Conforme especificado na imagem
+        //paradaProxima: true, // Conforme especificado na imagem
         numVagas: int.tryParse(_vagasController.text.trim()) ?? 0,
         abrigo: _temAbrigo,
         sinalizacao: _temSinalizacao,
