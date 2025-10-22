@@ -551,6 +551,31 @@ class _SobreState extends State<Sobre> {
     );
   }
 
+  Widget _buildBackButton(BuildContext context) {
+    return Container(
+      alignment: Alignment.topLeft,
+      child: InkWell(
+        onTap: () => Navigator.pop(context),
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: const Icon(Icons.arrow_back, size: 24),
+        ),
+      ),
+    );
+  }
+
   // --- Função Build Principal ---
 
   @override
@@ -579,6 +604,7 @@ class _SobreState extends State<Sobre> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    _buildBackButton(context),
                     // Conteúdo principal
                     _buildContent(context),
                   ],
