@@ -1,3 +1,3 @@
 class CaminhoBackend {
-  static const String baseUrl = 'http://10.233.144.111:';
+  static const String baseUrl = 'https://lathiest-gustily-carri.ngrok-free.dev';
 }

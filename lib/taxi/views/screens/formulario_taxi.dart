@@ -6,10 +6,11 @@ import 'package:provider/provider.dart';
 import '../../providers/themes/tema_provider.dart';
 import '../../services/endereco_osm_service.dart';
 import '../../services/login_service.dart';
-import '../../services/pre_cadastro_service.dart';
+import '../../services/pre_cadastro_taxi_service.dart';
 import '../widgets/formulario/pontos_salvos/pontos_salvos_secao.dart';
-import '../widgets/formulario/secoes_formulario/formulario_secao.dart';
+import '../widgets/formulario/secoes_formulario/formulario_secao_taxi.dart';
 import '../widgets/formulario/botoes_acao/botoes_acao_secao.dart';
+import 'home/tela_inicio.dart';
 
 class FormularioTaxi extends StatefulWidget {
   final List<Marker> pontos;
@@ -22,6 +23,7 @@ class FormularioTaxi extends StatefulWidget {
 class _FormularioTaxiState extends State<FormularioTaxi> {
   // Serviços
   final PontoService _pontoService = PontoService();
+  final EnderecoService _enderecoService = EnderecoService();
 
   // Controllers
   final _enderecoController = TextEditingController();
@@ -41,14 +43,15 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
 
   // Outros dados
   String _classificacaoEstrutura = 'Edificado';
+  int _idTipoInfraestrutura = 23; // ID correspondente
   String _autorizatario = '';
+  int _idAutorizatario = 45; // Valor padrão
   String? _imagemPath;
-  Uint8List? _webImage; // Para armazenar imagem da web
-  double _notaAvaliacao = 1.0; // Valor do slider
+  Uint8List? _webImage;
+  double _notaAvaliacao = 1.0;
 
   bool _isLoadingEndereco = true;
-  bool _isSaving = false; // Estado de carregamento para salvamento
-  final EnderecoService _enderecoService = EnderecoService();
+  bool _isSaving = false;
 
   int? _userId;
 
@@ -60,20 +63,16 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
     _loadUserId();
   }
 
-
   // Função para carregar o ID do usuário
   void _loadUserId() async {
-    // Chama o método do seu serviço que lê do SharedPreferences
     final id = await LoginService.getUsuarioId();
-
-    // Atualiza o estado da tela com o ID recuperado
     if (mounted) {
       setState(() {
         _userId = id;
       });
     }
+    print('User ID carregado: $_userId');
   }
-
 
   Future<void> _carregarEndereco() async {
     final endereco = await _enderecoService.obterEnderecoFormatado(widget.pontos);
@@ -99,13 +98,32 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
       _webImage = webImage;
       _imagemPath = path;
     });
+    print('Imagem selecionada - Web: ${webImage?.length ?? 0} bytes, Path: $path');
   }
 
-
-
   // Método para mapear classificação para IDs
-  int _getIdTipoInfraestrutura() {
-    switch (_classificacaoEstrutura) {
+  void _onClassificacaoChanged(String? value) {
+    if (value == null) return;
+
+    setState(() {
+      _classificacaoEstrutura = value;
+      _idTipoInfraestrutura = _getIdTipoInfraestrutura(value);
+    });
+    print('Classificação alterada: $value (ID: $_idTipoInfraestrutura)');
+  }
+
+  // Callback para quando o ID vier do InfraestruturaDropdown
+  void _onIdInfraestruturaChanged(int? id) {
+    if (id != null) {
+      setState(() {
+        _idTipoInfraestrutura = id;
+      });
+      print('ID Infraestrutura atualizado: $id');
+    }
+  }
+
+  int _getIdTipoInfraestrutura(String classificacao) {
+    switch (classificacao) {
       case 'Edificado':
         return 23;
       case 'Não Edificado':
@@ -117,45 +135,107 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
     }
   }
 
+  // Método para extrair ID do autorizatário
+  void _onAutorizatarioChanged(String? value) {
+    if (value == null || value.isEmpty) return;
+
+    setState(() {
+      _autorizatario = value;
+
+      // Tenta extrair o ID (formato esperado: "ID - Nome")
+      if (value.contains(' - ')) {
+        final parts = value.split(' - ');
+        _idAutorizatario = int.tryParse(parts[0].trim()) ?? 45;
+      } else {
+        // Se não tiver o formato esperado, tenta converter diretamente
+        _idAutorizatario = int.tryParse(value.trim()) ?? 45;
+      }
+    });
+    print('Autorizatário alterado: $value (ID: $_idAutorizatario)');
+  }
+
   // Método principal de salvamento
   Future<void> _salvar() async {
-    if (_isSaving) return; // Previne múltiplos envios
+    if (_isSaving) {
+      print('⚠️ Já está salvando, aguarde...');
+      return;
+    }
+
+    print('\n=== INICIANDO VALIDAÇÕES ===');
+
+    // Validação do usuário
+    if (_userId == null) {
+      _mostrarErro('Erro: Usuário não identificado. Faça login novamente.');
+      print('❌ User ID não encontrado');
+      return;
+    }
 
     // Validações básicas
     if (_enderecoController.text.trim().isEmpty) {
       _mostrarErro('Endereço é obrigatório');
+      print('❌ Endereço vazio');
       return;
     }
 
     if (_vagasController.text.trim().isEmpty) {
       _mostrarErro('Número de vagas é obrigatório');
+      print('❌ Número de vagas vazio');
+      return;
+    }
+
+    final numVagas = int.tryParse(_vagasController.text.trim());
+    if (numVagas == null || numVagas <= 0) {
+      _mostrarErro('Número de vagas inválido');
+      print('❌ Número de vagas inválido: ${_vagasController.text}');
       return;
     }
 
     if (_autorizatario.trim().isEmpty) {
       _mostrarErro('Autorizatário é obrigatório');
+      print('❌ Autorizatário vazio');
       return;
     }
+
+    if (widget.pontos.isEmpty) {
+      _mostrarErro('Nenhum ponto marcado no mapa');
+      print('❌ Nenhum ponto no mapa');
+      return;
+    }
+
+    print('✅ Validações OK');
+    print('=== DADOS DO FORMULÁRIO ===');
+    print('User ID: $_userId');
+    print('Endereço: ${_enderecoController.text.trim()}');
+    print('Vagas: $numVagas');
+    print('Autorizatário: $_autorizatario (ID: $_idAutorizatario)');
+    print('Classificação: $_classificacaoEstrutura (ID: $_idTipoInfraestrutura)');
+    print('Ponto Oficial: $_pontoOficial');
+    print('Sinalização: $_temSinalizacao');
+    print('Abrigo: $_temAbrigo');
+    print('Energia: $_temEnergia');
+    print('Água: $_temAgua');
+    print('Nota: $_notaAvaliacao');
+    print('Observações Avaliação: ${_observacoesAvController.text.trim()}');
+    print('Observações: ${_observacoesController.text.trim()}');
+    print('Imagem Web: ${_webImage != null ? '${_webImage!.length} bytes' : 'Não'}');
+    print('Imagem Path: ${_imagemPath ?? 'Não'}');
 
     setState(() => _isSaving = true);
 
     try {
       final marker = widget.pontos.first;
 
-      // Extrai ID do autorizatário (assumindo formato "ID - Nome")
-      int idAutorizatario = 45; // Valor padrão
-      if (_autorizatario.contains(' - ')) {
-        final parts = _autorizatario.split(' - ');
-        idAutorizatario = int.tryParse(parts[0]) ?? 45;
-      }
+      print('\n=== COORDENADAS ===');
+      print('Latitude: ${marker.point.latitude}');
+      print('Longitude: ${marker.point.longitude}');
 
       final sucesso = await _pontoService.salvarPonto(
         idUsuario: _userId!,
         latitude: marker.point.latitude,
         longitude: marker.point.longitude,
         endereco: _enderecoController.text.trim(),
-        idGrupoInfraestrutura: 2, // Conforme especificado na imagem
-        idTipoInfraestrutura: _getIdTipoInfraestrutura(),
+        idGrupoInfraestrutura: 2, // Deve ter um endpoint informando qual o tipo. Por enquanto vai no código mesmo.
+        idTipoInfraestrutura: _idTipoInfraestrutura,
         codAvaliacao: _notaAvaliacao.toInt(),
         descAvaliacao: _observacoesAvController.text.trim().isEmpty
             ? 'Sem observações de avaliação'
@@ -163,9 +243,8 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
         observacao: _observacoesController.text.trim().isEmpty
             ? 'Sem observações'
             : _observacoesController.text.trim(),
-        idAutorizatario: idAutorizatario,
-        //paradaProxima: true, // Conforme especificado na imagem
-        numVagas: int.tryParse(_vagasController.text.trim()) ?? 0,
+        idAutorizatario: _idAutorizatario,
+        numVagas: numVagas,
         abrigo: _temAbrigo,
         sinalizacao: _temSinalizacao,
         energia: _temEnergia,
@@ -175,23 +254,33 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
         imagePath: _imagemPath,
       );
 
-      if (mounted) {
-        if (sucesso) {
-          final mapaController = context.read<MapaController>();
-          mapaController.showSuccess('Ponto salvo com sucesso! 🎉');
+      if (!mounted) return;
 
-          // Aguarda um pouco e volta para a tela anterior
-          await Future.delayed(const Duration(seconds: 2));
-          if (mounted) {
-            Navigator.pop(context);
-          }
-        } else {
-          _mostrarErro('Erro ao salvar o ponto. Tente novamente.');
-        }
+      if (sucesso) {
+        print('\n✅ SUCESSO NO SALVAMENTO');
+
+        final mapaController = context.read<MapaController>();
+        mapaController.showSuccess('Ponto salvo com sucesso! 🎉');
+
+        // Mostra diálogo de sucesso
+        await _mostrarDialogoSucesso();
+
+        // Limpa o formulário
+        _limparFormulario();
+
+        // O popUntil já é feito no botão OK do diálogo
+        // Não precisa fazer aqui
+      } else {
+        print('\n❌ FALHA NO SALVAMENTO');
+        _mostrarErro('Erro ao salvar o ponto. Verifique os dados e tente novamente.');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('\n❌ EXCEÇÃO NO SALVAMENTO');
+      print('Erro: $e');
+      print('Stack: $stackTrace');
+
       if (mounted) {
-        _mostrarErro('Erro inesperado ao salvar o ponto.');
+        _mostrarErro('Erro inesperado ao salvar o ponto. Tente novamente.');
       }
     } finally {
       if (mounted) {
@@ -200,12 +289,147 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
     }
   }
 
+  Future<void> _mostrarDialogoSucesso() async {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Row(
+            children: [
+              Icon(Icons.check_circle, color: Color(0xFF27AE60), size: 32),
+              SizedBox(width: 12),
+              Text('Sucesso!'),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Ponto de táxi cadastrado com sucesso!',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildInfoRow('Endereço', _enderecoController.text),
+                    const SizedBox(height: 8),
+                    _buildInfoRow('Vagas', _vagasController.text),
+                    const SizedBox(height: 8),
+                    _buildInfoRow('Avaliação', '${_notaAvaliacao.toInt()}/5'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                // Fecha o diálogo primeiro
+                Navigator.of(context).pop();
+
+                // Reseta o estado do MapaController
+                final mapaController = context.read<MapaController>();
+                mapaController.limparMarkers(); // Método que limpa TUDO
+
+                // Pequeno delay para garantir que o estado foi limpo
+                await Future.delayed(const Duration(milliseconds: 100));
+
+                // Volta para a página inicial removendo todas as rotas
+                if (mounted) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const TelaInicioPage()),
+                        (route) => false,
+                  );
+                }
+              },
+              style: TextButton.styleFrom(
+                backgroundColor: const Color(0xFF27AE60),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('OK', style: TextStyle(fontSize: 16)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '$label: ',
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+          ),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(fontSize: 14),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _limparFormulario() {
+    _enderecoController.clear();
+    _observacoesController.clear();
+    _observacoesAvController.clear();
+    _vagasController.clear();
+    _telefoneController.clear();
+
+    setState(() {
+      _pontoOficial = false;
+      _temSinalizacao = false;
+      _temAbrigo = false;
+      _temEnergia = false;
+      _temAgua = false;
+      _classificacaoEstrutura = 'Edificado';
+      _idTipoInfraestrutura = 23;
+      _autorizatario = '';
+      _idAutorizatario = 45;
+      _imagemPath = null;
+      _webImage = null;
+      _notaAvaliacao = 1.0;
+    });
+  }
+
   void _mostrarErro(String mensagem) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(mensagem),
-        backgroundColor: Colors.red,
-        duration: const Duration(seconds: 3),
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white),
+            const SizedBox(width: 8),
+            Expanded(child: Text(mensagem)),
+          ],
+        ),
+        backgroundColor: const Color(0xFFE74C3C),
+        duration: const Duration(seconds: 4),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
       ),
     );
   }
@@ -222,7 +446,6 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
           PontosSalvosSecao(pontos: widget.pontos),
           const SizedBox(height: 24),
           FormularioSection(
-            // controllers
             enderecoController: _enderecoController,
             observacoesController: _observacoesController,
             observacoesAvController: _observacoesAvController,
@@ -230,7 +453,6 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
             telefoneController: _telefoneController,
             latitudeController: _latitudeController,
             longitudeController: _longitudeController,
-            // valores
             pontoOficial: _pontoOficial,
             temSinalizacao: _temSinalizacao,
             temAbrigo: _temAbrigo,
@@ -241,16 +463,16 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
             isLoadingEndereco: _isLoadingEndereco,
             imagemSelecionada: _imagemPath,
             valor: _notaAvaliacao,
-            // callbacks
             onPontoOficialChanged: (v) => setState(() => _pontoOficial = v),
             onTemSinalizacaoChanged: (v) => setState(() => _temSinalizacao = v),
             onTemAbrigoChanged: (v) => setState(() => _temAbrigo = v),
             onTemEnergiaChanged: (v) => setState(() => _temEnergia = v),
             onTemAguaChanged: (v) => setState(() => _temAgua = v),
-            onClassificacaoChanged: (v) => setState(() => _classificacaoEstrutura = v ?? ''),
-            onAutorizatarioChanged: (v) => setState(() => _autorizatario = v ?? ''),
+            onClassificacaoChanged: _onClassificacaoChanged,
+            onAutorizatarioChanged: _onAutorizatarioChanged,
             onImagemSelecionada: _onImagemSelecionada,
-            onNotaChanged: (v) => setState(() => _notaAvaliacao = v), onIdChanged: (int? value) {  },
+            onNotaChanged: (v) => setState(() => _notaAvaliacao = v),
+            onIdChanged: _onIdInfraestruturaChanged,
           ),
           const SizedBox(height: 32),
           BotoesAcaoSecao(
@@ -258,8 +480,9 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
             observacoesController: _observacoesController,
             vagasController: _vagasController,
             onSalvar: _salvar,
-            isLoading: _isSaving, // Passa o estado de carregamento
+            isLoading: _isSaving,
           ),
+          const SizedBox(height: 16),
         ],
       ),
     );
@@ -294,7 +517,6 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
                     child: Column(
                       children: [
                         FormularioSection(
-                          // controllers
                           enderecoController: _enderecoController,
                           observacoesController: _observacoesController,
                           observacoesAvController: _observacoesAvController,
@@ -302,7 +524,6 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
                           telefoneController: _telefoneController,
                           latitudeController: _latitudeController,
                           longitudeController: _longitudeController,
-                          // valores
                           pontoOficial: _pontoOficial,
                           temSinalizacao: _temSinalizacao,
                           temAbrigo: _temAbrigo,
@@ -313,16 +534,16 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
                           isLoadingEndereco: _isLoadingEndereco,
                           imagemSelecionada: _imagemPath,
                           valor: _notaAvaliacao,
-                          // callbacks
                           onPontoOficialChanged: (v) => setState(() => _pontoOficial = v),
                           onTemSinalizacaoChanged: (v) => setState(() => _temSinalizacao = v),
                           onTemAbrigoChanged: (v) => setState(() => _temAbrigo = v),
                           onTemEnergiaChanged: (v) => setState(() => _temEnergia = v),
                           onTemAguaChanged: (v) => setState(() => _temAgua = v),
-                          onClassificacaoChanged: (v) => setState(() => _classificacaoEstrutura = v ?? ''),
-                          onAutorizatarioChanged: (v) => setState(() => _autorizatario = v ?? ''),
+                          onClassificacaoChanged: _onClassificacaoChanged,
+                          onAutorizatarioChanged: _onAutorizatarioChanged,
                           onImagemSelecionada: _onImagemSelecionada,
-                          onNotaChanged: (v) => setState(() => _notaAvaliacao = v), onIdChanged: (int? value) {  },
+                          onNotaChanged: (v) => setState(() => _notaAvaliacao = v),
+                          onIdChanged: _onIdInfraestruturaChanged,
                         ),
                         const SizedBox(height: 32),
                         BotoesAcaoSecao(
@@ -484,50 +705,6 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final themeProvider = context.watch<ThemeProvider>();
-
-    return Scaffold(
-      backgroundColor: themeProvider.isDarkMode
-          ? const Color(0xFF1A1A1A)
-          : const Color(0xFFF5F7FA),
-      appBar: !_isDesktop(context)
-          ? AppBar(
-        title: const Column(
-          children: [
-            Text(
-              'Formulário Táxi',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.amber,
-        foregroundColor: Colors.white,
-        elevation: _isDesktop(context) ? 0 : null,
-        centerTitle: !_isDesktop(context),
-      )
-          : null,
-      body: SafeArea(
-        child: _isDesktop(context)
-            ? _buildDesktopLayout(context)
-            : _buildMobileLayout(context),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _enderecoController.dispose();
-    _observacoesController.dispose();
-    _vagasController.dispose();
-    _telefoneController.dispose();
-    _latitudeController.dispose();
-    _longitudeController.dispose();
-    _observacoesAvController.dispose();
-    super.dispose();
-  }
-
   Widget _buildBackButton(BuildContext context) {
     return Container(
       alignment: Alignment.topLeft,
@@ -551,5 +728,66 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
         ),
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+
+    return Scaffold(
+      backgroundColor: themeProvider.isDarkMode
+          ? const Color(0xFF1A1A1A)
+          : const Color(0xFFF5F7FA),
+      appBar: !_isDesktop(context)
+          ? AppBar(
+        title: const Text(
+          'Formulário Táxi',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.amber,
+        foregroundColor: Colors.white,
+        centerTitle: true,
+      )
+          : null,
+      body: SafeArea(
+        child: _isSaving
+            ? Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const CircularProgressIndicator(
+                color: Color(0xFF27AE60),
+                strokeWidth: 3,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Salvando ponto de táxi...',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: themeProvider.isDarkMode
+                      ? Colors.white70
+                      : Colors.black54,
+                ),
+              ),
+            ],
+          ),
+        )
+            : _isDesktop(context)
+            ? _buildDesktopLayout(context)
+            : _buildMobileLayout(context),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _enderecoController.dispose();
+    _observacoesController.dispose();
+    _vagasController.dispose();
+    _telefoneController.dispose();
+    _latitudeController.dispose();
+    _longitudeController.dispose();
+    _observacoesAvController.dispose();
+    super.dispose();
   }
 }

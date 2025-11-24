@@ -647,7 +647,7 @@ class SelecaoForm extends StatelessWidget {
       context,
       MaterialPageRoute(
         //builder: (context) => FormularioSTIP(pontos: pontos),
-        builder: (context) => FormularioTaxi(pontos: pontos),
+        builder: (context) => FormularioSTIP(pontos: pontos),
       ),
     );
   }

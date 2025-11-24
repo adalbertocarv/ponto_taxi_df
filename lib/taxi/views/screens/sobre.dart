@@ -424,8 +424,8 @@ class _SobreState extends State<Sobre> {
         _buildTeamCard(
           'Equipe Demandante/Organizacional',
           [
-            'Ana Carolina Pereira de Araújo',
-            'Gerson Antônio Silva Soares Ferreira'
+            '',
+            ''
           ],
           Icons.business,
         ),
@@ -433,10 +433,10 @@ class _SobreState extends State<Sobre> {
         _buildTeamCard(
           'Equipe de Desenvolvimento',
           [
-            'Adalberto Carvalho Santos Júnior',
-            'Ednardo de Oliveira Ferreira',
-            'Gabriel Pedro Veras',
-            'Lucas Bezerra da Cruz',
+            '',
+            '',
+            '',
+            '',
           ],
           Icons.code,
         ),
@@ -452,8 +452,8 @@ class _SobreState extends State<Sobre> {
           child: _buildTeamCard(
             'Equipe Demandante/Organizacional',
             [
-              'Ana Carolina Pereira de Araújo',
-              'Gerson Antônio Silva Soares Ferreira'
+              '',
+              ''
             ],
             Icons.business,
           ),
@@ -463,10 +463,10 @@ class _SobreState extends State<Sobre> {
           child: _buildTeamCard(
             'Equipe de Desenvolvimento',
             [
-              'Adalberto Carvalho Santos Júnior',
-              'Ednardo de Oliveira Ferreira',
-              'Gabriel Pedro Veras',
-              'Lucas Bezerra da Cruz',
+              '',
+              '',
+              '',
+              '',
             ],
             Icons.code,
           ),

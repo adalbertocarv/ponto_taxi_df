@@ -6,7 +6,7 @@ import 'package:ponto_taxi_df/taxi/views/screens/sobre.dart';
 import 'package:provider/provider.dart';
 import '../../controllers/modo_app_controller.dart';
 import '../../providers/themes/tema_provider.dart';
-import '../../providers/autenticacao/auth_provider.dart';
+import '../../providers/auth/auth_provider.dart';
 import '../widgets/confirmacao_modo_app.dart';
 import '../widgets/multi_clique.dart';
 

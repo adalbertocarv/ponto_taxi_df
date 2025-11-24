@@ -8,7 +8,7 @@ import 'package:ponto_taxi_df/taxi/services/url_backend_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginService {
-  static const String backend = CaminhoBackend.baseUrl;
+  static const String backend = 'http://10.233.144.111:8080';
 
   // Função para converter senha em MD5 e depois para hexadecimal
   static String _convertToMd5Hex(String password) {
@@ -18,7 +18,7 @@ class LoginService {
   }
 
   static Future<Map<String, dynamic>> login(String username, String senha) async {
-    final url = Uri.parse('${backend}8080/valida-md5/validar');
+    final url = Uri.parse('$backend/valida-md5/validar');
 
     try {
       // Converte a senha para MD5 em hexadecimal

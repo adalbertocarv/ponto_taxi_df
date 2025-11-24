@@ -340,55 +340,6 @@ class _FormularioSectionState extends State<FormularioSection> {
           Row(
             children: [
               Expanded(
-                child: DropdownButtonFormField<String>(
-                  value: [
-                    'Edificado',
-                    'Não Edificado',
-                    'Edificado Padrão Oscar Niemeyer'
-                  ].contains(widget.classificacaoEstrutura)
-                      ? widget.classificacaoEstrutura
-                      : null,
-                  decoration: InputDecoration(
-                    labelText: 'Tipo do Abrigo',
-                    prefixIcon: Icon(
-                      Icons.home_filled,
-                      color: themeProvider.primaryColor,
-                    ),
-                    labelStyle: TextStyle(
-                      color: themeProvider.isDarkMode ? Colors.white70 : Colors.black87,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: themeProvider.primaryColor,
-                        width: 2,
-                      ),
-                    ),
-                    filled: true,
-                    fillColor: theme.cardTheme.color,
-                  ),
-                  dropdownColor: theme.cardTheme.color,
-                  style: TextStyle(
-                    color: themeProvider.isDarkMode ? Colors.white : Colors.black87,
-                  ),
-                  items: [
-                    'Edificado',
-                    'Não Edificado',
-                    'Edificado Padrão Oscar Niemeyer'
-                  ]
-                      .map((e) => DropdownMenuItem(
-                    value: e,
-                    child: Text(e),
-                  ))
-                      .toList(),
-                  onChanged: widget.onClassificacaoChanged,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
                 child: Autocomplete<Autorizatario>(
                   optionsBuilder: (TextEditingValue textEditingValue) async {
                     if (textEditingValue.text.isEmpty) {
@@ -422,15 +373,16 @@ class _FormularioSectionState extends State<FormularioSection> {
               ),
             ],
           ),
+          const SizedBox(height: 20),
 
-          // InfraestruturaDropdown(
-          //   initialValue: widget.classificacaoEstrutura, // se houver
-          //   onChanged: (infra) {
-          //     widget.onClassificacaoChanged(infra.nomeInfraestrutura);
-          //     // Se precisar do id também:
-          //     widget.onIdChanged(infra.idTipoInfraestrutura);
-          //   },
-          // ),
+          InfraestruturaDropdown(
+            initialValue: widget.classificacaoEstrutura, // se houver
+            onChanged: (infra) {
+              widget.onClassificacaoChanged(infra.nomeInfraestrutura);
+              // Se precisar do id também:
+              widget.onIdChanged(infra.idTipoInfraestrutura);
+            },
+          ),
 
           const SizedBox(height: 20),
 

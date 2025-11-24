@@ -7,7 +7,7 @@ class PerfilService {
   static const String backend = CaminhoBackend.baseUrl;
 
   Future<Usuario?> buscarInfoUsuario(String idUsuario) async {
-    final url = Uri.parse('${backend}3000/funcionarios/$idUsuario');
+    final url = Uri.parse('${backend}/funcionarios/$idUsuario');
 
     final response = await http.get(url);
 

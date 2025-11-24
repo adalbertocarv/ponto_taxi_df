@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ponto_taxi_df/taxi/views/screens/selecao_modo_app.dart';
 import 'package:provider/provider.dart';
-import '../../providers/autenticacao/auth_provider.dart';
+import '../../providers/auth/auth_provider.dart';
 import '../../services/login_service.dart';
 
 class LoginScreen extends StatefulWidget {
