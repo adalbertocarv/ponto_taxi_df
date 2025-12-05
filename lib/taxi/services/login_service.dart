@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
-import 'package:ponto_taxi_df/taxi/services/url_backend_model.dart';
+import 'package:ponto_taxi_df/taxi/models/url_backend_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginService {

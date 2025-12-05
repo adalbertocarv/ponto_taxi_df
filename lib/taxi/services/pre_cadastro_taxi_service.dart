@@ -45,8 +45,6 @@ class PontoService {
     String? imagePath,
   }) async {
     try {
-      print('=== INICIANDO ENVIO ===');
-      print('URL: $baseUrl/pre/cadastro/infraestrutura');
 
       FormData formData = FormData();
 
@@ -70,16 +68,12 @@ class PontoService {
         'ponto_oficial': pontoOficial.toString(),
       };
 
-      print('=== CAMPOS DO FORMULÁRIO ===');
       fields.forEach((key, value) {
-        print('$key: $value');
         formData.fields.add(MapEntry(key, value));
       });
 
       // Adiciona imagem se existir
       if (kIsWeb && webImage != null && webImage.isNotEmpty) {
-        print('=== ADICIONANDO IMAGEM WEB ===');
-        print('Tamanho: ${webImage.length} bytes');
 
         formData.files.add(
           MapEntry(
@@ -92,8 +86,6 @@ class PontoService {
           ),
         );
       } else if (!kIsWeb && imagePath != null && imagePath.isNotEmpty) {
-        print('=== ADICIONANDO IMAGEM MOBILE ===');
-        print('Path: $imagePath');
 
         try {
           formData.files.add(
@@ -107,14 +99,11 @@ class PontoService {
             ),
           );
         } catch (e) {
-          print('Erro ao adicionar imagem do arquivo: $e');
           // Continua sem a imagem se houver erro
         }
       } else {
-        print('=== NENHUMA IMAGEM FORNECIDA ===');
       }
 
-      print('=== ENVIANDO REQUISIÇÃO ===');
 
       final response = await _dio.post(
         '/pre/cadastro/infraestrutura',
@@ -127,35 +116,20 @@ class PontoService {
         ),
       );
 
-      print('=== RESPOSTA RECEBIDA ===');
-      print('Status: ${response.statusCode}');
-      print('Body: ${response.data}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print('✅ PONTO SALVO COM SUCESSO');
         return true;
       } else {
-        print('❌ ERRO: Status ${response.statusCode}');
-        print('Resposta: ${response.data}');
         return false;
       }
 
     } on DioException catch (e) {
-      print('=== ERRO DIO ===');
-      print('Tipo: ${e.type}');
-      print('Mensagem: ${e.message}');
-      print('Response: ${e.response?.data}');
-      print('Status Code: ${e.response?.statusCode}');
 
       if (e.response != null) {
-        print('Headers: ${e.response?.headers}');
       }
 
       return false;
     } catch (e, stackTrace) {
-      print('=== ERRO GENÉRICO ===');
-      print('Erro: $e');
-      print('Stack: $stackTrace');
       return false;
     }
   }

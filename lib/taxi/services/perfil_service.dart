@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'url_backend_model.dart';
+import '../models/url_backend_model.dart';
 import '../models/usuario_model.dart';
 
 class PerfilService {

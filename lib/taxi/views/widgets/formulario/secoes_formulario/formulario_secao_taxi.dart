@@ -585,66 +585,34 @@ class _FormularioSectionState extends State<FormularioSection> {
           ),
           const SizedBox(height: 16),
 
-          DropdownButtonFormField<String>(
-            value: <String>[
-              'Edificado',
-              'Não Edificado',
-              'Edificado Padrão Oscar Niemeyer'
-            ].contains(widget.classificacaoEstrutura)
-                ? widget.classificacaoEstrutura
-                : null,
-            decoration: InputDecoration(
-              labelText: 'Tipo do Abrigo',
-              prefixIcon: Icon(
-                Icons.home_filled,
-                color: themeProvider.primaryColor,
-              ),
-              labelStyle: TextStyle(
-                color:
-                    themeProvider.isDarkMode ? Colors.white70 : Colors.black87,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: themeProvider.isDarkMode
-                      ? Colors.grey.shade700
-                      : Colors.grey.shade300,
+          Row(
+            children: [
+              Expanded(
+                child: InfraestruturaDropdown(
+                  initialValue: widget.classificacaoEstrutura.isNotEmpty
+                      ? widget.classificacaoEstrutura
+                      : null,
+                  onChanged: (infra) {
+                    widget.onClassificacaoChanged(infra.nomeInfraestrutura);
+                    widget.onIdChanged(infra.idTipoInfraestrutura);
+                  },
                 ),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: themeProvider.primaryColor,
-                  width: 2,
+              const SizedBox(width: 16),
+              Expanded(
+                child: CustomTextField(
+                  controller: widget.vagasController,
+                  label: 'Nº de Vagas',
+                  icon: Icons.directions_car_filled,
+                  keyboardType: TextInputType.number,
+                  hint: 'ex: 4',
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
                 ),
               ),
-              filled: true,
-              fillColor: theme.cardTheme.color,
-            ),
-            dropdownColor: theme.cardTheme.color,
-            style: TextStyle(
-              color: themeProvider.isDarkMode ? Colors.white : Colors.black87,
-            ),
-            items: [
-              'Edificado',
-              'Não Edificado',
-              'Edificado Padrão Oscar Niemeyer'
-            ]
-                .map((e) => DropdownMenuItem(
-                      value: e,
-                      child: Text(
-                        e,
-                        style: TextStyle(
-                          color: themeProvider.isDarkMode
-                              ? Colors.white
-                              : Colors.black87,
-                        ),
-                      ),
-                    ))
-                .toList(),
-            onChanged: widget.onClassificacaoChanged,
+            ],
           ),
-
           const SizedBox(height: 16),
 
           buildBooleanField(

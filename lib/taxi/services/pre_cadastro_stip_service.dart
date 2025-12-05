@@ -116,20 +116,10 @@ class PreCadastroStipService {
         return true;
       }
 
-      print("Erro ao enviar STIP. Status: ${response.statusCode}");
-      print("Resposta: ${response.data}");
       return false;
     } on DioException catch (e) {
-      print('=== ERRO DIO ===');
-      print('Mensagem: ${e.message}');
-      print('Status Code: ${e.response?.statusCode}');
-      print('Headers: ${e.response?.headers}');
-      print('Body: ${e.response?.data}');
       return false;
     } catch (e, stack) {
-      print('=== ERRO GENÉRICO ===');
-      print('Erro: $e');
-      print('Stack: $stack');
       return false;
     }
   }

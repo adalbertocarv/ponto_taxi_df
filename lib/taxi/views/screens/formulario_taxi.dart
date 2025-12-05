@@ -71,7 +71,6 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
         _userId = id;
       });
     }
-    print('User ID carregado: $_userId');
   }
 
   Future<void> _carregarEndereco() async {
@@ -98,7 +97,6 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
       _webImage = webImage;
       _imagemPath = path;
     });
-    print('Imagem selecionada - Web: ${webImage?.length ?? 0} bytes, Path: $path');
   }
 
   // Método para mapear classificação para IDs
@@ -109,7 +107,6 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
       _classificacaoEstrutura = value;
       _idTipoInfraestrutura = _getIdTipoInfraestrutura(value);
     });
-    print('Classificação alterada: $value (ID: $_idTipoInfraestrutura)');
   }
 
   // Callback para quando o ID vier do InfraestruturaDropdown
@@ -118,7 +115,6 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
       setState(() {
         _idTipoInfraestrutura = id;
       });
-      print('ID Infraestrutura atualizado: $id');
     }
   }
 
@@ -151,83 +147,54 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
         _idAutorizatario = int.tryParse(value.trim()) ?? 45;
       }
     });
-    print('Autorizatário alterado: $value (ID: $_idAutorizatario)');
   }
 
   // Método principal de salvamento
   Future<void> _salvar() async {
     if (_isSaving) {
-      print('⚠️ Já está salvando, aguarde...');
       return;
     }
 
-    print('\n=== INICIANDO VALIDAÇÕES ===');
 
     // Validação do usuário
     if (_userId == null) {
       _mostrarErro('Erro: Usuário não identificado. Faça login novamente.');
-      print('❌ User ID não encontrado');
       return;
     }
 
     // Validações básicas
     if (_enderecoController.text.trim().isEmpty) {
       _mostrarErro('Endereço é obrigatório');
-      print('❌ Endereço vazio');
       return;
     }
 
     if (_vagasController.text.trim().isEmpty) {
       _mostrarErro('Número de vagas é obrigatório');
-      print('❌ Número de vagas vazio');
       return;
     }
 
     final numVagas = int.tryParse(_vagasController.text.trim());
     if (numVagas == null || numVagas <= 0) {
       _mostrarErro('Número de vagas inválido');
-      print('❌ Número de vagas inválido: ${_vagasController.text}');
       return;
     }
 
     if (_autorizatario.trim().isEmpty) {
       _mostrarErro('Autorizatário é obrigatório');
-      print('❌ Autorizatário vazio');
       return;
     }
 
     if (widget.pontos.isEmpty) {
       _mostrarErro('Nenhum ponto marcado no mapa');
-      print('❌ Nenhum ponto no mapa');
       return;
     }
 
-    print('✅ Validações OK');
-    print('=== DADOS DO FORMULÁRIO ===');
-    print('User ID: $_userId');
-    print('Endereço: ${_enderecoController.text.trim()}');
-    print('Vagas: $numVagas');
-    print('Autorizatário: $_autorizatario (ID: $_idAutorizatario)');
-    print('Classificação: $_classificacaoEstrutura (ID: $_idTipoInfraestrutura)');
-    print('Ponto Oficial: $_pontoOficial');
-    print('Sinalização: $_temSinalizacao');
-    print('Abrigo: $_temAbrigo');
-    print('Energia: $_temEnergia');
-    print('Água: $_temAgua');
-    print('Nota: $_notaAvaliacao');
-    print('Observações Avaliação: ${_observacoesAvController.text.trim()}');
-    print('Observações: ${_observacoesController.text.trim()}');
-    print('Imagem Web: ${_webImage != null ? '${_webImage!.length} bytes' : 'Não'}');
-    print('Imagem Path: ${_imagemPath ?? 'Não'}');
 
     setState(() => _isSaving = true);
 
     try {
       final marker = widget.pontos.first;
 
-      print('\n=== COORDENADAS ===');
-      print('Latitude: ${marker.point.latitude}');
-      print('Longitude: ${marker.point.longitude}');
 
       final sucesso = await _pontoService.salvarPonto(
         idUsuario: _userId!,
@@ -257,7 +224,6 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
       if (!mounted) return;
 
       if (sucesso) {
-        print('\n✅ SUCESSO NO SALVAMENTO');
 
         final mapaController = context.read<MapaController>();
         mapaController.showSuccess('Ponto salvo com sucesso! 🎉');
@@ -271,13 +237,9 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
         // O popUntil já é feito no botão OK do diálogo
         // Não precisa fazer aqui
       } else {
-        print('\n❌ FALHA NO SALVAMENTO');
         _mostrarErro('Erro ao salvar o ponto. Verifique os dados e tente novamente.');
       }
     } catch (e, stackTrace) {
-      print('\n❌ EXCEÇÃO NO SALVAMENTO');
-      print('Erro: $e');
-      print('Stack: $stackTrace');
 
       if (mounted) {
         _mostrarErro('Erro inesperado ao salvar o ponto. Tente novamente.');

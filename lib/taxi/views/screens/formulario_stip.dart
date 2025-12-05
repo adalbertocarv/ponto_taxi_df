@@ -74,7 +74,6 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
         _userId = id;
       });
     }
-    print('User ID carregado: $_userId');
   }
 
   Future<void> _carregarEndereco() async {
@@ -100,7 +99,6 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
       _webImage = webImage;
       _imagemPath = path;
     });
-    print('Imagem selecionada - Web: ${webImage?.length ?? 0} bytes, Path: $path');
   }
 
   // Callback para quando a infraestrutura for alterada
@@ -109,7 +107,6 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
     setState(() {
       _classificacaoEstrutura = value;
     });
-    print('Classificação alterada: $value');
   }
 
   // Callback para quando o ID da infraestrutura vier do dropdown
@@ -118,87 +115,54 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
       setState(() {
         _idTipoInfraestrutura = id;
       });
-      print('ID Infraestrutura atualizado: $id');
     }
   }
 
   Future<void> _salvar() async {
     if (_isSaving) {
-      print('⚠️ Já está salvando, aguarde...');
       return;
     }
 
-    print('\n=== INICIANDO VALIDAÇÕES ===');
 
     // Validação do usuário
     if (_userId == null) {
       _mostrarErro('Erro: Usuário não identificado. Faça login novamente.');
-      print('❌ User ID não encontrado');
       return;
     }
 
     // Validações básicas
     if (_enderecoController.text.trim().isEmpty) {
       _mostrarErro('Endereço é obrigatório');
-      print('❌ Endereço vazio');
       return;
     }
 
     if (_vagasController.text.trim().isEmpty) {
       _mostrarErro('Número de vagas é obrigatório');
-      print('❌ Número de vagas vazio');
       return;
     }
 
     final numVagas = int.tryParse(_vagasController.text.trim());
     if (numVagas == null || numVagas <= 0) {
       _mostrarErro('Número de vagas inválido');
-      print('❌ Número de vagas inválido: ${_vagasController.text}');
       return;
     }
 
     if (_idTipoInfraestrutura == 0) {
       _mostrarErro('Selecione o tipo de infraestrutura');
-      print('❌ Tipo de infraestrutura não selecionado');
       return;
     }
 
     if (widget.pontos.isEmpty) {
       _mostrarErro('Nenhum ponto marcado no mapa');
-      print('❌ Nenhum ponto no mapa');
       return;
     }
 
-    print('✅ Validações OK');
-    print('=== DADOS DO FORMULÁRIO STIP ===');
-    print('User ID: $_userId');
-    print('Endereço: ${_enderecoController.text.trim()}');
-    print('Vagas: $numVagas');
-    print('Tipo Infraestrutura: $_classificacaoEstrutura (ID: $_idTipoInfraestrutura)');
-    print('Sanitários Masc/Fem: $_temSanitariosMascFem');
-    print('Chuveiros Individuais: $_temChuveirosIndividuais');
-    print('Vestuários: $_temVestuarios');
-    print('Sala de Descanso: $_temSalaDescanso');
-    print('Wi-fi: $_temWifi');
-    print('Pontos para carregar celular: $_temPontosCarregarCelular');
-    print('Espaço para refeição: $_temEspacoRefeicao');
-    print('Espaço para estacionar bike: $_temEspacoEstacionarBike');
-    print('Ponto de espera: $_temPontoEspera');
-    print('Empresa garante manutenção: $_empresaGaranteManutencao');
-    print('Nota: $_notaAvaliacao');
-    print('Observações Avaliação: ${_observacoesAvController.text.trim()}');
-    print('Observações: ${_observacoesController.text.trim()}');
-    print('Imagem Web: ${_webImage != null ? '${_webImage!.length} bytes' : 'Não'}');
-    print('Imagem Path: ${_imagemPath ?? 'Não'}');
 
     setState(() => _isSaving = true);
 
     try {
       final marker = widget.pontos.first;
 
-      print('\n=== COORDENADAS ===');
-      print('Latitude: ${marker.point.latitude}');
-      print('Longitude: ${marker.point.longitude}');
 
       final sucesso = await _stipService.salvarPontoStip(
         idUsuario: _userId!,
@@ -232,7 +196,6 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
       if (!mounted) return;
 
       if (sucesso) {
-        print('\n✅ SUCESSO NO SALVAMENTO');
 
         final mapaController = context.read<MapaController>();
         mapaController.showSuccess('Ponto STIP salvo com sucesso! 🎉');
@@ -240,13 +203,9 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
         await _mostrarDialogoSucesso();
         _limparFormulario();
       } else {
-        print('\n❌ FALHA NO SALVAMENTO');
         _mostrarErro('Erro ao salvar o ponto. Verifique os dados e tente novamente.');
       }
     } catch (e, stackTrace) {
-      print('\n❌ EXCEÇÃO NO SALVAMENTO');
-      print('Erro: $e');
-      print('Stack: $stackTrace');
 
       if (mounted) {
         _mostrarErro('Erro inesperado ao salvar o ponto. Tente novamente.');
