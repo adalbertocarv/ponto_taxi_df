@@ -9,7 +9,6 @@ import 'package:ponto_taxi_df/taxi/views/screens/login.dart';
 import 'package:ponto_taxi_df/taxi/views/screens/selecao_modo_app.dart';
 import 'package:provider/provider.dart';
 
-
 void main() {
   runApp(
     MultiProvider(
