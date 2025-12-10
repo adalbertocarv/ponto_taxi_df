@@ -89,7 +89,7 @@ class _FormularioSectionState extends State<FormularioSection> {
   //---------------------------------------------------------
 
   final phoneFormatter = MaskTextInputFormatter(
-    mask: '(##) #########',
+    mask: '(##) # ####-####',
     filter: {"#": RegExp(r'[0-9]')},
   );
 
@@ -346,20 +346,25 @@ class _FormularioSectionState extends State<FormularioSection> {
                       return const Iterable<Autorizatario>.empty();
                     }
                     try {
-                      final results = await AutorizatarioService.buscarAutorizatarios(textEditingValue.text);
+                      final results =
+                          await AutorizatarioService.buscarAutorizatarios(
+                              textEditingValue.text);
                       return results;
                     } catch (e) {
                       return const Iterable<Autorizatario>.empty();
                     }
                   },
-                  displayStringForOption: (Autorizatario option) => option.toString(),
-                  fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                  displayStringForOption: (Autorizatario option) =>
+                      option.toString(),
+                  fieldViewBuilder:
+                      (context, controller, focusNode, onFieldSubmitted) {
                     return TextFormField(
                       controller: controller,
                       focusNode: focusNode,
                       decoration: InputDecoration(
                         labelText: 'Autorizatário',
-                        prefixIcon: Icon(Icons.person_search, color: Theme.of(context).primaryColor),
+                        prefixIcon: Icon(Icons.person_search,
+                            color: Theme.of(context).primaryColor),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -409,7 +414,7 @@ class _FormularioSectionState extends State<FormularioSection> {
                   label: 'Telefone',
                   icon: Icons.phone,
                   //keyboardType: TextInputType.phone,
-                  hint: 'ex: (61) 3321-8181',
+                  hint: 'ex: (61) 9 3321-8181',
                   //maxLength: 11,
                   inputFormatters: [
                     phoneFormatter,
@@ -458,33 +463,36 @@ class _FormularioSectionState extends State<FormularioSection> {
                       context: context,
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: buildBooleanField(
-                      label: 'Tem Energia',
-                      icon: Icons.bolt,
-                      value: widget.temEnergia,
-                      onChanged: widget.onTemEnergiaChanged,
-                      context: context,
-                    ),
-                  ),
+                  const Expanded(child: SizedBox()),
                 ],
               ),
               const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: buildBooleanField(
-                      label: 'Tem Água',
-                      icon: Icons.water_drop,
-                      value: widget.temAgua,
-                      onChanged: widget.onTemAguaChanged,
-                      context: context,
+              if (widget.temAbrigo) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: buildBooleanField(
+                        label: 'Tem Energia',
+                        icon: Icons.bolt,
+                        value: widget.temEnergia,
+                        onChanged: widget.onTemEnergiaChanged,
+                        context: context,
+                      ),
                     ),
-                  ),
-                  const Expanded(child: SizedBox()), // Para manter alinhamento
-                ],
-              ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: buildBooleanField(
+                        label: 'Tem Água',
+                        icon: Icons.water_drop,
+                        value: widget.temAgua,
+                        onChanged: widget.onTemAguaChanged,
+                        context: context,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+              ]
             ],
           ),
 
@@ -599,18 +607,6 @@ class _FormularioSectionState extends State<FormularioSection> {
                 ),
               ),
               const SizedBox(width: 16),
-              Expanded(
-                child: CustomTextField(
-                  controller: widget.vagasController,
-                  label: 'Nº de Vagas',
-                  icon: Icons.directions_car_filled,
-                  keyboardType: TextInputType.number,
-                  hint: 'ex: 4',
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
-                ),
-              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -639,21 +635,25 @@ class _FormularioSectionState extends State<FormularioSection> {
             context: context,
           ),
 
-          buildBooleanField(
-            label: 'Tem Energia',
-            icon: Icons.bolt,
-            value: widget.temEnergia,
-            onChanged: widget.onTemEnergiaChanged,
-            context: context,
-          ),
+          // Só aparece se tem abrigo
+          if (widget.temAbrigo)
+            buildBooleanField(
+              label: 'Tem Energia',
+              icon: Icons.bolt,
+              value: widget.temEnergia,
+              onChanged: widget.onTemEnergiaChanged,
+              context: context,
+            ),
 
-          buildBooleanField(
-            label: 'Tem Água',
-            icon: Icons.water_drop,
-            value: widget.temAgua,
-            onChanged: widget.onTemAguaChanged,
-            context: context,
-          ),
+          // Só aparece se tem abrigo
+          if (widget.temAbrigo)
+            buildBooleanField(
+              label: 'Tem Água',
+              icon: Icons.water_drop,
+              value: widget.temAgua,
+              onChanged: widget.onTemAguaChanged,
+              context: context,
+            ),
 
           CustomTextField(
             controller: widget.vagasController,
@@ -674,7 +674,7 @@ class _FormularioSectionState extends State<FormularioSection> {
             label: 'Telefone',
             icon: Icons.phone,
             keyboardType: TextInputType.phone,
-            hint: 'ex: (61) 3321-8181',
+            hint: 'ex: (61) 9 3321-8181',
             //maxLength: 11,
             inputFormatters: [
               phoneFormatter,
