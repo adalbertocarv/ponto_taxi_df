@@ -140,7 +140,9 @@ class BotoesAcaoSecao extends StatelessWidget {
               Expanded(
                 flex: 3,
                 child: ElevatedButton.icon(
-                  onPressed: isLoading ? null : onSalvar, // Desabilita quando carregando
+                  onPressed: isLoading
+                      ? null
+                      : onSalvar, // Desabilita quando carregando
                   icon: const Icon(Icons.save_rounded),
                   label: const Text('Salvar Ponto'),
                   style: ElevatedButton.styleFrom(
@@ -302,9 +304,7 @@ class BotoesAcaoSecao extends StatelessWidget {
                   ),
                 ),
               ),
-
               const SizedBox(width: 12),
-
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () {
