@@ -74,7 +74,8 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
   }
 
   Future<void> _carregarEndereco() async {
-    final endereco = await _enderecoService.obterEnderecoFormatado(widget.pontos);
+    final endereco =
+        await _enderecoService.obterEnderecoFormatado(widget.pontos);
     if (mounted) {
       setState(() {
         _enderecoController.text = endereco ?? '';
@@ -155,7 +156,6 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
       return;
     }
 
-
     // Validação do usuário
     if (_userId == null) {
       _mostrarErro('Erro: Usuário não identificado. Faça login novamente.');
@@ -189,19 +189,18 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
       return;
     }
 
-
     setState(() => _isSaving = true);
 
     try {
       final marker = widget.pontos.first;
-
 
       final sucesso = await _pontoService.salvarPonto(
         idUsuario: _userId!,
         latitude: marker.point.latitude,
         longitude: marker.point.longitude,
         endereco: _enderecoController.text.trim(),
-        idGrupoInfraestrutura: 2, // Deve ter um endpoint informando qual o tipo. Por enquanto vai no código mesmo.
+        idGrupoInfraestrutura:
+            2, // Deve ter um endpoint informando qual o tipo. Por enquanto vai no código mesmo.
         idTipoInfraestrutura: _idTipoInfraestrutura,
         codAvaliacao: _notaAvaliacao.toInt(),
         descAvaliacao: _observacoesAvController.text.trim().isEmpty
@@ -224,7 +223,6 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
       if (!mounted) return;
 
       if (sucesso) {
-
         final mapaController = context.read<MapaController>();
         mapaController.showSuccess('Ponto salvo com sucesso! 🎉');
 
@@ -237,10 +235,10 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
         // O popUntil já é feito no botão OK do diálogo
         // Não precisa fazer aqui
       } else {
-        _mostrarErro('Erro ao salvar o ponto. Verifique os dados e tente novamente.');
+        _mostrarErro(
+            'Erro ao salvar o ponto. Verifique os dados e tente novamente.');
       }
     } catch (e, stackTrace) {
-
       if (mounted) {
         _mostrarErro('Erro inesperado ao salvar o ponto. Tente novamente.');
       }
@@ -312,14 +310,15 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
                 if (mounted) {
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (_) => const TelaInicioPage()),
-                        (route) => false,
+                    (route) => false,
                   );
                 }
               },
               style: TextButton.styleFrom(
                 backgroundColor: const Color(0xFF27AE60),
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -443,6 +442,15 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
             vagasController: _vagasController,
             onSalvar: _salvar,
             isLoading: _isSaving,
+            autorizatarioSelecionado: _autorizatario,
+            classificacaoEstrutura: _classificacaoEstrutura,
+            observacoesAvController: _observacoesAvController,
+            pontoOficial: _pontoOficial,
+            telefoneController: _telefoneController,
+            temAbrigo: _temAbrigo,
+            temAgua: _temAgua,
+            temEnergia: _temEnergia,
+            temSinalizacao: _temSinalizacao,
           ),
           const SizedBox(height: 16),
         ],
@@ -496,15 +504,20 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
                           isLoadingEndereco: _isLoadingEndereco,
                           imagemSelecionada: _imagemPath,
                           valor: _notaAvaliacao,
-                          onPontoOficialChanged: (v) => setState(() => _pontoOficial = v),
-                          onTemSinalizacaoChanged: (v) => setState(() => _temSinalizacao = v),
-                          onTemAbrigoChanged: (v) => setState(() => _temAbrigo = v),
-                          onTemEnergiaChanged: (v) => setState(() => _temEnergia = v),
+                          onPontoOficialChanged: (v) =>
+                              setState(() => _pontoOficial = v),
+                          onTemSinalizacaoChanged: (v) =>
+                              setState(() => _temSinalizacao = v),
+                          onTemAbrigoChanged: (v) =>
+                              setState(() => _temAbrigo = v),
+                          onTemEnergiaChanged: (v) =>
+                              setState(() => _temEnergia = v),
                           onTemAguaChanged: (v) => setState(() => _temAgua = v),
                           onClassificacaoChanged: _onClassificacaoChanged,
                           onAutorizatarioChanged: _onAutorizatarioChanged,
                           onImagemSelecionada: _onImagemSelecionada,
-                          onNotaChanged: (v) => setState(() => _notaAvaliacao = v),
+                          onNotaChanged: (v) =>
+                              setState(() => _notaAvaliacao = v),
                           onIdChanged: _onIdInfraestruturaChanged,
                         ),
                         const SizedBox(height: 32),
@@ -514,6 +527,15 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
                           vagasController: _vagasController,
                           onSalvar: _salvar,
                           isLoading: _isSaving,
+                          autorizatarioSelecionado: _autorizatario,
+                          classificacaoEstrutura: _classificacaoEstrutura,
+                          observacoesAvController: _observacoesAvController,
+                          pontoOficial: _pontoOficial,
+                          telefoneController: _telefoneController,
+                          temAbrigo: _temAbrigo,
+                          temAgua: _temAgua,
+                          temEnergia: _temEnergia,
+                          temSinalizacao: _temSinalizacao,
                         ),
                       ],
                     ),
@@ -607,11 +629,11 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
   }
 
   Widget _buildCoordenadasItem(
-      String label,
-      String value,
-      IconData icon,
-      ThemeProvider themeProvider,
-      ) {
+    String label,
+    String value,
+    IconData icon,
+    ThemeProvider themeProvider,
+  ) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -702,41 +724,41 @@ class _FormularioTaxiState extends State<FormularioTaxi> {
           : const Color(0xFFF5F7FA),
       appBar: !_isDesktop(context)
           ? AppBar(
-        title: const Text(
-          'Formulário Táxi',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.amber,
-        foregroundColor: Colors.white,
-        centerTitle: true,
-      )
+              title: const Text(
+                'Formulário Táxi',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              backgroundColor: Colors.amber,
+              foregroundColor: Colors.white,
+              centerTitle: true,
+            )
           : null,
       body: SafeArea(
         child: _isSaving
             ? Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const CircularProgressIndicator(
-                color: Color(0xFF27AE60),
-                strokeWidth: 3,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Salvando ponto de táxi...',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: themeProvider.isDarkMode
-                      ? Colors.white70
-                      : Colors.black54,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(
+                      color: Color(0xFF27AE60),
+                      strokeWidth: 3,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Salvando ponto de táxi...',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: themeProvider.isDarkMode
+                            ? Colors.white70
+                            : Colors.black54,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-        )
+              )
             : _isDesktop(context)
-            ? _buildDesktopLayout(context)
-            : _buildMobileLayout(context),
+                ? _buildDesktopLayout(context)
+                : _buildMobileLayout(context),
       ),
     );
   }

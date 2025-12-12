@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:ponto_taxi_df/taxi/controllers/mapa_controller.dart';
+import 'package:ponto_taxi_df/taxi/views/widgets/formulario/botoes_acao/botao_acao_secao_stip.dart';
 import 'package:provider/provider.dart';
 import '../../providers/themes/tema_provider.dart';
 import '../../services/endereco_osm_service.dart';
@@ -77,7 +78,8 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
   }
 
   Future<void> _carregarEndereco() async {
-    final endereco = await _enderecoService.obterEnderecoFormatado(widget.pontos);
+    final endereco =
+        await _enderecoService.obterEnderecoFormatado(widget.pontos);
     if (mounted) {
       setState(() {
         _enderecoController.text = endereco ?? '';
@@ -123,7 +125,6 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
       return;
     }
 
-
     // Validação do usuário
     if (_userId == null) {
       _mostrarErro('Erro: Usuário não identificado. Faça login novamente.');
@@ -157,12 +158,10 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
       return;
     }
 
-
     setState(() => _isSaving = true);
 
     try {
       final marker = widget.pontos.first;
-
 
       final sucesso = await _stipService.salvarPontoStip(
         idUsuario: _userId!,
@@ -196,17 +195,16 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
       if (!mounted) return;
 
       if (sucesso) {
-
         final mapaController = context.read<MapaController>();
         mapaController.showSuccess('Ponto STIP salvo com sucesso! 🎉');
 
         await _mostrarDialogoSucesso();
         _limparFormulario();
       } else {
-        _mostrarErro('Erro ao salvar o ponto. Verifique os dados e tente novamente.');
+        _mostrarErro(
+            'Erro ao salvar o ponto. Verifique os dados e tente novamente.');
       }
     } catch (e, stackTrace) {
-
       if (mounted) {
         _mostrarErro('Erro inesperado ao salvar o ponto. Tente novamente.');
       }
@@ -274,14 +272,15 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
                 if (mounted) {
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (_) => const TelaInicioPage()),
-                        (route) => false,
+                    (route) => false,
                   );
                 }
               },
               style: TextButton.styleFrom(
                 backgroundColor: const Color(0xFF27AE60),
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -392,28 +391,52 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
             isLoadingEndereco: _isLoadingEndereco,
             imagemSelecionada: _imagemPath,
             valor: _notaAvaliacao,
-            onTemSanitariosMascFemChanged: (v) => setState(() => _temSanitariosMascFem = v),
-            onTemChuveirosIndividuaisChanged: (v) => setState(() => _temChuveirosIndividuais = v),
+            onTemSanitariosMascFemChanged: (v) =>
+                setState(() => _temSanitariosMascFem = v),
+            onTemChuveirosIndividuaisChanged: (v) =>
+                setState(() => _temChuveirosIndividuais = v),
             onTemVestuariosChanged: (v) => setState(() => _temVestuarios = v),
-            onTemSalaDescansoChanged: (v) => setState(() => _temSalaDescanso = v),
+            onTemSalaDescansoChanged: (v) =>
+                setState(() => _temSalaDescanso = v),
             onTemWifiChanged: (v) => setState(() => _temWifi = v),
-            onTemPontosCarregarCelularChanged: (v) => setState(() => _temPontosCarregarCelular = v),
-            onTemEspacoRefeicaoChanged: (v) => setState(() => _temEspacoRefeicao = v),
-            onTemEspacoEstacionarBikeChanged: (v) => setState(() => _temEspacoEstacionarBike = v),
+            onTemPontosCarregarCelularChanged: (v) =>
+                setState(() => _temPontosCarregarCelular = v),
+            onTemEspacoRefeicaoChanged: (v) =>
+                setState(() => _temEspacoRefeicao = v),
+            onTemEspacoEstacionarBikeChanged: (v) =>
+                setState(() => _temEspacoEstacionarBike = v),
             onTemPontoEsperaChanged: (v) => setState(() => _temPontoEspera = v),
-            onEmpresaGaranteManutencaoChanged: (v) => setState(() => _empresaGaranteManutencao = v),
+            onEmpresaGaranteManutencaoChanged: (v) =>
+                setState(() => _empresaGaranteManutencao = v),
             onImagemSelecionada: _onImagemSelecionada,
             onNotaChanged: (v) => setState(() => _notaAvaliacao = v),
             onClassificacaoChanged: _onClassificacaoChanged,
             onIdChanged: _onIdInfraestruturaChanged,
           ),
           const SizedBox(height: 32),
-          BotoesAcaoSecao(
+          BotoesAcaoSecao2(
             enderecoController: _enderecoController,
             observacoesController: _observacoesController,
             vagasController: _vagasController,
             onSalvar: _salvar,
             isLoading: _isSaving,
+            classificacaoEstrutura: _classificacaoEstrutura,
+            empresaGaranteManutencao: _empresaGaranteManutencao,
+            imagemSelecionada: _imagemPath,
+            latitudeController: _latitudeController,
+            longitudeController: _longitudeController,
+            observacoesAvController: _observacoesAvController,
+            temChuveirosIndividuais: _temChuveirosIndividuais,
+            temEspacoEstacionarBike: _temEspacoEstacionarBike,
+            temEspacoRefeicao: _temEspacoRefeicao,
+            temPontoEspera: _temPontoEspera,
+            temPontosCarregarCelular: _temPontosCarregarCelular,
+            temSalaDescanso: _temSalaDescanso,
+            temSanitariosMascFem: _temSanitariosMascFem,
+            temVestuarios: _temVestuarios,
+            temWifi: _temWifi,
+            valorNota: _notaAvaliacao,
+            onLimpar: _FormularioSTIPState.new,
           ),
           const SizedBox(height: 16),
         ],
@@ -470,28 +493,55 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
                           isLoadingEndereco: _isLoadingEndereco,
                           imagemSelecionada: _imagemPath,
                           valor: _notaAvaliacao,
-                          onTemSanitariosMascFemChanged: (v) => setState(() => _temSanitariosMascFem = v),
-                          onTemChuveirosIndividuaisChanged: (v) => setState(() => _temChuveirosIndividuais = v),
-                          onTemVestuariosChanged: (v) => setState(() => _temVestuarios = v),
-                          onTemSalaDescansoChanged: (v) => setState(() => _temSalaDescanso = v),
+                          onTemSanitariosMascFemChanged: (v) =>
+                              setState(() => _temSanitariosMascFem = v),
+                          onTemChuveirosIndividuaisChanged: (v) =>
+                              setState(() => _temChuveirosIndividuais = v),
+                          onTemVestuariosChanged: (v) =>
+                              setState(() => _temVestuarios = v),
+                          onTemSalaDescansoChanged: (v) =>
+                              setState(() => _temSalaDescanso = v),
                           onTemWifiChanged: (v) => setState(() => _temWifi = v),
-                          onTemPontosCarregarCelularChanged: (v) => setState(() => _temPontosCarregarCelular = v),
-                          onTemEspacoRefeicaoChanged: (v) => setState(() => _temEspacoRefeicao = v),
-                          onTemEspacoEstacionarBikeChanged: (v) => setState(() => _temEspacoEstacionarBike = v),
-                          onTemPontoEsperaChanged: (v) => setState(() => _temPontoEspera = v),
-                          onEmpresaGaranteManutencaoChanged: (v) => setState(() => _empresaGaranteManutencao = v),
+                          onTemPontosCarregarCelularChanged: (v) =>
+                              setState(() => _temPontosCarregarCelular = v),
+                          onTemEspacoRefeicaoChanged: (v) =>
+                              setState(() => _temEspacoRefeicao = v),
+                          onTemEspacoEstacionarBikeChanged: (v) =>
+                              setState(() => _temEspacoEstacionarBike = v),
+                          onTemPontoEsperaChanged: (v) =>
+                              setState(() => _temPontoEspera = v),
+                          onEmpresaGaranteManutencaoChanged: (v) =>
+                              setState(() => _empresaGaranteManutencao = v),
                           onImagemSelecionada: _onImagemSelecionada,
-                          onNotaChanged: (v) => setState(() => _notaAvaliacao = v),
+                          onNotaChanged: (v) =>
+                              setState(() => _notaAvaliacao = v),
                           onClassificacaoChanged: _onClassificacaoChanged,
                           onIdChanged: _onIdInfraestruturaChanged,
                         ),
                         const SizedBox(height: 32),
-                        BotoesAcaoSecao(
+                        BotoesAcaoSecao2(
                           enderecoController: _enderecoController,
                           observacoesController: _observacoesController,
                           vagasController: _vagasController,
                           onSalvar: _salvar,
                           isLoading: _isSaving,
+                          classificacaoEstrutura: _classificacaoEstrutura,
+                          empresaGaranteManutencao: _empresaGaranteManutencao,
+                          imagemSelecionada: _imagemPath,
+                          latitudeController: _latitudeController,
+                          longitudeController: _longitudeController,
+                          observacoesAvController: _observacoesAvController,
+                          temChuveirosIndividuais: _temChuveirosIndividuais,
+                          temEspacoEstacionarBike: _temEspacoEstacionarBike,
+                          temEspacoRefeicao: _temEspacoRefeicao,
+                          temPontoEspera: _temPontoEspera,
+                          temPontosCarregarCelular: _temPontosCarregarCelular,
+                          temSalaDescanso: _temSalaDescanso,
+                          temSanitariosMascFem: _temSanitariosMascFem,
+                          temVestuarios: _temVestuarios,
+                          temWifi: _temWifi,
+                          valorNota: _notaAvaliacao,
+                          onLimpar: _FormularioSTIPState.new,
                         ),
                       ],
                     ),
@@ -585,11 +635,11 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
   }
 
   Widget _buildCoordenadasItem(
-      String label,
-      String value,
-      IconData icon,
-      ThemeProvider themeProvider,
-      ) {
+    String label,
+    String value,
+    IconData icon,
+    ThemeProvider themeProvider,
+  ) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -680,41 +730,41 @@ class _FormularioSTIPState extends State<FormularioSTIP> {
           : const Color(0xFFF5F7FA),
       appBar: !_isDesktop(context)
           ? AppBar(
-        title: const Text(
-          'Formulário STIP',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: themeProvider.primaryColor,
-        foregroundColor: Colors.white,
-        centerTitle: true,
-      )
+              title: const Text(
+                'Formulário STIP',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              backgroundColor: themeProvider.primaryColor,
+              foregroundColor: Colors.white,
+              centerTitle: true,
+            )
           : null,
       body: SafeArea(
         child: _isSaving
             ? Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const CircularProgressIndicator(
-                color: Color(0xFF27AE60),
-                strokeWidth: 3,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Salvando ponto STIP...',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: themeProvider.isDarkMode
-                      ? Colors.white70
-                      : Colors.black54,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(
+                      color: Color(0xFF27AE60),
+                      strokeWidth: 3,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Salvando ponto STIP...',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: themeProvider.isDarkMode
+                            ? Colors.white70
+                            : Colors.black54,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-        )
+              )
             : _isDesktop(context)
-            ? _buildDesktopLayout(context)
-            : _buildMobileLayout(context),
+                ? _buildDesktopLayout(context)
+                : _buildMobileLayout(context),
       ),
     );
   }

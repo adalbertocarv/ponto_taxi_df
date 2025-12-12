@@ -4,8 +4,22 @@ import '../../../../providers/themes/tema_provider.dart';
 
 class BotoesAcaoSecao extends StatelessWidget {
   final TextEditingController enderecoController;
-  final TextEditingController observacoesController;
+  final TextEditingController observacoesController; // Observações Gerais
   final TextEditingController vagasController;
+
+  // NOVOS CAMPOS ADICIONADOS PARA REVISÃO:
+  final String autorizatarioSelecionado;
+  final String classificacaoEstrutura;
+  final TextEditingController telefoneController;
+  final TextEditingController
+      observacoesAvController; // Observações da Avaliação
+  final bool pontoOficial;
+  final bool temSinalizacao;
+  final bool temAbrigo;
+  final bool temEnergia;
+  final bool temAgua;
+  // Fim dos novos campos
+
   final VoidCallback onSalvar;
   final bool isLoading;
 
@@ -16,7 +30,44 @@ class BotoesAcaoSecao extends StatelessWidget {
     required this.vagasController,
     required this.onSalvar,
     required this.isLoading,
+
+    // Inicializando os NOVOS CAMPOS
+    required this.autorizatarioSelecionado,
+    required this.classificacaoEstrutura,
+    required this.telefoneController,
+    required this.observacoesAvController,
+    required this.pontoOficial,
+    required this.temSinalizacao,
+    required this.temAbrigo,
+    required this.temEnergia,
+    required this.temAgua,
   });
+
+  // Função auxiliar para construir uma linha de dado para revisão
+  Widget _buildReviewRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              '$label:',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(value),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Função auxiliar para formatar booleanos
+  String _formatBoolean(bool value) => value ? 'Sim' : 'Não';
 
   // Função para determinar se é desktop
   bool _isDesktop(BuildContext context) {
@@ -26,6 +77,139 @@ class BotoesAcaoSecao extends StatelessWidget {
   // Validação básica dos campos obrigatórios
   bool _isFormValid() {
     return enderecoController.text.trim().isNotEmpty;
+  }
+
+  // 💡 FUNÇÃO: Exibe o Diálogo de Confirmação com Revisão de TODOS os Dados
+  void _showConfirmacaoDialog(
+    BuildContext context, {
+    required String autorizatario,
+    required String classificacao,
+    required String vagas,
+    required String telefone,
+    required bool pOficial,
+    required bool temSinal,
+    required bool temAbr,
+    required bool temEnerg,
+    required bool temAgua,
+    required String obsAv,
+    required String obsGeral,
+    required bool formValido,
+  }) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmação de Dados'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const Text(
+                  '⚠️ Por favor, revise os dados a seguir antes de confirmar o salvamento.',
+                  style: TextStyle(
+                      color: Colors.orange, fontWeight: FontWeight.w600),
+                ),
+                const Divider(),
+
+                // --- Dados do Formulário Principal (Revisão) ---
+
+                // 1. Endereço (Campo do Controller que você já tinha)
+                _buildReviewRow(
+                    'Endereço',
+                    enderecoController.text.isNotEmpty
+                        ? enderecoController.text
+                        : 'Não informado'),
+
+                // 2. Autorizatário
+                _buildReviewRow('Autorizatário',
+                    autorizatario.isNotEmpty ? autorizatario : 'Não informado'),
+
+                // 3. Classificação/Infraestrutura
+                _buildReviewRow('Classificação',
+                    classificacao.isNotEmpty ? classificacao : 'Não informado'),
+
+                const Divider(),
+
+                // 4. Vagas e Telefone
+                _buildReviewRow(
+                    'Nº de Vagas', vagas.isNotEmpty ? vagas : 'Não informado'),
+                _buildReviewRow('Telefone',
+                    telefone.isNotEmpty ? telefone : 'Não informado'),
+
+                const Divider(),
+
+                const Text(
+                  'Características:',
+                  style: TextStyle(fontWeight: FontWeight.bold, height: 1.5),
+                ),
+
+                // 5. Campos Booleanos
+                _buildReviewRow('Ponto Oficial', _formatBoolean(pOficial)),
+                _buildReviewRow('Há Sinalização', _formatBoolean(temSinal)),
+                _buildReviewRow('Tem Abrigo', _formatBoolean(temAbr)),
+
+                // Campos Condicionais (Energia/Água - só se 'Tem Abrigo' for true)
+                if (temAbr) ...[
+                  _buildReviewRow('Tem Energia', _formatBoolean(temEnerg)),
+                  _buildReviewRow('Tem Água', _formatBoolean(temAgua)),
+                ],
+
+                const Divider(),
+
+                // 6. Observações da Avaliação
+                _buildReviewRow(
+                    'Obs. da Avaliação', obsAv.isNotEmpty ? obsAv : 'Nenhuma'),
+
+                // 7. Observações Gerais
+                _buildReviewRow(
+                    'Obs. Gerais', obsGeral.isNotEmpty ? obsGeral : 'Nenhuma'),
+
+                const SizedBox(height: 16),
+                const Text(
+                  'Confirma a criação deste ponto com os dados acima?',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            // Botão "Cancelar"
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Fecha o popup
+              },
+              child: const Text('Cancelar'),
+            ),
+
+            // Botão "Salvar" (Ação principal do popup)
+            Expanded(
+              flex: 3,
+              child: ElevatedButton.icon(
+                onPressed: isLoading || !formValido
+                    ? null
+                    : onSalvar, // Chama a função de salvamento
+                icon: const Icon(Icons.save_rounded),
+                label: const Text('Confirmar'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: formValido
+                      ? const Color(0xFF27AE60)
+                      : Colors.grey.shade400,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
+                  elevation: formValido ? 2 : 0,
+                  shadowColor: const Color(0xFF27AE60).withOpacity(0.6),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget _buildDesktopLayout(BuildContext context) {
@@ -41,8 +225,8 @@ class BotoesAcaoSecao extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: themeProvider.isDarkMode
-                ? Colors.black.withValues(alpha: 0.3)
-                : Colors.black.withValues(alpha: 0.08),
+                ? Colors.black.withOpacity(0.3)
+                : Colors.black.withOpacity(0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -50,13 +234,13 @@ class BotoesAcaoSecao extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Header da seção
+          // ... (Header da Seção - sem mudanças) ...
           Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE74C3C).withValues(alpha: 0.1),
+                  color: const Color(0xFFE74C3C).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(
@@ -136,13 +320,27 @@ class BotoesAcaoSecao extends StatelessWidget {
 
               const SizedBox(width: 16),
 
-              // Botão Salvar (maior)
+              // 💡 Botão Salvar (Atualizado para passar TODOS os dados para revisão)
               Expanded(
                 flex: 3,
                 child: ElevatedButton.icon(
-                  onPressed: isLoading
-                      ? null
-                      : onSalvar, // Desabilita quando carregando
+                  onPressed: _isFormValid()
+                      ? () => _showConfirmacaoDialog(
+                            context,
+                            autorizatario: autorizatarioSelecionado,
+                            classificacao: classificacaoEstrutura,
+                            vagas: vagasController.text,
+                            telefone: telefoneController.text,
+                            pOficial: pontoOficial,
+                            temSinal: temSinalizacao,
+                            temAbr: temAbrigo,
+                            temEnerg: temEnergia,
+                            temAgua: temAgua,
+                            obsAv: observacoesAvController.text,
+                            obsGeral: observacoesController.text,
+                            formValido: _isFormValid(),
+                          )
+                      : null,
                   icon: const Icon(Icons.save_rounded),
                   label: const Text('Salvar Ponto'),
                   style: ElevatedButton.styleFrom(
@@ -152,7 +350,7 @@ class BotoesAcaoSecao extends StatelessWidget {
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     elevation: _isFormValid() ? 2 : 0,
-                    shadowColor: const Color(0xFF27AE60).withValues(alpha: 0.3),
+                    shadowColor: const Color(0xFF27AE60).withOpacity(0.3),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -162,7 +360,7 @@ class BotoesAcaoSecao extends StatelessWidget {
             ],
           ),
 
-          // Informação de validação
+          // ... (Informação de validação - sem mudanças) ...
           if (!_isFormValid()) ...[
             const SizedBox(height: 12),
             Container(
@@ -215,8 +413,8 @@ class BotoesAcaoSecao extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: themeProvider.isDarkMode
-                ? Colors.black.withValues(alpha: 0.3)
-                : Colors.black.withValues(alpha: 0.08),
+                ? Colors.black.withOpacity(0.3)
+                : Colors.black.withOpacity(0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -224,13 +422,13 @@ class BotoesAcaoSecao extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Header da seção
+          // ... (Header da Seção - sem mudanças) ...
           Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE74C3C).withValues(alpha: 0.1),
+                  color: const Color(0xFFE74C3C).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(
@@ -255,11 +453,27 @@ class BotoesAcaoSecao extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // Botão Salvar (principal)
+          // 💡 Botão Salvar (principal) - Atualizado para passar TODOS os dados para revisão
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: _isFormValid() ? onSalvar : null,
+              onPressed: _isFormValid()
+                  ? () => _showConfirmacaoDialog(
+                        context,
+                        autorizatario: autorizatarioSelecionado,
+                        classificacao: classificacaoEstrutura,
+                        vagas: vagasController.text,
+                        telefone: telefoneController.text,
+                        pOficial: pontoOficial,
+                        temSinal: temSinalizacao,
+                        temAbr: temAbrigo,
+                        temEnerg: temEnergia,
+                        temAgua: temAgua,
+                        obsAv: observacoesAvController.text,
+                        obsGeral: observacoesController.text,
+                        formValido: _isFormValid(),
+                      )
+                  : null,
               icon: const Icon(Icons.save_rounded),
               label: const Text('Salvar Ponto'),
               style: ElevatedButton.styleFrom(
@@ -269,7 +483,7 @@ class BotoesAcaoSecao extends StatelessWidget {
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 elevation: _isFormValid() ? 2 : 0,
-                shadowColor: const Color(0xFF27AE60).withValues(alpha: 0.3),
+                shadowColor: const Color(0xFF27AE60).withOpacity(0.3),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -279,7 +493,7 @@ class BotoesAcaoSecao extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          // Botões secundários em linha
+          // ... (Botões secundários e Informação de validação - sem mudanças) ...
           Row(
             children: [
               Expanded(
@@ -328,7 +542,6 @@ class BotoesAcaoSecao extends StatelessWidget {
             ],
           ),
 
-          // Informação de validação
           if (!_isFormValid()) ...[
             const SizedBox(height: 12),
             Container(
@@ -369,6 +582,7 @@ class BotoesAcaoSecao extends StatelessWidget {
   }
 
   void _showLimparDialog(BuildContext context) {
+    // ... (Função de limpar - sem mudanças) ...
     showDialog(
       context: context,
       builder: (BuildContext context) {

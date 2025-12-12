@@ -12,55 +12,63 @@ class _SobreState extends State<Sobre> {
   // Estado para gerenciar a funcionalidade clicada (apenas para desktop/tablet)
   // O estado rastreia o índice do container que deve expandir e exibir a descrição completa.
   int? _selectedIndex;
-  
+
   // Lista unificada de funcionalidades ATUALIZADA com ícones e descrições
   final List<Map<String, dynamic>> _functionalityItems = const [
     {
       'icon': Icons.map,
       'title': 'Mapa Interativo',
       'description': 'Visualização e navegação de pontos',
-      'grid_title': 'Exibição de mapa interativo via flutter_map, permitindo visualização de pontos cadastrados, controle de camadas e rastreamento em tempo real.',
+      'grid_title':
+          'Exibição de mapa interativo via flutter_map, permitindo visualização de pontos cadastrados, controle de camadas e rastreamento em tempo real.',
     },
     {
       'icon': Icons.pin_drop,
       'title': 'Cadastro via GPS',
       'description': 'Adição de pontos com precisão GPS',
-      'grid_title': 'Cadastro de novos pontos utilizando a precisão do GPS para garantir a exatidão da localização, essencial para auditorias fiscais.',
+      'grid_title':
+          'Cadastro de novos pontos utilizando a precisão do GPS para garantir a exatidão da localização, essencial para auditorias fiscais.',
     },
     {
       'icon': Icons.my_location,
       'title': 'Geolocalização',
       'description': 'Centraliza a localização do usuário',
-      'grid_title': 'Recurso de geolocalização para centralizar o mapa rapidamente na posição atual do usuário e facilitar o processo de auditoria em campo.',
+      'grid_title':
+          'Recurso de geolocalização para centralizar o mapa rapidamente na posição atual do usuário e facilitar o processo de auditoria em campo.',
     },
     {
       'icon': Icons.tune,
       'title': 'Controles do Mapa',
       'description': 'Zoom, satélite e orientação',
-      'grid_title': 'Controles avançados de zoom, satélite e orientação para o Norte, melhorando a exploração e a compreensão do mapa.',
+      'grid_title':
+          'Controles avançados de zoom, satélite e orientação para o Norte, melhorando a exploração e a compreensão do mapa.',
     },
     {
       'icon': Icons.lock_person,
       'title': 'Login Seguro',
       'description': 'Acesso autorizado (SEMOB)',
-      'grid_title': 'Autenticação segura e restrita para Auditores Fiscais da SEMOB, protegendo o acesso aos dados sensíveis e garantindo a integridade do sistema.',
+      'grid_title':
+          'Autenticação segura e restrita para Auditores Fiscais da SEMOB, protegendo o acesso aos dados sensíveis e garantindo a integridade do sistema.',
     },
     {
       'icon': Icons.account_circle,
       'title': 'Gestão de Perfil',
       'description': 'Visualização e atualização de dados',
-      'grid_title': 'Gestão completa do perfil do auditor, incluindo nome, e-mail e foto, com facilidade de visualização e atualização de dados pessoais.',
+      'grid_title':
+          'Gestão completa do perfil do auditor, incluindo nome, e-mail e foto, com facilidade de visualização e atualização de dados pessoais.',
     },
   ];
 
   // --- Funções Auxiliares de Responsividade ---
 
-  bool _isMobile(BuildContext context) => MediaQuery.of(context).size.width < 600;
+  bool _isMobile(BuildContext context) =>
+      MediaQuery.of(context).size.width < 600;
   bool _isTablet(BuildContext context) =>
       MediaQuery.of(context).size.width >= 600 &&
       MediaQuery.of(context).size.width < 1024;
-  bool _isDesktop(BuildContext context) => MediaQuery.of(context).size.width >= 1024;
-  
+  bool _isDesktop(BuildContext context) =>
+      MediaQuery.of(context).size.width >= 1024;
+
   // --- Funções Auxiliares para Responsividade ---
 
   /// Retorna padding padrão baseado na largura da tela
@@ -116,7 +124,7 @@ class _SobreState extends State<Sobre> {
 
         // Funcionalidades em grid responsivo
         _buildFunctionalitiesSection(context),
-        
+
         // O painel de detalhes separado foi removido, a expansão é in-line.
 
         const SizedBox(height: 60),
@@ -138,7 +146,7 @@ class _SobreState extends State<Sobre> {
       style: TextStyle(
         // Define o tamanho máximo (desktop: 110, mobile/tablet: 60)
         fontSize: isDesktop ? 110 : 60,
-        fontWeight: FontWeight.w900, 
+        fontWeight: FontWeight.w900,
         fontFamily: 'monospace',
         height: 0.9,
         color: Colors.black87,
@@ -154,21 +162,21 @@ class _SobreState extends State<Sobre> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues( alpha:0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
         ],
       ),
       child: const Text(
-        'Ponto Certo - Táxi é um aplicativo Flutter desenvolvido para cadastrar pontos de táxi '
+        'Ponto Certo - Táxi é um aplicativo Flutter desenvolvido para cadastrar pontos de táxi e STIP '
         'no Distrito Federal (DF), Brasil. Criado para Auditores Fiscais da Secretaria de '
         'Transporte e Mobilidade (SEMOB), ele oferece ferramentas para mapear e catalogar pontos '
-        'de táxi com precisão, utilizando recursos avançados de mapa e geolocalização.  ',
+        'de táxi e de STIP com precisão, utilizando recursos avançados de mapa e geolocalização.  ',
         style: TextStyle(
-          fontSize: 20, 
+          fontSize: 20,
           color: Colors.black87,
-          fontWeight: FontWeight.w300, 
+          fontWeight: FontWeight.w300,
           height: 1.5,
           letterSpacing: 0.3,
         ),
@@ -220,7 +228,7 @@ class _SobreState extends State<Sobre> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0069B4).withValues( alpha:0.1),
+                      color: const Color(0xFF0069B4).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
@@ -237,7 +245,7 @@ class _SobreState extends State<Sobre> {
                         Text(
                           func['title'] as String,
                           style: const TextStyle(
-                            fontSize: 16, 
+                            fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: Colors.black87,
                           ),
@@ -246,7 +254,7 @@ class _SobreState extends State<Sobre> {
                         Text(
                           func['description'] as String,
                           style: TextStyle(
-                            fontSize: 14, 
+                            fontSize: 14,
                             color: Colors.grey.shade600,
                           ),
                         ),
@@ -266,7 +274,7 @@ class _SobreState extends State<Sobre> {
     final isTablet = _isTablet(context);
     final isDesktop = _isDesktop(context);
 
-    final iconSize = isDesktop ? 50.0 : 32.0; 
+    final iconSize = isDesktop ? 50.0 : 32.0;
     final titleFontSize = isDesktop ? 22.0 : 20.0;
     final descFontSize = isDesktop ? 18.0 : 16.0;
 
@@ -277,7 +285,7 @@ class _SobreState extends State<Sobre> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues( alpha:0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -289,9 +297,9 @@ class _SobreState extends State<Sobre> {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: isTablet ? 2 : 3,
           // Mantendo o ajuste do childAspectRatio para garantir espaço suficiente
-          childAspectRatio: isDesktop ? 1.3 : 1.6, 
-          crossAxisSpacing: isDesktop ? 40 : 30, 
-          mainAxisSpacing: isDesktop ? 50 : 30, 
+          childAspectRatio: isDesktop ? 1.3 : 1.6,
+          crossAxisSpacing: isDesktop ? 40 : 30,
+          mainAxisSpacing: isDesktop ? 50 : 30,
         ),
         itemCount: functionalities.length,
         itemBuilder: (context, index) {
@@ -333,9 +341,9 @@ class _SobreState extends State<Sobre> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text( 
+                Text(
                   func['title'] as String,
-                  style: TextStyle( 
+                  style: TextStyle(
                     fontSize: titleFontSize,
                     color: Colors.black,
                     fontWeight: FontWeight.w800,
@@ -355,7 +363,8 @@ class _SobreState extends State<Sobre> {
             },
             // Usando AnimatedContainer para garantir transições visuais suaves
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300), // Animação de transição
+              duration:
+                  const Duration(milliseconds: 300), // Animação de transição
               curve: Curves.easeOut,
               padding: EdgeInsets.symmetric(
                 // Aumentando o padding vertical no estado expandido para forçar o crescimento do container
@@ -364,7 +373,7 @@ class _SobreState extends State<Sobre> {
               ),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? const Color(0xFF0069B4).withValues( alpha:0.15)
+                    ? const Color(0xFF0069B4).withValues(alpha: 0.15)
                     : Colors.white, // Fundo branco no estado normal
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
@@ -376,28 +385,28 @@ class _SobreState extends State<Sobre> {
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: const Color(0xFF0069B4).withValues( alpha:0.3),
+                          color: const Color(0xFF0069B4).withValues(alpha: 0.3),
                           blurRadius: 15,
                           offset: const Offset(0, 6),
                         )
                       ]
                     : [
                         BoxShadow(
-                          color: Colors.black.withValues( alpha:0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 5,
                           offset: const Offset(0, 2),
                         ),
                       ],
               ),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start, 
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon( 
+                  Icon(
                     func['icon'] as IconData,
                     color: const Color(0xFF0069B4),
                     size: iconSize,
                   ),
-                  const SizedBox(width: 30), 
+                  const SizedBox(width: 30),
                   Expanded(
                     child: contentWidget,
                   ),
@@ -423,10 +432,7 @@ class _SobreState extends State<Sobre> {
       children: [
         _buildTeamCard(
           'Equipe Demandante/Organizacional',
-          [
-            '',
-            ''
-          ],
+          ['', ''],
           Icons.business,
         ),
         const SizedBox(height: 40),
@@ -451,10 +457,7 @@ class _SobreState extends State<Sobre> {
         Expanded(
           child: _buildTeamCard(
             'Equipe Demandante/Organizacional',
-            [
-              '',
-              ''
-            ],
+            ['', ''],
             Icons.business,
           ),
         ),
@@ -483,7 +486,7 @@ class _SobreState extends State<Sobre> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues( alpha:0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -497,7 +500,7 @@ class _SobreState extends State<Sobre> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0069B4).withValues( alpha:0.1),
+                  color: const Color(0xFF0069B4).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -511,7 +514,7 @@ class _SobreState extends State<Sobre> {
                 child: Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 30, 
+                    fontSize: 30,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
                   ),
@@ -535,9 +538,9 @@ class _SobreState extends State<Sobre> {
                     child: Text(
                       member,
                       style: TextStyle(
-                        fontSize: 22, 
+                        fontSize: 22,
                         color: Colors.black87,
-                        fontWeight: FontWeight.w500, 
+                        fontWeight: FontWeight.w500,
                         height: 1.3,
                       ),
                     ),
